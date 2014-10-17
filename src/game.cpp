@@ -1179,6 +1179,14 @@ bool game::do_turn()
             add_msg(m_warning, _("Your stomach feels so empty..."));
         }
     }
+    // Check if need to pee
+        if (u.bladder >= u.bladderdance) {
+            if (u.bladder >= u.bladdercap || u.has_trait("INCONT") || u.has_disease("sleep") || u.has_disease("lying_down")) {
+                u.peeself(false);
+            } else if (calendar::turn % 10 == 0) {
+                add_msg(m_warning, _("You're doing a potty dance like a 4 year old"));
+            }
+        }
 
     // Check if we're dying of thirst
     if (u.thirst >= 600) {
@@ -1236,7 +1244,12 @@ bool game::do_turn()
             u.add_disease("lack_sleep", 50);
         }
     }
-
+    if (calendar::turn % u.peerate == 0 && !u.has_disease("sleep")) {
+        u.bladder++;
+    }
+    else if (calendar::turn % u.peesleeprate == 0 && u.has_disease("sleep")) {
+        u.bladder++;
+    }
     if (calendar::turn % 50 == 0) { // Hunger, thirst, & fatigue up every 5 minutes
         if ((!u.has_trait("LIGHTEATER") || !one_in(3)) &&
             (!u.has_bionic("bio_recycler") || calendar::turn % 300 == 0) &&
@@ -1408,6 +1421,14 @@ bool game::do_turn()
     }
 
     process_activity();
+	for( size_t i = 0; i < u.worn.size(); ++i ) {
+		if(u.worn[i].has_flag("SUCKING")) {
+			u.add_morale( MORALE_SUCKING_PACIFIER, 1, 60);
+		}
+	}
+	if(u.weapon.has_flag("PLUSHIE")) {
+		u.add_morale( MORALE_PLUSHIE, 1, 60);
+	}
     if (!u.has_disease("sleep") && !u.has_disease("lying_down")) {
         if (u.moves > 0) {
             while (u.moves > 0) {
@@ -2787,6 +2808,8 @@ input_context get_default_mode_input_context()
     ctxt.register_action("close");
     ctxt.register_action("smash");
     ctxt.register_action("examine");
+    ctxt.register_action("pee");
+    ctxt.register_action("peeself");
     ctxt.register_action("advinv");
     ctxt.register_action("pickup");
     ctxt.register_action("grab");
@@ -2817,6 +2840,7 @@ input_context get_default_mode_input_context()
     ctxt.register_action("drop_adj");
     ctxt.register_action("bionics");
     ctxt.register_action("mutations");
+    ctxt.register_action("mutationsc");
     ctxt.register_action("sort_armor");
     ctxt.register_action("wait");
     ctxt.register_action("craft");
@@ -3390,6 +3414,12 @@ bool game::handle_action()
             examine(mouse_action_x, mouse_action_y);
         }
         break;
+    case ACTION_PEESELF:
+        u.peeself(true);
+        break;
+    case ACTION_PEE:
+        pee();
+        break;
 
     case ACTION_ADVANCEDINV:
         if (u.has_active_mutation("SHELL2")) {
@@ -3575,6 +3605,10 @@ bool game::handle_action()
         break;
     case ACTION_MUTATIONS:
         u.power_mutations();
+        refresh_all();
+        break;
+    case ACTION_MUTATIONSC:
+        u.power_mutationsc();
         refresh_all();
         break;
 
@@ -4570,6 +4604,8 @@ void game::debug()
 
             const int nlevx = tmp.x * 2 - int(MAPSIZE / 2);
             const int nlevy = tmp.y * 2 - int(MAPSIZE / 2);
+            // TODO: make this use the normal map shifting function all the time?
+            shift_monsters( nlevx - levx, nlevy - levy, tmp.z - levz );
             cur_om = &overmap_buffer.get_om_global(tmp.x, tmp.y);
             levx = nlevx - cur_om->pos().x * OMAPX * 2;
             levy = nlevy - cur_om->pos().y * OMAPY * 2;
@@ -4820,8 +4856,8 @@ void game::debug()
     break;
 
     case 18: {
-        debugmsg("This menu is disabled in this version. Sorry!");
-        break;
+//        debugmsg("This menu is disabled in this version. Sorry!");
+//        break;
         const int weather_offset = 1;
         uimenu weather_menu;
         weather_menu.text = _("Select new weather pattern:");
@@ -7794,6 +7830,87 @@ void game::close(int closex, int closey)
     }
 }
 
+void game::pee()
+{
+    if(!u.has_trait("DEBUG_BLADDER"))
+    {
+        if(u.has_trait("INCONT"))
+        {
+            add_msg(m_critical, _("Message from bladder:You can't tell me what to do!"));
+            return;
+        }
+        for(unsigned int i = 0;i<u.worn.size();i++)
+        {
+            if((u.worn[i].covers.test(bp_leg_l)) || (u.worn[i].covers.test(bp_leg_r)))
+            {
+                if(u.worn[i].has_flag("DIAPERLOCKED"))
+                {
+                    if(u.bladder >= u.bladdermict)
+                    {
+                        add_msg(m_critical, _("You struggle to take off youpants but fail. Time to panic."));
+                        return;
+                    }
+                }
+            }
+        }
+        if(u.bladder < u.bladdermict)
+        {
+            add_msg(m_info, _("You don't have to go"));
+            return;
+        }
+    }
+    if(u.weapon.type->id == "e_handcuffs" && u.weapon.charges > 0)
+	{
+		add_msg(m_critical, _("You can't take your pants off with those handcuffs on."));
+		return;
+	}
+    int peex, peey;
+
+    if(u.male)
+    {
+        if (!choose_adjacent(_("Pee where?"), peex, peey)) {
+            return;
+        }
+    }
+    else
+    {
+        peex=u.posx;
+        peey=u.posy;
+    }
+	u.bladder=0;
+	
+	std::string peeterid = m.get_ter(peex,peey);
+	std::string peefurnid = m.get_furn(peex,peey);
+	if(peeterid != "t_water_sh" && peeterid != "t_water_dp" && peeterid != "t_swater_sh" && peeterid != "t_swater_dp" && peeterid != "t_water_pool" && peeterid != "t_sewage" && peeterid != "t_lava" && peefurnid != "f_toilet")
+		m.add_field( peex, peey, fd_pee,3 );
+    if(peeterid == "t_water_pool")
+    {
+        add_msg(m_info, _("You pee in the pool."));
+        return;
+    }
+    else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+    {
+        add_msg(m_info, _("You pee in the water."));
+        return;
+    }
+    else if(peefurnid == "f_toilet")
+    {
+        if(u.male)
+        add_msg(m_info, _("You use the toilet like a big boy."));
+        else
+        add_msg(m_info, _("You use the toilet like a big girl."));
+        return;
+    }
+    else if(peeterid == "t_sewage")
+    {
+        add_msg(m_info, _("You pee in the already putrid sewage."));
+        return;
+    }
+    else
+    {
+        add_msg(m_info, _("You take a whiz."));
+    }
+}
 void game::smash()
 {
     const int move_cost = int(u.weapon.is_null() ? 80 : u.weapon.attack_time() * 0.8);
@@ -13171,6 +13288,11 @@ bool game::plmove(int dx, int dy)
         if (one_in(20) && u.has_artifact_with(AEP_MOVEMENT_NOISE)) {
             sound(x, y, 40, _("You emit a rattling sound."));
         }
+	for( size_t i = 0; i < u.worn.size(); ++i ) {
+		if (u.worn[i].has_flag("CRINKLE")) {
+		sound(x, y, 40, _("your diaper crinkling."));
+		}
+	}
         // If we moved out of the nonant, we need update our map data
         if (m.has_flag("SWIMMABLE", x, y) && u.has_effect("onfire")) {
             add_msg(_("The water puts out the flames!"));
@@ -13757,6 +13879,7 @@ void game::vertical_move(int movez, bool force)
                                 u.apply_damage( nullptr, bp_torso, 5 );
                                 u.hunger += 10;
                                 u.thirst += 10;
+                                u.bladder += 1;
                             } else {
                                 add_msg(_("You gingerly descend using your vines."));
                             }
@@ -13765,6 +13888,7 @@ void game::vertical_move(int movez, bool force)
                             rope_ladder = true;
                             u.hunger += 10;
                             u.thirst += 10;
+							u.bladder += 1;
                         }
                     } else {
                         return;
@@ -13878,6 +14002,8 @@ void game::vertical_move(int movez, bool force)
     if (force) { // Basically, we fell.
         if ((u.has_trait("WINGS_BIRD")) || ((one_in(2)) && (u.has_trait("WINGS_BUTTERFLY")))) {
             add_msg(_("You flap your wings and flutter down gracefully."));
+        } else if (u.has_trait("WINGS_DRAGON")) {
+            add_msg(_("You spread your wings and glide down safely."));
         } else {
             int dam = int((u.str_max / 4) + rng(5, 10)) * rng(1, 3);//The bigger they are
             dam -= rng(u.get_dodge(), u.get_dodge() * 3);

@@ -55,6 +55,7 @@ struct trapfunc {
     void shadow         (Creature *creature, int x, int y);
     void drain          (Creature *creature, int x, int y);
     void snake          (Creature *creature, int x, int y);
+    void chunkblower    (Creature *creature, int x, int y);
 };
 
 typedef void (trapfunc::*trap_function)(Creature *, int, int);
@@ -182,6 +183,7 @@ tr_glow,
 tr_hum,
 tr_shadow,
 tr_drain,
-tr_snake;
+tr_snake,
+tr_chunkblower;
 
 #endif

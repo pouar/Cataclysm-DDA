@@ -169,6 +169,7 @@ void item::init() {
     bday = 0;
     invlet = 0;
     damage = 0;
+    pee = 0;
     burnt = 0;
     covers = 0;
     poison = 0;
@@ -876,6 +877,44 @@ std::string item::info(bool showtext, std::vector<iteminfo> *dump, bool debug)
             dump->push_back(iteminfo("DESCRIPTION", "--"));
             dump->push_back(iteminfo("DESCRIPTION", _("This piece of clothing fits you perfectly.")));
         }
+        if (is_armor() && has_flag("DIAPERLOCKED")) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION", _("There's a lock on it that prevents you from removing it.")));
+        }
+        if (is_armor() && has_flag("DIAPER")) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION", _("This piece of clothing is absorbant enough to be used as a toilet.")));
+            if (pee>0) {
+                dump->push_back(iteminfo("DESCRIPTION", "--"));
+                if(pee>=type->peecap)
+				{
+					if(has_flag("EVERDIAPER"))
+						dump->push_back(iteminfo("DESCRIPTION", _("Even though it's not leaking, it looks and feels like it should.")));
+					else
+						dump->push_back(iteminfo("DESCRIPTION", _("Urine is leaking from it.")));
+				}
+                else if(pee>type->peecap*.75)
+				{
+					if(has_flag("EVERDIAPER"))
+						dump->push_back(iteminfo("DESCRIPTION", _("it is visibly soaked and yellow from urine.")));
+					else
+						dump->push_back(iteminfo("DESCRIPTION", _("it is visibly soaked and yellow from urine but hasn't leaked yet.")));
+				}
+                else if(pee>type->peecap*.25)
+                    dump->push_back(iteminfo("DESCRIPTION", _("It is soaked in urine, but it can hold more.")));
+                else
+                    dump->push_back(iteminfo("DESCRIPTION", _("It is barely wet.")));
+            }
+        }
+        if (is_armor() && !has_flag("DIAPER")) {
+            if (pee>0) {
+                dump->push_back(iteminfo("DESCRIPTION", "--"));
+                if(pee<type->peecap)
+                dump->push_back(iteminfo("DESCRIPTION", _("It is Damp with urine.")));
+                else
+                dump->push_back(iteminfo("DESCRIPTION", _("It is drenched in urine.")));
+            }
+        }
         if (is_armor() && has_flag("SKINTIGHT")) {
             dump->push_back(iteminfo("DESCRIPTION", "--"));
             dump->push_back(iteminfo("DESCRIPTION",
@@ -1294,6 +1333,15 @@ std::string item::tname( unsigned int quantity, bool with_prefix ) const
 
     if (has_flag("FIT")) {
         ret << _(" (fits)");
+    }
+    if (pee>0) {
+        if(pee<type->peecap || has_flag("EVERDIAPER"))
+            ret << _(" (wet)");
+        else
+            ret << _(" (leaking)");
+    }
+    if (has_flag("DIAPERLOCKED")) {
+        ret << _(" (locked)");
     }
 
     if (has_flag("RECHARGE")) {

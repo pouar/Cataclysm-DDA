@@ -79,6 +79,7 @@ enum field_id {
  fd_incendiary,
  fd_relax_gas,
  fd_fungal_haze,
+ fd_pee,
  fd_hot_air1,
  fd_hot_air2,
  fd_hot_air3,

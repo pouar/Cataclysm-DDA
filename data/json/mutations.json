@@ -1122,7 +1122,7 @@
         "description" : "A set of flexible green scales has grown to cover your body, acting as natural armor. Somewhat reduces wet effects.",
         "category" : ["MUTCAT_CHIMERA", "MUTCAT_RAPTOR", "MUTCAT_LIZARD"],
         "prereqs" : ["SKIN_ROUGH"],
-        "changes_to" : ["THICK_SCALES", "SLEEK_SCALES"],
+        "changes_to" : ["THICK_SCALES", "SLEEK_SCALES", "DRAGON_SCALES"],
         "wet_protection" : [
             { "part" : "HEAD", "ignored" : 3 },
             { "part" : "LEGS", "ignored" : 10 },
@@ -2315,7 +2315,7 @@
         "ugliness" : 2,
         "description" : "You have a pair of large, feathered wings. Your body is too heavy to be able to fly, but you can use them to slow your descent during a fall, and will not take falling damage under any circumstances.",
         "prereqs" : ["WINGS_STUB"],
-        "cancels" : ["WINGS_BAT", "WINGS_INSECT", "WINGS_BUTTERFLY"],
+        "cancels" : ["WINGS_BAT", "WINGS_INSECT", "WINGS_BUTTERFLY","WINGS_DRAGON"],
         "category" : ["MUTCAT_BIRD"]
     },{
         "type" : "mutation",
@@ -2326,7 +2326,7 @@
         "ugliness" : 4,
         "description" : "You have a pair of large, translucent wings.  They are too small to lift you, but are powerful enough to greatly speed your momvement, with some effort and noise.",
         "prereqs" : ["WINGS_STUB"],
-        "cancels" : ["WINGS_BIRD", "WINGS_BAT", "WINGS_BUTTERFLY"],
+        "cancels" : ["WINGS_BIRD", "WINGS_BAT", "WINGS_BUTTERFLY","WINGS_DRAGON"],
         "category" : ["MUTCAT_INSECT"],
         "active"     :    true,
         "cost"       :    20,
@@ -2838,7 +2838,7 @@
         "visibility" : 2,
         "ugliness" : 2,
         "description" : "You have a pair of stubby little wings projecting from your shoulderblades. They can be wiggled at will, but are useless.",
-        "changes_to" : ["WINGS_BIRD", "WINGS_BAT", "WINGS_INSECT", "WINGS_BUTTERFLY"]
+        "changes_to" : ["WINGS_BIRD", "WINGS_BAT", "WINGS_INSECT", "WINGS_BUTTERFLY","WINGS_DRAGON"]
     },{
         "type" : "mutation",
         "id" : "WINGS_BAT",
@@ -2848,7 +2848,7 @@
         "ugliness" : 4,
         "description" : "You have a pair of large, leathery wings. You can move them a little, but they are useless, and in fact put you off balance, reducing your ability to dodge slightly.",
         "prereqs" : ["WINGS_STUB"],
-        "cancels" : ["WINGS_BIRD", "WINGS_INSECT", "WINGS_BUTTERFLY"]
+        "cancels" : ["WINGS_BIRD", "WINGS_INSECT", "WINGS_BUTTERFLY","WINGS_DRAGON"]
     },{
         "type" : "mutation",
         "id" : "WINGS_BUTTERFLY",
@@ -2861,7 +2861,7 @@
         "purifiable" : false,
         "prereqs" : ["WINGS_STUB"],
         "threshreq" : ["THRESH_INSECT"],
-        "cancels" : ["WINGS_BIRD", "WINGS_INSECT", "WINGS_BAT"],
+        "cancels" : ["WINGS_BIRD", "WINGS_INSECT", "WINGS_BAT","WINGS_DRAGON"],
         "category" : ["MUTCAT_INSECT"]
     },{
         "type" : "mutation",

@@ -167,6 +167,8 @@ void Item_factory::init()
     iuse_function_list["FIRSTAID"] = &iuse::firstaid;
     iuse_function_list["DISINFECTANT"] = &iuse::disinfectant;
     iuse_function_list["CAFF"] = &iuse::caff;
+    iuse_function_list["BLADDERSTIM"] = &iuse::bladderstim;
+    iuse_function_list["BLADDERSET"] = &iuse::bladderset;
     iuse_function_list["ATOMIC_CAFF"] = &iuse::atomic_caff;
     iuse_function_list["ALCOHOL"] = &iuse::alcohol;
     iuse_function_list["ALCOHOL_WEAK"] = &iuse::alcohol_weak;
@@ -217,6 +219,7 @@ void Item_factory::init()
     iuse_function_list["PRIMITIVE_FIRE"] = &iuse::primitive_fire;
     iuse_function_list["REF_LIT"] = &iuse::ref_lit;
     iuse_function_list["SEW"] = &iuse::sew;
+    iuse_function_list["DIAPERLOCK"] = &iuse::diaperlock;
     iuse_function_list["EXTRA_BATTERY"] = &iuse::extra_battery;
     iuse_function_list["RECHARGEABLE_BATTERY"] = &iuse::rechargeable_battery;
     iuse_function_list["SCISSORS"] = &iuse::scissors;
@@ -301,6 +304,7 @@ void Item_factory::init()
     iuse_function_list["VIBE"] = &iuse::vibe;
     iuse_function_list["VORTEX"] = &iuse::vortex;
     iuse_function_list["DOG_WHISTLE"] = &iuse::dog_whistle;
+    iuse_function_list["DIAPERFUR_WHISTLE"] = &iuse::diaperfur_whistle;
     iuse_function_list["VACUTAINER"] = &iuse::vacutainer;
     iuse_function_list["KNIFE"] = &iuse::knife;
     iuse_function_list["LUMBER"] = &iuse::lumber;
@@ -961,6 +965,7 @@ void Item_factory::load_basic_info(JsonObject &jo, itype *new_item_template)
     new_item_template->weight = jo.get_int("weight");
     new_item_template->melee_dam = jo.get_int("bashing");
     new_item_template->melee_cut = jo.get_int("cutting");
+    new_item_template->peecap = jo.get_int("peecap", 1);
     new_item_template->m_to_hit = jo.get_int("to_hit");
 
     if (jo.has_member("explode_in_fire")) {

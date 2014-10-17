@@ -630,6 +630,46 @@ void iexamine::portable_structure(player *p, map *m, int examx, int examy)
     m->add_item_or_charges(examx, examy, item(dropped, calendar::turn));
 }
 
+void iexamine::washer(player *p, map *m, int examx, int examy)
+{
+    int action = menu(true,_("Washing Machine"),_("Wash item"),_("Wash all items"),NULL);
+    (void)m;
+    (void)examx;
+    (void)examy;
+    switch (action) {
+        case 1: {
+            int pos = g->inv(_("Clean what?"));
+            item *fix = &(p->i_at(pos));
+            if (fix == NULL || fix->is_null()) {
+                p->add_msg_if_player(m_info, _("You do not have that item!"));
+                return;
+            }
+            p->add_msg_if_player(m_good, _("You clean your %s."), fix->tname().c_str());
+            fix->pee=0;
+            if(fix->has_flag("WETDIAPER"))
+                fix->item_tags.erase("WETDIAPER");
+            break;
+        }
+        case 2: {
+            for(unsigned int i = 0;i<p->worn.size();i++)
+            {
+                    p->worn[i].pee=0;
+                    if(p->worn[i].has_flag("WETDIAPER"))
+                        p->worn[i].item_tags.erase("WETDIAPER");
+            }
+            std::vector<item *> f_inv = p->inv.all_items_with_flag("WETDIAPER");
+            for(std::vector<item *>::iterator it = f_inv.begin() ; it != f_inv.end(); it++)
+            {
+                    (*it)->pee=0;
+                    if((*it)->has_flag("WETDIAPER"))
+                        (*it)->item_tags.erase("WETDIAPER");
+            }
+            p->add_msg_if_player(m_good, _("You clean your diapers."));
+            break;
+        }
+    }
+}
+
 void iexamine::pit(player *p, map *m, int examx, int examy)
 {
     inventory map_inv;
@@ -1953,7 +1993,7 @@ void iexamine::recycler(player *p, map *m, int examx, int examy)
 void iexamine::trap(player *p, map *m, int examx, int examy)
 {
     const trap_id tid = m->tr_at(examx, examy);
-    if (p == NULL || !p->is_player() || tid == tr_null) {
+    if (p == NULL || !p->is_player() || tid == tr_null || tid == tr_chunkblower) {
         return;
     }
     const struct trap &t = *traplist[tid];
@@ -1976,24 +2016,96 @@ void iexamine::trap(player *p, map *m, int examx, int examy)
 
 void iexamine::water_source(player *p, map *m, const int examx, const int examy)
 {
-    item water = m->water_from(examx, examy);
-    // Try to handle first (bottling) drink after.
-    // changed boolean, large sources should be infinite
-    if (g->handle_liquid(water, true, true)) {
-        p->moves -= 100;
-    } else {
-        p->drink_from_hands(water);
+    int action = menu(true,_("Wash or drink?"),_("Wash item"),_("Wash all items"),_("Drink"),NULL);
+	switch (action) {
+        case 1: {
+            int pos = g->inv(_("Clean what?"));
+            item *fix = &(p->i_at(pos));
+            if (fix == NULL || fix->is_null()) {
+                p->add_msg_if_player(m_info, _("You do not have that item!"));
+                return;
+            }
+            p->add_msg_if_player(m_good, _("You clean your %s."), fix->tname().c_str());
+            fix->pee=0;
+            if(fix->has_flag("WETDIAPER"))
+                fix->item_tags.erase("WETDIAPER");
+            break;
+        }
+        case 2: {
+            for(unsigned int i = 0;i<p->worn.size();i++)
+            {
+                p->worn[i].pee=0;
+                if(p->worn[i].has_flag("WETDIAPER"))
+                    p->worn[i].item_tags.erase("WETDIAPER");
+            }
+            std::vector<item *> f_inv = p->inv.all_items_with_flag("WETDIAPER");
+            for(std::vector<item *>::iterator it = f_inv.begin() ; it != f_inv.end(); it++)
+            {
+                    (*it)->pee=0;
+                    if((*it)->has_flag("WETDIAPER"))
+                        (*it)->item_tags.erase("WETDIAPER");
+            }
+            p->add_msg_if_player(m_good, _("You clean your diapers."));
+            break;
+        }
+        case 3: {
+            item water = m->water_from(examx, examy);
+            // Try to handle first (bottling) drink after.
+            // changed boolean, large sources should be infinite
+            if (g->handle_liquid(water, true, true)) {
+                p->moves -= 100;
+            } else {
+                p->drink_from_hands(water);
+            }
+            break;
+        }
     }
 }
 void iexamine::swater_source(player *p, map *m, const int examx, const int examy)
 {
-    item swater = m->swater_from(examx, examy);
-    // Try to handle first (bottling) drink after.
-    // changed boolean, large sources should be infinite
-    if (g->handle_liquid(swater, true, true)) {
-        p->moves -= 100;
-    } else {
-        p->drink_from_hands(swater);
+    int action = menu(true,_("Wash or drink?"),_("Wash item"),_("Wash all items"),_("Drink"),NULL);
+    switch (action) {
+        case 1: {
+            int pos = g->inv(_("Clean what?"));
+            item *fix = &(p->i_at(pos));
+            if (fix == NULL || fix->is_null()) {
+                p->add_msg_if_player(m_info, _("You do not have that item!"));
+                return;
+            }
+            p->add_msg_if_player(m_good, _("You clean your %s."), fix->tname().c_str());
+            fix->pee=0;
+            if(fix->has_flag("WETDIAPER"))
+                fix->item_tags.erase("WETDIAPER");
+            break;
+        }
+        case 2: {
+            for(unsigned int i = 0;i<p->worn.size();i++)
+            {
+                p->worn[i].pee=0;
+                if(p->worn[i].has_flag("WETDIAPER"))
+                    p->worn[i].item_tags.erase("WETDIAPER");
+            }
+            std::vector<item *> f_inv = p->inv.all_items_with_flag("WETDIAPER");
+            for(std::vector<item *>::iterator it = f_inv.begin() ; it != f_inv.end(); it++)
+            {
+                    (*it)->pee=0;
+                    if((*it)->has_flag("WETDIAPER"))
+                        (*it)->item_tags.erase("WETDIAPER");
+            }
+            p->add_msg_if_player(m_good, _("You clean your diapers."));
+            break;
+        }
+        case 3: {
+            item swater = m->swater_from(examx, examy);
+            // Try to handle first (bottling) drink after.
+            // changed boolean, large sources should be infinite
+            if (g->handle_liquid(swater, true, true)) {
+                p->moves -= 100;
+            } else {
+                p->drink_from_hands(swater);
+            }
+            break;
+        }
     }
 }
 void iexamine::acid_source(player *p, map *m, const int examx, const int examy)
@@ -2649,7 +2761,14 @@ void iexamine::pay_gas(player *p, map *m, const int examx, const int examy)
         }
     }
 }
-
+void iexamine::chunk_blower(player *p, map *m, const int examx, const int examy)
+{
+                p->add_msg_if_player(m_bad, _("A gigantic grinder fused of steel and turbine. Blades flay muscle from bone. Nobody dies alone. As hundreds wait for death. The sound of engines grinding. Every tissue, organ and lining explode in a mulch of compost. Churning corkscrews of pain. Razor-sharp gears and cogs. For the creation of human sausage logs. The splattering of meat on flesh. Enzymes, acids and fats trickle down into vats. Nightmarish humanoid mower. Behold, the chunk blower."));
+				(void)m;
+				(void)examx;
+				(void)examy;
+				
+}
 /**
  * Given then name of one of the above functions, returns the matching function
  * pointer. If no match is found, defaults to iexamine::none but prints out a
@@ -2692,6 +2811,9 @@ void (iexamine::*iexamine_function_from_string(std::string function_name))(playe
     }
     if ("bars" == function_name) {
         return &iexamine::bars;
+    }
+    if ("washer" == function_name) {
+        return &iexamine::washer;
     }
     if ("portable_structure" == function_name) {
         return &iexamine::portable_structure;
@@ -2822,6 +2944,9 @@ void (iexamine::*iexamine_function_from_string(std::string function_name))(playe
     }
     if ("pay_gas" == function_name) {
         return &iexamine::pay_gas;
+    }
+    if ("chunk_blower" == function_name) {
+        return &iexamine::chunk_blower;
     }
 
     //No match found

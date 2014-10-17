@@ -828,6 +828,25 @@ std::vector<std::pair<item *, int> > inventory::all_items_by_type(itype_id type)
     return ret;
 }
 
+std::vector<item *> inventory::all_items_with_flag( const std::string flag )
+{
+    std::vector<item *> ret;
+
+    for (invstack::iterator istack = items.begin(); istack != items.end(); ++istack) {
+        for (std::list<item>::iterator iitem = istack->begin(); iitem != istack->end(); ++iitem) {
+            if (iitem->has_flag(flag)) {
+                ret.push_back(&*iitem);
+            } else if (!iitem->contents.empty())
+                for (auto &k : iitem->contents) {
+                    if (k.has_flag(flag)) {
+                        ret.push_back(&k);
+                    }
+                }
+        }
+    }
+    return ret;
+}
+
 std::vector<item *> inventory::all_ammo(const ammotype &type)
 {
     std::vector<item *> ret;

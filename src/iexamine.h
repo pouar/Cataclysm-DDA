@@ -35,6 +35,7 @@ class iexamine
         void rubble (player *p, map *m, int examx, int examy);
         void chainfence (player *p, map *m, int examx, int examy);
         void bars(player *p, map *m, int examx, int examy);
+        void washer(player *p, map *m, int examx, int examy);
         void portable_structure(player *p, map *m, int examx, int examy);
         void pit (player *p, map *m, int examx, int examy);
         void pit_covered (player *p, map *m, int examx, int examy);
@@ -82,6 +83,7 @@ class iexamine
         void curtains (player *p, map *m, const int examx, const int examy);
         void sign (player *p, map *m, const int examx, const int examy);
         void pay_gas (player *p, map *m, const int examx, const int examy);
+        void chunk_blower (player *p, map *m, const int examx, const int examy);
 };
 
 typedef void (iexamine::*iexamine_function)(player *, map *, int, int);

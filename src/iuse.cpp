@@ -641,6 +641,83 @@ int iuse::caff(player *p, item *it, bool)
     p->fatigue -= food->stim * 3;
     return it->type->charges_to_use();
 }
+int iuse::bladderstim(player *p, item *it, bool)
+{
+    if (!p->has_disease("diuretic")) {
+        p->add_disease("diuretic", 900);
+    } else {
+        p->add_disease("diuretic", 200);
+    }
+    return it->type->charges_to_use();
+}
+
+int iuse::bladderset(player *p, item *it, bool)
+{
+    int action = menu(true,_("Alter player's bladder"),_("usage"),_("capacity"),_("micturation point"),_("potty dance point"),_("desperation point"),_("last minute point"),_("potty failure point"),_("urine per hour"),_("urine per hour sleep"),NULL);
+    switch (action) {
+        case 1: {
+            p->bladder = query_int("Enter ml of urine:");
+            break;
+        }
+        case 2: {
+            p->bladdercap = query_int("Enter ml of urine:");
+            p->bladdermict=p->bladdercap/4;
+            p->bladderdance=p->bladdercap/2;
+            p->bladderdesp=p->bladdercap*0.75;
+            p->bladderlast=p->bladdercap-5;
+            break;
+        }
+        case 3: {
+            p->bladdermict = query_int("Enter ml of urine:");
+            break;
+        }
+        case 4: {
+            p->bladderdance = query_int("Enter ml of urine:");
+            break;
+        }
+        case 5: {
+            p->bladderdesp = query_int("Enter ml of urine:");
+            break;
+        }
+        case 6: {
+            p->bladderlast = query_int("Enter ml of urine:");
+            break;
+        }
+        case 7: {
+            p->bladdercap = query_int("Enter ml of urine:");
+            break;
+        }
+        case 8: {
+            double urine = (double)query_int("Enter ml of urine:");
+            add_msg("urine: %f",urine);
+            double calcount = 0.0;
+            p->peerate = 0;
+            while(calcount < 1.0)
+            {
+                p->peerate++;
+                calcount+=urine/600;
+            }
+            add_msg("peerate: %d",p->peerate);
+            add_msg("actualurine: %d",600/p->peerate);
+            break;
+        }
+        case 9: {
+            double urine = (double)query_int("Enter ml of urine:");
+            add_msg("urine: %f",urine);
+            double calcount = 0.0;
+            p->peesleeprate = 0;
+            while(calcount < 1.0)
+            {
+                p->peesleeprate++;
+                calcount+=urine/600;
+            }
+            add_msg("peeratesleep: %d",p->peesleeprate);
+            add_msg("actualurine: %d",600/p->peesleeprate);
+            break;
+        }
+    }
+    return it->type->charges_to_use();
+}
 
 int iuse::atomic_caff(player *p, item *it, bool)
 {
@@ -2805,6 +2882,39 @@ int iuse::ref_lit(player *p, item *it, bool t)
     return it->type->charges_to_use();
 }
 
+int iuse::diaperlock(player *p, item *it, bool)
+{
+    if (p->is_underwater()) {
+        p->add_msg_if_player(m_info, _("You can't do that while underwater."));
+        return 0;
+    }
+    //minimum LL_LOW of LL_DARK + (ELFA_NV or atomic_light)
+    if (p->fine_detail_vision_mod() > 4) {
+        add_msg(m_info, _("You can't see to sew!"));
+        return 0;
+    }
+    int pos = g->inv(_("Lock/Unlock what?"));
+    item *fix = &(p->i_at(pos));
+    if (fix == NULL || fix->is_null()) {
+        p->add_msg_if_player(m_info, _("You do not have that item!"));
+        return 0;
+    }
+
+
+
+
+    if (fix->has_flag("DIAPERLOCKED")) {
+        p->add_msg_if_player(m_info, _("You unlock your %s, allowing you to take it off."), fix->tname().c_str());
+        fix->item_tags.erase("DIAPERLOCKED");
+    }
+    else {
+        p->add_msg_if_player(m_info, _("You lock your %s, preventing you from taking it off."), fix->tname().c_str());
+        fix->item_tags.insert("DIAPERLOCKED");
+    }
+
+    return it->type->charges_to_use();
+}
+
 int iuse::sew(player *p, item *it, bool)
 {
     if (it->charges == 0) {
@@ -2961,7 +3071,6 @@ int iuse::sew(player *p, item *it, bool)
 
     return thread_used;
 }
-
 int iuse::extra_battery(player *p, item *, bool)
 {
     int pos = g->inv_type(_("Modify what?"), IC_TOOL);
@@ -4582,7 +4691,7 @@ int iuse::combatsaw_off(player *p, item *it, bool)
     p->moves -= 60;
     if (it->charges > 0 && !p->is_underwater()) {
         g->sound(p->posx, p->posy, 30,
-                 _("With a snarl, the combat chainsaw screams to life!"));
+                 _("If you want to live you have to kill or become."));
         it->make("combatsaw_on");
         it->active = true;
     } else {
@@ -6639,6 +6748,32 @@ int iuse::dog_whistle(player *p, item *it, bool)
     p->add_msg_if_player(_("You blow your dog whistle."));
     for (size_t i = 0; i < g->num_zombies(); i++) {
         if (g->zombie(i).friendly != 0 && g->zombie(i).type->id == "mon_dog") {
+            bool u_see = g->u_see(&(g->zombie(i)));
+            if (g->zombie(i).has_effect("docile")) {
+                if (u_see) {
+                    p->add_msg_if_player(_("Your %s looks ready to attack."), g->zombie(i).name().c_str());
+                }
+                g->zombie(i).remove_effect("docile");
+            } else {
+                if (u_see) {
+                    p->add_msg_if_player(_("Your %s goes docile."), g->zombie(i).name().c_str());
+                }
+                g->zombie(i).add_effect("docile", 1, 1, true);
+            }
+        }
+    }
+    return it->type->charges_to_use();
+}
+
+int iuse::diaperfur_whistle(player *p, item *it, bool)
+{
+    if (p->is_underwater()) {
+        p->add_msg_if_player(m_info, _("You can't do that while underwater."));
+        return 0;
+    }
+    p->add_msg_if_player(_("You blow your diaperfur whistle."));
+    for (size_t i = 0; i < g->num_zombies(); i++) {
+        if ((g->zombie(i).friendly != 0 && g->zombie(i).type->id == "mon_diaperfur_dragon") || (g->zombie(i).friendly != 0 && g->zombie(i).type->id == "mon_diaperfur_fox") || (g->zombie(i).friendly != 0 && g->zombie(i).type->id == "mon_diaperfur_cat")) {
             bool u_see = g->u_see(&(g->zombie(i)));
             if (g->zombie(i).has_effect("docile")) {
                 if (u_see) {
@@ -8835,8 +8970,8 @@ bool einkpc_download_memory_card(player *p, item *eink, item *mc)
         mc->item_vars["MC_PHOTOS"] = "";
 
         p->add_msg_if_player(m_good, string_format(
-                                 ngettext("You download %d new photo into internal memory.",
-                                          "You download %d new photos into internal memory.", new_photos)).c_str());
+                                 ngettext("You transfered %d new photo to the laptop's hdd.",
+                                          "You transfered %d new photos to the laptop's hdd.", new_photos)).c_str());
 
         int old_photos = 0;
         if (eink->item_vars["EIPC_PHOTOS"] != "") {
@@ -8853,8 +8988,8 @@ bool einkpc_download_memory_card(player *p, item *eink, item *mc)
         mc->item_vars["MC_MUSIC"] = "";
 
         p->add_msg_if_player(m_good, string_format(
-                                 ngettext("You download %d new song into internal memory.",
-                                          "You download %d new songs into internal memory.", new_songs)).c_str());
+                                 ngettext("You transfered %d new song to the laptop's hdd.",
+                                          "You transfered %d new songs to the laptop's hdd.", new_songs)).c_str());
 
         int old_songs = 0;
         if (eink->item_vars["EIPC_MUSIC"] != "") {
@@ -8906,17 +9041,17 @@ bool einkpc_download_memory_card(player *p, item *eink, item *mc)
                 something_downloaded = true;
                 eink->item_vars["EIPC_RECIPES"] = "," + rident + ",";
 
-                p->add_msg_if_player(m_good, _("You download a recipe for %s into the tablet's memory."),
+                p->add_msg_if_player(m_good, _("You transfered a recipe for %s to the laptop's hdd."),
                                      dummy.type->nname(1).c_str());
             } else {
                 if (eink->item_vars["EIPC_RECIPES"].find("," + rident + ",") == std::string::npos) {
                     something_downloaded = true;
                     eink->item_vars["EIPC_RECIPES"] += rident + ",";
 
-                    p->add_msg_if_player(m_good, _("You download a recipe for %s into the tablet's memory."),
+                    p->add_msg_if_player(m_good, _("You transfered a recipe for %s to the laptop's hdd."),
                                          dummy.type->nname(1).c_str());
                 } else {
-                    p->add_msg_if_player(m_good, _("Your tablet already has a recipe for %s."),
+                    p->add_msg_if_player(m_good, _("Your laptop already has a recipe for %s."),
                                          dummy.type->nname(1).c_str());
                 }
             }
@@ -9040,7 +9175,7 @@ int iuse::einktabletpc(player *p, item *it, bool t)
             const int photos = atoi(it->item_vars["EIPC_PHOTOS"].c_str());
             amenu.addentry(ei_photo, true, 'p', _("Photos [%d]"), photos);
         } else {
-            amenu.addentry(ei_photo, false, 'p', _("No photos on device"));
+            amenu.addentry(ei_photo, false, 'p', _("No photos on laptop"));
         }
 
         if (it->item_vars["EIPC_MUSIC"] != "") {
@@ -9051,7 +9186,7 @@ int iuse::einktabletpc(player *p, item *it, bool t)
                 amenu.addentry(ei_music, true, 'm', _("Turn music on [%d]"), songs);
             }
         } else {
-            amenu.addentry(ei_music, false, 'm', _("No music on device"));
+            amenu.addentry(ei_music, false, 'm', _("No music on laptop"));
         }
 
         if (it->item_vars["RECIPE"] != "") {
@@ -9060,7 +9195,7 @@ int iuse::einktabletpc(player *p, item *it, bool t)
         }
 
         if (it->item_vars["EIPC_RECIPES"] != "") {
-            amenu.addentry(ei_recipe, true, 'r', _("View recipe on E-ink screen"));
+            amenu.addentry(ei_recipe, true, 'r', _("View recipe on laptop"));
         }
 
         if (it->item_vars["EINK_MONSTER_PHOTOS"] != "") {
@@ -9069,7 +9204,7 @@ int iuse::einktabletpc(player *p, item *it, bool t)
             amenu.addentry(ei_monsters, false, 'y', _("Collection of monsters is empty"));
         }
 
-        amenu.addentry(ei_download, true, 'w', _("Download data from memory card"));
+        amenu.addentry(ei_download, true, 'w', _("Transfer data from memory card"));
 
         if (p->skillLevel("computer") > 2) {
             amenu.addentry(ei_decrypt, true, 'd', _("Decrypt memory card"));
@@ -9196,7 +9331,7 @@ int iuse::einktabletpc(player *p, item *it, bool t)
                 if( recipe ) {
                     const item dummy( recipe->result, 0 );
                     p->add_msg_if_player(m_info,
-                        _("You change the e-ink screen to show a recipe for %s."),
+                        _("You open up a recipe for %s."),
                                          dummy.type->nname(1).c_str());
                 }
             }

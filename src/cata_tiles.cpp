@@ -1007,6 +1007,7 @@ bool cata_tiles::draw_field_or_item(int x, int y)
         case fd_weedsmoke:
         case fd_cracksmoke:
         case fd_methsmoke:
+        case fd_pee:
         case fd_hot_air1:
         case fd_hot_air2:
         case fd_hot_air3:

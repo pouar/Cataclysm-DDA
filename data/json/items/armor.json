@@ -1530,7 +1530,7 @@
         "environmental_protection" : 0,
         "encumbrance" : 0,
         "bashing" : -5,
-        "flags" : ["VARSIZE"],
+        "flags" : ["VARSIZE", "SKIRT"],
         "coverage" : 50,
         "material_thickness" : 1
     },
@@ -1554,7 +1554,7 @@
         "environmental_protection" : 0,
         "encumbrance" : 1,
         "bashing" : -5,
-        "flags" : ["VARSIZE"],
+        "flags" : ["VARSIZE", "SKIRT"],
         "coverage" : 35,
         "material_thickness" : 1
     },
@@ -1579,7 +1579,7 @@
         "environmental_protection" : 0,
         "encumbrance" : 0,
         "bashing" : -5,
-        "flags" : ["VARSIZE", "FANCY"],
+        "flags" : ["VARSIZE", "FANCY", "SKIRT"],
         "coverage" : 75,
         "material_thickness" : 1
     },
@@ -2163,7 +2163,7 @@
         "environmental_protection" : 0,
         "encumbrance" : 1,
         "bashing" : -5,
-        "flags" : ["VARSIZE", "FANCY"],
+        "flags" : ["VARSIZE", "FANCY", "SKIRT"],
         "coverage" : 85,
         "material_thickness" : 2
     },
@@ -2188,7 +2188,7 @@
         "environmental_protection" : 0,
         "encumbrance" : 0,
         "bashing" : -5,
-        "flags" : ["VARSIZE", "FANCY"],
+        "flags" : ["VARSIZE", "FANCY", "SKIRT"],
         "coverage" : 65,
         "material_thickness" : 1
     },
@@ -2262,7 +2262,7 @@
         "environmental_protection" : 0,
         "encumbrance" : 4,
         "bashing" : -5,
-        "flags" : ["VARSIZE", "SUPER_FANCY"],
+        "flags" : ["VARSIZE", "SUPER_FANCY", "SKIRT"],
         "coverage" : 90,
         "material_thickness" : 2
     },

@@ -288,6 +288,13 @@ void game::init_fields()
         },
 
         {
+            "fd_pee",
+            {_("urine splatter"), _("urine stain"), _("puddle of urine")}, '~', 0,
+            {c_yellow, c_yellow, c_yellow}, {true, true, true}, {false, false, false}, 1500,
+            {0,0,0}
+        },
+
+        {
             "fd_hot_air1",
             {"", "", ""}, '&', -1,
             {c_white, c_yellow, c_red}, {true, true, true}, {false, false, false}, 500,

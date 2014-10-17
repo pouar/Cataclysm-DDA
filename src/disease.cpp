@@ -54,7 +54,8 @@ enum dis_type_enum {
  // Lack/sleep
  DI_LACKSLEEP,
  // Grabbed (from MA or monster)
- DI_GRABBED
+ DI_GRABBED,
+ DI_DIURETIC
 };
 
 std::map<std::string, dis_type_enum> disease_type_lookup;
@@ -153,6 +154,7 @@ void game::init_diseases() {
     disease_type_lookup["ma_buff"] = DI_MA_BUFF;
     disease_type_lookup["lack_sleep"] = DI_LACKSLEEP;
     disease_type_lookup["grabbed"] = DI_GRABBED;
+    disease_type_lookup["diuretic"] = DI_DIURETIC;
 }
 
 bool dis_msg(dis_type type_string) {
@@ -241,6 +243,8 @@ bool dis_msg(dis_type type_string) {
     case DI_GRABBED:
         add_msg(m_bad, _("You have been grabbed."));
         break;
+    case DI_DIURETIC:
+        add_msg(m_warning, _("Your bladder is filling way faster than normal."));
     default:
         return false;
         break;
@@ -1747,6 +1751,14 @@ void dis_effect(player &p, disease &dis)
             p.dodges_left = 0;
             p.rem_disease(dis.type);
             break;
+        case DI_DIURETIC:
+            if (calendar::turn % p.peerate == 0 && !p.has_disease("sleep")) {
+                p.bladder++;
+            }
+            else if (calendar::turn % p.peesleeprate == 0 && p.has_disease("sleep")) {
+                p.bladder++;
+            }
+            break;
         default: // Other diseases don't have any effects. Suppress warning.
             break;
     }
@@ -2250,6 +2262,8 @@ std::string dis_name(disease& dis)
 
     case DI_LACKSLEEP: return _("Lacking Sleep");
     case DI_GRABBED: return _("Grabbed");
+    case DI_DIURETIC: return _("Fast filling bladder");
+    
     default: break;
     }
     return "";
@@ -2838,6 +2852,7 @@ Your right foot is blistering from the intense heat. It is extremely painful.");
     You can't move as quickly and your stats just aren't where they should be.");
     case DI_GRABBED: return _("You have been grabbed by an attacker. \n\
     You cannot dodge and blocking is very difficult.");
+    case DI_DIURETIC: return _("Urine Production x 2");
     default: break;
     }
     return "Who knows?  This is probably a bug. (disease.cpp:dis_description)";
@@ -3074,7 +3089,6 @@ void manage_sleep(player& p, disease& dis)
             p.thirst -= 5;
         }
     }
-
     // Check mutation category strengths to see if we're mutated enough to get a dream
     std::string highcat = p.get_highest_category();
     int highest = p.mutation_category_level[highcat];
@@ -3111,7 +3125,6 @@ void manage_sleep(player& p, disease& dis)
             }
         }
     }
-
     int tirednessVal = rng(5, 200) + rng(0,abs(p.fatigue * 2 * 5));
     if (p.has_trait("HEAVYSLEEPER2") && !p.has_trait("HIBERNATE")) {
         // So you can too sleep through noon

@@ -115,6 +115,7 @@ public:
 
     signed int melee_dam; // Bonus for melee damage; may be a penalty
     signed int melee_cut; // Cutting damage in melee
+    int peecap; 
     signed int m_to_hit;  // To-hit bonus for melee combat; -5 to 5 is reasonable
 
     std::set<std::string> item_tags;

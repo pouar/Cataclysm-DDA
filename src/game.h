@@ -571,6 +571,7 @@ class game
         void wait(); // Long wait (player action)  '^'
         void open(); // Open a door  'o'
         void close(int closex = -1, int closey = -1); // Close a door  'c'
+        void pee();
         void smash(); // Smash terrain
         void craft();                        // See crafting.cpp
         void recraft();                      // See crafting.cpp

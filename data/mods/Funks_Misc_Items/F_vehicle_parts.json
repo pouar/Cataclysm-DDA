@@ -1,0 +1,18 @@
+[
+  {
+        "type" : "vehicle_part",
+        "id" : "hood_mirror",
+        "name" : "hood mirror",
+        "symbol" : "o",
+        "color" : "light_cyan",
+        "broken_symbol" : "*",
+        "broken_color" : "dark_gray",
+        "damage_modifier" : 10,
+        "durability" : 20,
+        "item" : "mirror",
+        "difficulty" : 1,
+        "location" : "structure",
+        "flags" : ["MIRROR", "UNMOUNT_ON_DAMAGE"],
+        "breaks_into" : [ {"item": "glass_shard", "min": 0, "max": 2} ]
+  }
+]

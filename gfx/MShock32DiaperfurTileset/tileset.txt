@@ -1,0 +1,19 @@
+#COLEEN'S TILESET 
+#Name of the tileset
+NAME: MShock32DLfur
+#Viewing (Option) name of the tileset
+VIEW: MShock32DLfur
+#JSON Path - Default of tile_config.json
+JSON: MShock32DiaperfurTileset/tile_config.json
+#Tileset Path - Default of tinytile.png
+TILESET: MShock32DiaperfurTileset/MShock.png
+
+#Based on Mshock32 tileset but with a diaperfur dragon for the player.
+#Original diaperfur dragon sprites by sprites by Orion89.
+#http://www.furaffinity.net/full/14502184/
+
+#Also, the pikachu doll was taken from here
+#http://piffle-stix.deviantart.com/art/AB-Icon-Sets-Plushies-186803830
+
+#Pacifier was taken from here
+#http://piffle-stix.deviantart.com/art/AB-Icon-Sets-Pacifiers-186753355

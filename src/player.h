@@ -202,6 +202,8 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         nc_color bodytemp_color(int bp);
         /** Returns the player's modified base movement cost */
         int  run_cost(int base_cost, bool diag = false);
+
+        int peeself(bool ctrl);
         /** Returns the player's speed for swimming across water tiles */
         int  swim_speed();
         /** Maintains body wetness and handles the rate at which the player dries */
@@ -264,6 +266,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         /** Generates and handles the UI for player interaction with installed bionics */
         void power_bionics();
         void power_mutations();
+        void power_mutationsc();
         /** Handles bionic activation effects of the entered bionic */
         void activate_bionic(int b);
         void activate_mutation(int b);
@@ -1014,6 +1017,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         bool last_climate_control_ret;
         int power_level, max_power_level;
         int hunger, thirst, fatigue;
+        int bladder,bladdercap,bladdermict,bladderdance,bladderdesp,bladderlast,peerate,peesleeprate;
         int stomach_food, stomach_water;
         int oxygen;
         unsigned int recoil;

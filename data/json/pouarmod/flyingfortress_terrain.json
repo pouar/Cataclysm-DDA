@@ -1,0 +1,122 @@
+[
+	{
+		"color": "red",
+		"id": "flying_fortress_1",
+		"mondensity": 0,
+		"name": "Flying Fortress Of Doom",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 46,
+		"type": "overmap_terrain"
+	},
+	{
+		"color": "red",
+		"id": "flying_fortress_2",
+		"mondensity": 0,
+		"name": "Flying Fortress Of Doom",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 46,
+		"type": "overmap_terrain"
+	},
+	{
+		"color": "red",
+		"id": "flying_fortress_3",
+		"mondensity": 0,
+		"name": "Flying Fortress Of Doom",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 46,
+		"type": "overmap_terrain"
+	},
+	{
+		"color": "red",
+		"id": "flying_fortress_4",
+		"mondensity": 0,
+		"name": "Flying Fortress Of Doom",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 46,
+		"type": "overmap_terrain"
+	},
+	{
+		"color": "red",
+		"id": "flying_fortress_5",
+		"mondensity": 0,
+		"name": "Flying Fortress Of Doom",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 46,
+		"type": "overmap_terrain"
+	},
+	{
+		"color": "red",
+		"id": "flying_fortress_6",
+		"mondensity": 0,
+		"name": "Flying Fortress Of Doom",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 46,
+		"type": "overmap_terrain"
+	},
+	{
+		"color": "red",
+		"id": "flying_fortress_7",
+		"mondensity": 0,
+		"name": "Flying Fortress Of Doom",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 46,
+		"type": "overmap_terrain"
+	},
+	{
+		"color": "red",
+		"id": "flying_fortress_8",
+		"mondensity": 0,
+		"name": "Flying Fortress Of Doom",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 46,
+		"type": "overmap_terrain"
+	},
+	{
+		"color": "red",
+		"id": "flying_fortress_9",
+		"mondensity": 0,
+		"name": "Flying Fortress Of Doom",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 46,
+		"type": "overmap_terrain"
+	},
+	{
+		"color": "red",
+		"id": "flying_fortress_10",
+		"mondensity": 0,
+		"name": "Flying Fortress Of Doom",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 46,
+		"type": "overmap_terrain"
+	},
+	{
+		"color": "red",
+		"id": "flying_fortress_11",
+		"mondensity": 0,
+		"name": "Flying Fortress Of Doom",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 46,
+		"type": "overmap_terrain"
+	},
+	{
+		"color": "red",
+		"id": "flying_fortress_12",
+		"mondensity": 0,
+		"name": "Flying Fortress Of Doom",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 46,
+		"type": "overmap_terrain"
+	}
+]

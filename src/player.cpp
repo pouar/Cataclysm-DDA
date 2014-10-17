@@ -112,7 +112,13 @@ void game::init_morale()
     _("Bad Tempered"),
     //~ You really don't like wearing the Uncomfy Gear
     _("Uncomfy Gear"),
-    _("Found kitten <3")
+    _("Found kitten <3"),
+    _("Sucking Pacifer"),
+    _("Hugging Plushie"),
+    _("Wearing Urine Soaked Clothing"),
+    _("Wearing Diaper"),
+    _("Gotta Pee"),
+    _("Everyone Saw You Pee Your Pants")
     };
     for (int i = 0; i < NUM_MORALE_TYPES; ++i) {
         morale_data[i]=tmp_morale_data[i];
@@ -143,6 +149,14 @@ player::player() : Character(), name("")
  thirst = 0;
  stomach_food = 0;
  stomach_water = 0;
+ bladder = 0;
+ bladdercap = 600;
+ bladdermict = 150;
+ bladderdance = 300;
+ bladderdesp = 450;
+ bladderlast = 595;
+ peerate = 8;
+ peesleeprate = 15;
  fatigue = 0;
  stim = 0;
  pain = 0;
@@ -573,6 +587,7 @@ void player::apply_persistent_morale()
                     bonus += 1;
                 }
             }
+	    
         }
         if(covered.test(bp_torso)) {
             bonus += 6;
@@ -605,6 +620,49 @@ void player::apply_persistent_morale()
         if(bonus) {
             add_morale(MORALE_PERM_FANCY, bonus, bonus, 5, 5, true);
         }
+    }
+    int bonus = false;
+    bool bonuspee = false;
+    int bonusbladder = 0;
+    for(unsigned int i = 0;i<worn.size();i++)
+    {
+        if(worn[i].has_flag("DIAPER"))
+            bonus=true;
+        if(worn[i].pee>0)
+            bonuspee=true;
+    }
+    if(!has_trait("INCONT"))
+    {
+        if(bladder<4)
+            bonusbladder+=bladder/bladdercap/4;
+            bonusbladder+=bladder/bladdercap/4;
+            if(bladder>=bladdercap-5)
+            {
+                bonusbladder++;
+                if(has_trait("DL"))
+                    bonusbladder++;
+                
+            }
+            if(bladder>=bladdercap && has_trait("DL"))
+                bonusbladder+=5;
+    }
+    if(has_trait("DL"))
+    {
+        if(bonus)
+            add_morale(MORALE_DIAPER, 20, 20, 20, 20, true);
+        if(bonuspee)
+            add_morale(MORALE_WET_DIAPER, 20, 20, 20, 20, true);
+        if(bonusbladder!=0)
+            add_morale(MORALE_BLADDER, bonusbladder*5, bonusbladder*5);
+    }
+    else
+    {
+        if(bonus)
+            add_morale(MORALE_DIAPER, -4, -4, -4, -4, true);
+        if(bonuspee)
+            add_morale(MORALE_WET_DIAPER, -8, -8, -8, -8, true);
+        if(bonusbladder!=0)
+            add_morale(MORALE_BLADDER, -bonusbladder, -bonusbladder, -4, -4, true);
     }
 
     // Floral folks really don't like having their flowers covered.
@@ -847,7 +905,7 @@ void player::update_bodytemp()
         }
         // Fur, etc effects for sleeping here.
         // Full-power fur is about as effective as a makeshift bed
-        if (has_trait("FUR") || has_trait("LUPINE_FUR") || has_trait("URSINE_FUR")) {
+        if (has_trait("FUR") || has_trait("LUPINE_FUR") || has_trait("URSINE_FUR") || has_trait("DRAGON_FUR")) {
             floor_mut_warmth += 500;
         }
         // Feline fur, not quite as warm.  Cats do better in warmer spots.
@@ -1115,7 +1173,7 @@ void player::update_bodytemp()
             temp_conv[i] += (temp_cur[i] > BODYTEMP_NORM ? 250 : 500);
         }
         // Furry or Lupine/Ursine Fur
-        if( has_trait("FUR") || has_trait("LUPINE_FUR") || has_trait("URSINE_FUR") ) {
+        if( has_trait("FUR") || has_trait("LUPINE_FUR") || has_trait("URSINE_FUR") || has_trait("DRAGON_FUR") ) {
             temp_conv[i] += (temp_cur[i] > BODYTEMP_NORM ? 750 : 1500);
         }
         // Feline fur
@@ -1471,6 +1529,9 @@ void player::recalc_speed_bonus()
     if (has_trait("QUICK")) { // multiply by 1.1
         set_speed_bonus(get_speed() * 1.10 - get_speed_base());
     }
+    if (has_trait("SONIC")) { // multiply by 1.9
+        set_speed_bonus(get_speed() * 1.90 - get_speed_base());
+    }
     if (has_bionic("bio_speed")) { // multiply by 1.1
         set_speed_bonus(get_speed() * 1.10 - get_speed_base());
     }
@@ -1531,6 +1592,9 @@ int player::run_cost(int base_cost, bool diag)
     }
     if (has_trait("FLEET2") && flatground) {
         movecost *= .7f;
+    }
+    if (has_trait("SONIC")) {
+        movecost *= .1f;
     }
     if (has_trait("SLOWRUNNER") && flatground) {
         movecost *= 1.15f;
@@ -1614,10 +1678,384 @@ int player::run_cost(int base_cost, bool diag)
     if (diag) {
         movecost *= 1.4142;
     }
-
     return int(movecost);
 }
+int player::peeself(bool ctrl)
+{
+    if(ctrl == true)
+    {
+        if(!has_trait("DEBUG_BLADDER"))
+        {
+            if(has_trait("INCONT"))
+            {
+                add_msg(m_bad, _("Message from bladder:You can't tell me what to do!"));
+                return 0;
+            }
+            if(bladder < bladdermict)
+            {
+                add_msg(m_info, _("You don't have to go"));
+                return 0;
+            }
+        }
+    }
+    bool wetdiaper = false;
+    bool leak = false;
+    bool wet = false;
+    std::string peeterid = g->m.get_ter(posx,posy);
+    std::string peefurnid = g->m.get_furn(posx,posy);
+    bool inwater = false;
+    if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp" || peeterid == "t_water_pool" || peeterid == "t_sewage" || peeterid == "t_lava")
+        inwater = true;
+    for(unsigned int i = 0;i<worn.size();i++)
+    {
+        if((worn[i].covers.test(bp_leg_l) || worn[i].covers.test(bp_leg_r)) && !worn[i].has_flag("SKIRT") && bladder>0)
+        {
+            worn[i].item_tags.insert("WETDIAPER");
+            wet=true;
+            if(worn[i].has_flag("DIAPER"))
+            {
+                wetdiaper=true;
+            }
+			if(worn[i].type->peecap>bladder+worn[i].pee)
+			{
+				worn[i].pee+=bladder;
+				bladder=0;
+                break;
+			}
+			else
+			{
+				bladder-=worn[i].type->peecap-worn[i].pee;
+				worn[i].pee=worn[i].type->peecap;
+				if(worn[i].has_flag("EVERDIAPER"))
+				{
+					bladder=0;
+					break;
+				}
+			}
+        }
+    }
+        if(bladder>0)
+			leak=true;
+		bladder=0;
+		if(leak==true)
+        {
+            if(!has_trait("DL"))
+                add_morale(MORALE_PEESELF, -20, -20);
+            if(inwater==false && peefurnid != "f_toilet")
+                g->m.add_field(posx, posy, fd_pee, 3);
+        }
+    if(ctrl == true)
+    {
+        if(wetdiaper==false)
+        {
+			if(leak==true)
+			{
+				if(peeterid == "t_water_pool")
+				{
+					add_msg(m_info, _("You pee in the pool. Way to keep it clean."));
+					return 0;
+				}
+				else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+				{
+					add_msg(m_info, _("You pee in the water."));
+					return 0;
+				}
+				else if(peefurnid == "f_toilet" && wet==true)
+				{
+					if(male)
+					add_msg(m_info, _("You try to use the toilet, but forgot to take your pants off first, peeing yourself."));
+					return 0;
+				}
+				else if(peefurnid == "f_toilet" && wet==false)
+				{
+					if(male)
+					add_msg(m_info, _("You use the toilet like a big boy."));
+					else
+					add_msg(m_info, _("You use the toilet like a big girl."));
+					return 0;
+				}
+				else if(peeterid == "t_sewage")
+				{
+					add_msg(m_info, _("You pee in the already putrid sewage."));
+					return 0;
+				}
+				else if(wet==true)
+				{
+					add_msg(m_info, _("You decide to just pee your pants like a toddler. You might want to invest in some diapers so you don't leave a puddle and a obvious stain on your pants next time."));
+					return 0;
+				}
+				else if(wet==false)
+				{
+					add_msg(m_info, _("You just stand there and let loose. Do we have to put a diaper on you?"));
+					return 0;
+				}
+			}
+			else{
+				if(peeterid == "t_water_pool")
+				{
+					add_msg(m_info, _("You pee in the pool. Way to keep it clean."));
+					return 0;
+				}
+				else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+				{
+					add_msg(m_info, _("You pee in the water."));
+					return 0;
+				}
+				else if(peefurnid == "f_toilet" && wet==true)
+				{
+					if(male)
+					add_msg(m_info, _("You try to use the toilet, but forgot to take your pants off first, peeing yourself. Somehow your pants held up"));
+					return 0;
+				}
+				else if(peefurnid == "f_toilet" && wet==false)
+				{
+					if(male)
+					add_msg(m_info, _("You use the toilet like a big boy."));
+					else
+					add_msg(m_info, _("You use the toilet like a big girl."));
+					return 0;
+				}
+				else if(peeterid == "t_sewage")
+				{
+					add_msg(m_info, _("You pee in the already putrid sewage."));
+					return 0;
+				}
+				else if(wet==true)
+				{
+					add_msg(m_info, _("You decide to just pee your pants like a toddler. Fortunantly you didn't leave a puddle but only a stain in the inside of your pants"));
+					return 0;
+				}
+				else if(wet==false)
+				{
+					add_msg(m_info, _("You just stand there and let loose. Do we have to put a diaper on you?"));
+					return 0;
+				}
+			}
+        }
+        else
+        {	if(leak==true)
+			{
+				if(peeterid == "t_water_pool" || peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+				{
+					add_msg(m_info, _("you pee your swim diapers, you can't tell if it leaked or not because of the water"));
+					return 0;
+				}
+				else if(peefurnid == "f_toilet")
+				{
+					add_msg(m_info, _("Aww, you're trying to use the toilet with your diaper still on."));
+					return 0;
+				}
+				else if(peeterid == "t_sewage")
+				{
+					add_msg(m_info, _("you pee your swim diapers, you can't tell if it leaked or not because of the sewage"));
+					return 0;
+				}
+				else
+				{
+					add_msg(m_info, _("You decided to just pee your diaper like a toddler. Unfortunantly it leaks all over the place"));
+					return 0;
+				}
+			}
+			else{
+				if(peefurnid == "f_toilet")
+				{
+					add_msg(m_info, _("Aww, you're trying to use the toilet with your diaper still on."));
+					return 0;
+				}
+				else
+				{
+					add_msg(m_info, _("You decided to just pee your diaper like a toddler."));
+					return 0;
+				}
+			}
+        }
+    }
+    else
+    {
+        if(wetdiaper==false)
+        {
+			
+			if(leak==true)
+			{
+				if(has_disease("sleep"))
+				{
+					add_msg(m_bad, _("You wet the bed in your sleep."));
+					return 0;
+				}
+				else if(has_disease("lying_down"))
+				{
+					if(has_trait("INCONT"))
+						add_msg(m_info, _("While laying there you pee yourself without noticing."));
+					else
+						add_msg(m_info, _("Too lazy to get up you decided to just wet the bed."));
+					return 0;
+				}
+				else if(peeterid == "t_water_pool")
+				{
+					add_msg(m_bad, _("You have an accident in the pool. Since you don't see any pee you assume it didn't leak even though it did."));
+					return 0;
+				}
+				else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+				{
+					add_msg(m_bad, _("You have an accident in the water. Since you don't see any pee you assume it didn't leak even though it did."));
+					return 0;
+				}
+				else if(peefurnid == "f_toilet")
+				{
+					add_msg(m_bad, _("Good thing you were on a toilet when you had that accident but your pants were still on."));
+					return 0;
+				}
+				else if(peeterid == "t_sewage")
+				{
+					add_msg(m_bad, _("You have an accident in the already putrid sewage. You can't tell the difference between your pee and everyone elses pee so maybe those diapers held up."));
+					return 0;
+				}
+				else
+				{
+					if(has_trait("INCONT"))
+					add_msg(m_bad, _("Everyone starts laughing at you and you can't figure out why, until you look down and get a horrified look on your face as you find out your diaper is leaking like hell."));
+					else
+					add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Everyone starts laughing at you as your diapers leak all over the place."));
+					return 0;
+				}
+			}
+			else
+			{
+				if(has_disease("sleep"))
+				{
+					add_msg(m_bad, _("You wet the bed in your sleep. Or at least your pants as your bed is still clean"));
+					return 0;
+				}
+				else if(has_disease("lying_down"))
+				{
+					if(has_trait("INCONT"))
+						add_msg(m_info, _("While laying there you pee yourself without noticing."));
+					else
+						add_msg(m_info, _("Too lazy to get up you decided to just wet the bed."));
+					return 0;
+				}
+				else if(peeterid == "t_water_pool")
+				{
+					add_msg(m_bad, _("You have an accident in the pool. Way to keep it clean."));
+					return 0;
+				}
+				else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+				{
+					add_msg(m_bad, _("You have an accident in the water."));
+					return 0;
+				}
+				else if(peefurnid == "f_toilet" && wet==true)
+				{
+					add_msg(m_bad, _("Good thing you were on a toilet when you had that accident but your pants were still on. Amazingly it didn't leak through."));
+					return 0;
+				}
+				else if(peefurnid == "f_toilet" && wet==false)
+				{
+					add_msg(m_bad, _("Good thing you were on a toilet when had that accident."));
+					return 0;
+				}
+				else if(peeterid == "t_sewage")
+				{
+					add_msg(m_bad, _("You have an accident in the already putrid sewage."));
+					return 0;
+				}
+				else if(wet==true)
+				{
+					if(has_trait("INCONT"))
+					add_msg(m_bad, _("You pee yourself without control, but no one noticed as only the inside of your pants got stained"));
+					else
+					add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Amazingly it didn't leak through your pants."));
+					return 0;
+				}
+				else if(wet==false)
+				{
+					add_msg(m_bad, _("You have an accident right where you are. At least you weren't wearing any pants to drench but maybe you should start wearing diapers."));
+					return 0;
+				}
+			}
+        }
+        else
+        {
+			if(leak==true)
+			{
+				if(has_disease("sleep"))
+				{
+					add_msg(m_bad, _("You wet your diaper in your sleep. It doesn't hold up and pee gets all over the bed"));
+					return 0;
+				}
+				else if(has_disease("lying_down"))
+				{
+					if(has_trait("INCONT"))
+						add_msg(m_info, _("While laying there you pee yourself without noticing. And it leaks but you don't care."));
+					else
+						add_msg(m_info, _("Too lazy to get up you decided to just wet the bed. And it leaks but you don't care"));
+					return 0;
+				}
+				else if(peeterid == "t_water_pool")
+				{
+					add_msg(m_bad, _("You have an accident in the pool. Since you don't see any pee you assume it didn't leak even though it did."));
+					return 0;
+				}
+				else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+				{
+					add_msg(m_bad, _("You have an accident in the water. Since you don't see any pee you assume it didn't leak even though it did."));
+					return 0;
+				}
+				else if(peefurnid == "f_toilet")
+				{
+					add_msg(m_bad, _("Good thing you were on a toilet when you had that accident but your pants were still on."));
+					return 0;
+				}
+				else if(peeterid == "t_sewage")
+				{
+					add_msg(m_bad, _("You have an accident in the already putrid sewage. You can't tell the difference between your pee and everyone elses pee so maybe those diapers held up."));
+					return 0;
+				}
+				else
+				{
+					if(has_trait("INCONT"))
+					add_msg(m_bad, _("Everyone starts laughing at you and you can't figure out why, until you look down and get a horrified look on your face as you find out your diaper is leaking like hell."));
+					else
+					add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Everyone starts laughing at you as your diapers leak all over the place."));
+					return 0;
+				}
+			}
+			else
+			{
+				if(has_disease("sleep"))
+				{
+					add_msg(m_bad, _("You wet your diaper in your sleep."));
+					return 0;
+				}
+				else if(has_disease("lying_down"))
+				{
+					if(has_trait("INCONT"))
+						add_msg(m_info, _("While laying there you pee yourself without noticing."));
+					else
+						add_msg(m_info, _("Too lazy to get up you decided to just wet your diaper."));
+					return 0;
+				}
+				else if(peefurnid == "f_toilet" && wet==true)
+				{
+					add_msg(m_bad, _("Good thing you were on a toilet when you had that accident but your diaper was still on."));
+					return 0;
+				}
+				else if(peeterid == "t_water_pool" || peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+				{
+					add_msg(m_bad, _("You have an accident in your swim diapers."));
+					return 0;
+				}
+				else if(has_trait("INCONT"))
+					add_msg(m_bad, _("You pee yourself like a toddler without even noticing. And thanks to that diaper of yours no one else will either."));
+				else
+					add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. At least with those diapers no one will notice."));
+				return 0;
+			}
+        }
+    }
 
+        return 0;
+}
 int player::swim_speed()
 {
     int ret = 440 + weight_carried() / 60 - 50 * skillLevel("swimming");
@@ -2115,6 +2553,8 @@ void player::mod_stat( std::string stat, int modifier )
 {
     if( stat == "hunger" ) {
         hunger += modifier;
+    } else if( stat == "bladder" ) {
+        bladder += modifier;
     } else if( stat == "thirst" ) {
         thirst += modifier;
     } else if( stat == "fatigue" ) {
@@ -3372,6 +3812,18 @@ void player::disp_status(WINDOW *w, WINDOW *w2)
     else if (hunger < -60)
         wprintz(w, c_green,  _("Engorged"));
 
+    wmove(w, sideStyle ? 0 : 0, sideStyle ? 11 : 10);
+    if(!has_trait("INCONT") && !has_disease("sleep") && !has_disease("lying_down"))
+    {
+            if (bladder >= bladderlast)
+                wprintz(w, c_red,    _(" Potty dance (Last minute)"));
+            else if (bladder >= bladderdesp)
+                wprintz(w, c_ltred , _(" Potty dance (Desperate)"));
+            else if (bladder >= bladderdance)
+                wprintz(w, c_yellow, _(" Potty dance (Slight)"));
+            else if (bladder >= bladdermict)
+                wprintz(w, c_yellow, _(" Need to pee"));
+    }
     /// Find hottest/coldest bodypart
     // Calculate the most extreme body tempearatures
     int current_bp_extreme = 0, conv_bp_extreme = 0;
@@ -3806,7 +4258,7 @@ bool player::in_climate_control()
 {
     bool regulated_area=false;
     // Check
-    if(has_active_bionic("bio_climate")) { return true; }
+    if(has_active_bionic("bio_climate")||has_trait("SMARTTEMP")) { return true; }
     if ((is_wearing("rm13_armor_on")) || (is_wearing_power_armor() &&
         (has_active_UPS() || has_active_bionic("bio_power_armor_interface") || has_active_bionic("bio_power_armor_interface_mkII"))))
     {
@@ -4086,7 +4538,11 @@ void player::recalc_sight_limits()
     // (A player will never have more than one night vision trait.)
     sight_boost_cap = 12;
     // Debug-only NV, by vache's request
-    if (has_trait("DEBUG_NIGHTVISION")) {
+    if (has_trait("EYEOFSAURON")) {
+        sight_boost = 1000000000;
+        sight_boost_cap = 1000000000;
+    } 
+    else if (has_trait("DEBUG_NIGHTVISION")) {
         sight_boost = 59;
         sight_boost_cap = 59;
     } else if (has_nv() || has_trait("NIGHTVISION3") || has_trait("ELFA_FNV") || is_wearing("rm13_armor_on")) {
@@ -4191,6 +4647,8 @@ int player::overmap_sight_range(int light_level)
 
 int player::clairvoyance() const
 {
+ if(has_trait("EYEOFSAURON"))
+ return 1000000000;
  if (has_artifact_with(AEP_CLAIRVOYANCE))
   return 3;
  if (has_artifact_with(AEP_SUPER_CLAIRVOYANCE))
@@ -6253,6 +6711,9 @@ void player::mend()
                 healing_factor *= 2.0;
             }
 
+            if(bladder < 0) {
+                healing_factor *= 10.0;
+            }
             if(thirst < 0) {
                 healing_factor *= 2.0;
             }
@@ -6429,7 +6890,7 @@ void player::drench(int saturation, int flags)
     int dur = 60;
     int d_start = 30;
     if (morale_cap < 0) {
-        if (has_trait("LIGHTFUR") || has_trait("FUR") || has_trait("FELINE_FUR") || has_trait("LUPINE_FUR")) {
+        if (has_trait("LIGHTFUR") || has_trait("FUR") || has_trait("FELINE_FUR") || has_trait("LUPINE_FUR") || has_trait("DRAGON_FUR")) {
             dur /= 5;
             d_start /= 5;
         }
@@ -6541,6 +7002,9 @@ int player::weight_capacity() const
     if (has_trait("STRONGBACK")) {
         ret = int(ret * 1.35);
     }
+    if (has_trait("DIMPOCK")) {
+        ret += 100000000;
+    }
     if (has_trait("LIGHT_BONES")) {
         ret = int(ret * .80);
     }
@@ -6566,6 +7030,9 @@ int player::volume_capacity() const
     }
     if (has_bionic("bio_storage")) {
         ret += 8;
+    }
+    if (has_trait("DIMPOCK")) {
+        ret += 100000;
     }
     if (has_trait("SHELL")) {
         ret += 16;
@@ -9042,56 +9509,60 @@ bool player::takeoff(int pos, bool autodrop, std::vector<item> *items)
         if (worn_index >= 0 && size_t(worn_index) < worn.size()) {
             item &w = worn[worn_index];
 
-            // Handle power armor.
-            if (w.type->is_power_armor() && w.covers.test(bp_torso)) {
-                // We're trying to take off power armor, but cannot do that if we have a power armor component on!
-                for (int j = worn.size() - 1; j >= 0; j--) {
-                    if (worn[j].type->is_power_armor() &&
-                            j != worn_index) {
-                        if( autodrop || items != nullptr ) {
-                            if( items != nullptr ) {
-                                items->push_back( worn[j] );
+            if(!(w.has_flag("DIAPERLOCKED")))
+            {
+                // Handle power armor.
+                if (w.type->is_power_armor() && w.covers.test(bp_torso)) {
+                    // We're trying to take off power armor, but cannot do that if we have a power armor component on!
+                    for (int j = worn.size() - 1; j >= 0; j--) {
+                        if (worn[j].type->is_power_armor() &&
+                                j != worn_index) {
+                            if( autodrop || items != nullptr ) {
+                                if( items != nullptr ) {
+                                    items->push_back( worn[j] );
+                                } else {
+                                    g->m.add_item_or_charges( posx, posy, worn[j] );
+                                }
+                                add_msg(_("You take off your %s."), worn[j].tname().c_str());
+                                worn.erase(worn.begin() + j);
+                                // If we are before worn_index, erasing this element shifted its position by 1.
+                                if (worn_index > j) {
+                                    worn_index -= 1;
+                                    w = worn[worn_index];
+                                }
+                                taken_off = true;
                             } else {
-                                g->m.add_item_or_charges( posx, posy, worn[j] );
+                                add_msg(m_info, _("You can't take off power armor while wearing other power armor components."));
+                                return false;
                             }
-                            add_msg(_("You take off your %s."), worn[j].tname().c_str());
-                            worn.erase(worn.begin() + j);
-                            // If we are before worn_index, erasing this element shifted its position by 1.
-                            if (worn_index > j) {
-                                worn_index -= 1;
-                                w = worn[worn_index];
-                            }
-                            taken_off = true;
-                        } else {
-                            add_msg(m_info, _("You can't take off power armor while wearing other power armor components."));
-                            return false;
                         }
                     }
                 }
-            }
 
-            if( items != nullptr ) {
-                items->push_back( w );
-                taken_off = true;
-            } else if (autodrop || volume_capacity() - dynamic_cast<it_armor*>(w.type)->storage > volume_carried() + int(w.type->volume)) {
-                inv.add_item_keep_invlet(w);
-                taken_off = true;
-            } else if (query_yn(_("No room in inventory for your %s.  Drop it?"),
-                    w.tname().c_str())) {
-                g->m.add_item_or_charges(posx, posy, w);
-                taken_off = true;
-            } else {
-                taken_off = false;
+                if( items != nullptr ) {
+                    items->push_back( w );
+                    taken_off = true;
+                } else if (autodrop || volume_capacity() - dynamic_cast<it_armor*>(w.type)->storage > volume_carried() + int(w.type->volume)) {
+                    inv.add_item_keep_invlet(w);
+                    taken_off = true;
+                } else if (query_yn(_("No room in inventory for your %s.  Drop it?"),
+                        w.tname().c_str())) {
+                    g->m.add_item_or_charges(posx, posy, w);
+                    taken_off = true;
+                } else {
+                    taken_off = false;
+                }
+                if( taken_off ) {
+                    add_msg(_("You take off your %s."), w.tname().c_str());
+                    worn.erase(worn.begin() + worn_index);
+                }
             }
-            if( taken_off ) {
-                add_msg(_("You take off your %s."), w.tname().c_str());
-                worn.erase(worn.begin() + worn_index);
-            }
+            else
+                add_msg(m_warning, _("Your %s isn't going anywhere with that lock on."), w.tname().c_str());
         } else {
             add_msg(m_info, _("You are not wearing that item."));
         }
     }
-
     recalc_sight_limits();
 
     return taken_off;
@@ -10425,7 +10896,7 @@ int player::get_armor_bash_base(body_part bp) const
     if (bp == bp_eyes && has_bionic("bio_armor_eyes")) {
         ret += 3;
     }
-    if (has_trait("FUR") || has_trait("LUPINE_FUR") || has_trait("URSINE_FUR")) {
+    if (has_trait("FUR") || has_trait("LUPINE_FUR") || has_trait("URSINE_FUR") || has_trait("DRAGON_FUR")) {
         ret++;
     }
     if (bp == bp_head && has_trait("LYNX_FUR")) {
@@ -10440,7 +10911,7 @@ int player::get_armor_bash_base(body_part bp) const
     if (has_trait("M_SKIN2")) {
         ret += 3;
     }
-    if (has_trait("CHITIN")) {
+    if (has_trait("CHITIN") || has_trait("DRAGON_SCALES")) {
         ret += 2;
     }
     if (has_trait("SHELL") && bp == bp_torso) {
@@ -10506,7 +10977,7 @@ int player::get_armor_cut_base(body_part bp) const
     if (has_trait("CHITIN2")) {
         ret += 4;
     }
-    if (has_trait("CHITIN3")) {
+    if (has_trait("CHITIN3") || has_trait("DRAGON_SCALES")) {
         ret += 8;
     }
     if (has_trait("SHELL") && bp == bp_torso) {
@@ -10780,7 +11251,7 @@ void player::absorb(body_part bp, int &dam, int &cut)
     if ((bp == bp_arm_l || bp == bp_arm_r) && has_trait("ARM_FEATHERS")) {
         dam--;
     }
-    if (has_trait("FUR") || has_trait("LUPINE_FUR") || has_trait("URSINE_FUR")) {
+    if (has_trait("FUR") || has_trait("LUPINE_FUR") || has_trait("URSINE_FUR") || has_trait("DRAGON_FUR")) {
         dam--;
     }
     if (bp == bp_head && has_trait("LYNX_FUR")) {
@@ -10796,7 +11267,7 @@ void player::absorb(body_part bp, int &dam, int &cut)
         dam--;
         cut -= 4;
     }
-    if (has_trait("CHITIN3")) {
+    if (has_trait("CHITIN3") || has_trait("DRAGON_SCALES")) {
         dam -= 2;
         cut -= 8;
     }
@@ -11442,6 +11913,7 @@ void player::environmental_revert_effect()
         hp_cur[part] = hp_max[part];
     }
     hunger = 0;
+    bladder = 0;
     thirst = 0;
     fatigue = 0;
     set_healthy(0);

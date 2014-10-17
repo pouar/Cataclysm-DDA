@@ -646,7 +646,9 @@ void trapfunc::pit(Creature *c, int x, int y)
         if (n != NULL) {
             if ( (n->has_trait("WINGS_BIRD")) || ((one_in(2)) && (n->has_trait("WINGS_BUTTERFLY"))) ) {
                 n->add_msg_if_player(_("You flap your wings and flutter down gracefully."));
-            } else {
+            } else if (n->has_trait("WINGS_DRAGON") ) {
+                n->add_msg_if_player(_("You spread your wings and glide down safely."));
+            }  else {
                 int dodge = n->get_dodge();
                 int damage = eff * rng(10, 20) - rng(dodge, dodge * 5);
                 if (damage > 0) {
@@ -684,7 +686,9 @@ void trapfunc::pit_spikes(Creature *c, int x, int y)
             int damage = pit_effectiveness(x, y) * rng(20, 50);
             if ( (n->has_trait("WINGS_BIRD")) || ((one_in(2)) && (n->has_trait("WINGS_BUTTERFLY"))) ) {
                 n->add_msg_if_player(_("You flap your wings and flutter down gracefully."));
-            } else if (0 == damage || rng(5, 30) < dodge) {
+            } else if (n->has_trait("WINGS_DRAGON") ) {
+                n->add_msg_if_player(_("You spread your wings and glide down safely."));
+            }   else if (0 == damage || rng(5, 30) < dodge) {
                 n->add_msg_if_player(_("You avoid the spikes within."));
             } else {
                 body_part hit = num_bp;
@@ -1204,7 +1208,31 @@ void trapfunc::snake(Creature *c, int x, int y)
         }
     }
 }
-
+void trapfunc::chunkblower(Creature *c, int x, int y)
+{
+    if (c != NULL) {
+        c->add_msg_player_or_npc(m_bad, _("Your grinded mash of arms and legs, torsos and heads, now hamburger meat."), _("Your grinded mash of arms and legs, torsos and heads, now hamburger meat."),
+                                 g->m.tername(x, y).c_str());
+        c->add_memorial_log(pgettext("memorial_male", "reduced to ground beef."),
+                            pgettext("memorial_female", "reduced to ground beef."));
+        monster *z = dynamic_cast<monster *>(c);
+        player *n = dynamic_cast<player *>(c);
+        if (n != NULL) {
+            n->deal_damage( nullptr, bp_foot_l, damage_instance( DT_CUT, 1000 ) );
+            n->deal_damage( nullptr, bp_foot_r, damage_instance( DT_CUT, 1000 ) );
+            n->deal_damage( nullptr, bp_leg_l, damage_instance( DT_CUT, 1000 ) );
+            n->deal_damage( nullptr, bp_leg_r, damage_instance( DT_CUT, 1000 ) );
+            n->deal_damage( nullptr, bp_hand_l, damage_instance( DT_CUT, 1000 ) );
+            n->deal_damage( nullptr, bp_hand_r, damage_instance( DT_CUT, 1000 ) );
+            n->deal_damage( nullptr, bp_arm_l, damage_instance( DT_CUT, 1000 ) );
+            n->deal_damage( nullptr, bp_arm_r, damage_instance( DT_CUT, 1000 ) );
+            n->deal_damage( nullptr, bp_head, damage_instance( DT_CUT, 1000 ) );
+            n->deal_damage( nullptr, bp_torso, damage_instance( DT_CUT, 1000 ) );
+        } else if (z != NULL) {
+            z->apply_damage( nullptr, bp_torso, 10000 );
+        }
+    }
+}
 /**
  * Takes the name of a trap function and returns a function pointer to it.
  * @param function_name The name of the trapfunc function to find.
@@ -1305,6 +1333,9 @@ trap_function trap_function_from_string(std::string function_name)
     }
     if("snake" == function_name) {
         return &trapfunc::snake;
+    }
+    if("chunkblower" == function_name) {
+        return &trapfunc::chunkblower;
     }
 
     //No match found

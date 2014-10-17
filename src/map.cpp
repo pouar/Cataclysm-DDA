@@ -1581,7 +1581,7 @@ bool map::moppable_items_at(const int x, const int y)
     if(fld.findField(fd_blood) != 0 || fld.findField(fd_blood_veggy) != 0 ||
           fld.findField(fd_blood_insect) != 0 || fld.findField(fd_blood_invertebrate) != 0
           || fld.findField(fd_bile) != 0 || fld.findField(fd_slime) != 0 ||
-          fld.findField(fd_sludge) != 0) {
+          fld.findField(fd_sludge) != 0 || fld.findField(fd_pee) != 0) {
         return true;
     }
     int vpart;
@@ -1660,6 +1660,7 @@ void map::mop_spills(const int x, const int y) {
     remove_field( x, y, fd_bile );
     remove_field( x, y, fd_slime );
     remove_field( x, y, fd_sludge );
+    remove_field( x, y, fd_pee );
     int vpart;
     vehicle *veh = veh_at(x, y, vpart);
     if(veh != 0) {

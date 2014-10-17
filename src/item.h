@@ -441,6 +441,7 @@ public:
  int burnt;               // How badly we're burnt
  std::bitset<13> covers;  // What body parts it covers
  int bday;                // The turn on which it was created
+ int pee;
  int owned;               // UID of NPC owner; 0 = player, -1 = unowned
  light_emission light;
  union{

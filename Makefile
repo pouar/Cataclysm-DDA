@@ -51,11 +51,19 @@ RELEASE_FLAGS = -Werror
 WARNINGS = -Wall -Wextra
 # Uncomment below to disable warnings
 #WARNINGS = -w
-ifeq ($(shell sh -c 'uname -o 2>/dev/null || echo not'),Cygwin)
-  DEBUG = -g
+ifdef NDBSYM
+  DEBUG += -g0
 else
-  DEBUG = -g -D_GLIBCXX_DEBUG
+ifdef NGDB
+  DEBUG += -g3
+else
+  DEBUG += -ggdb3
 endif
+ifneq ($(shell sh -c 'uname -o 2>/dev/null || echo not'),Cygwin)
+  DEBUG += -D_GLIBCXX_DEBUG
+endif
+endif
+
 #PROFILE = -pg
 #OTHERS = -O3
 #DEFINES = -DNDEBUG
@@ -110,14 +118,13 @@ else
   LD  = $(CROSS)g++
 endif
 RC  = $(CROSS)windres
-
 # enable optimizations. slow to build
 ifdef RELEASE
   ifeq ($(NATIVE), osx)
     CXXFLAGS += -O3
   else
-    CXXFLAGS += -Os
-    LDFLAGS += -s
+    CXXFLAGS += -O2 -march=native -flto
+    LDFLAGS += -s -flto
   endif
   # OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
   # Strip symbols, generates smaller executable.

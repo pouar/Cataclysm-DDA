@@ -132,6 +132,14 @@ void player::load(JsonObject &data)
     }
     data.read("posy", posy);
     data.read("hunger", hunger);
+    data.read("bladder", bladder);
+    data.read("bladdercap", bladdercap);
+    data.read("bladderdance", bladderdance);
+    data.read("bladdermict", bladdermict);
+    data.read("bladderdesp", bladderdesp);
+    data.read("bladderlast", bladderlast);
+    data.read("peerate", peerate);
+    data.read("peesleeprate", peesleeprate);
     data.read("thirst", thirst);
     data.read("fatigue", fatigue);
     data.read("stim", stim);
@@ -222,6 +230,14 @@ void player::store(JsonOut &json) const
     // om-noms or lack thereof
     json.member( "hunger", hunger );
     json.member( "thirst", thirst );
+    json.member( "bladder", bladder );
+    json.member( "bladdercap", bladdercap );
+    json.member( "bladderdesp", bladderdesp );
+    json.member( "bladdermict", bladdermict );
+    json.member( "bladderdance", bladderdance );
+    json.member( "bladderlast", bladderlast );
+    json.member( "peerate", peerate );
+    json.member( "peesleeprate", peesleeprate );
     // energy
     json.member( "fatigue", fatigue );
     json.member( "stim", stim );
@@ -1005,6 +1021,7 @@ void item::deserialize(JsonObject &data)
     data.read( "invlet", lettmp );
     invlet = char(lettmp);
 
+    data.read( "pee", pee );
     data.read( "damage", damtmp );
     damage = damtmp; // todo: check why this is done after make(), using a tmp variable
     data.read( "active", active );
@@ -1113,6 +1130,9 @@ void item::serialize(JsonOut &json, bool save_contents) const
     }
     if ( damage != 0 ) {
         json.member( "damage", int(damage) );
+    }
+    if ( pee != 0 ) {
+        json.member( "pee", int(pee) );
     }
     if ( burnt != 0 ) {
         json.member( "burnt", burnt );

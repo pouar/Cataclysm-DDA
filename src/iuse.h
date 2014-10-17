@@ -27,6 +27,8 @@ public:
     int firstaid            (player*, item*, bool);
     int completefirstaid    (player*, item*, bool);
     int disinfectant        (player*, item*, bool);
+    int bladderstim         (player*, item*, bool);
+    int bladderset          (player*, item*, bool);
     int caff                (player*, item*, bool);
     int atomic_caff         (player*, item*, bool);
     int alcohol             (player*, item*, bool);
@@ -77,6 +79,7 @@ public:
     int primitive_fire      (player *, item *, bool);
     int ref_lit             (player *, item *, bool);
     int sew                 (player *, item *, bool);
+    int diaperlock          (player *, item *, bool);
     int extra_battery       (player *, item *, bool);
     int rechargeable_battery(player *, item *, bool);
     int cut_up              (player *, item *, item *, bool);
@@ -162,6 +165,7 @@ public:
     int vibe                (player *, item *, bool);
     int vortex              (player *, item *, bool);
     int dog_whistle         (player *, item *, bool);
+    int diaperfur_whistle   (player *, item *, bool);
     int vacutainer          (player *, item *, bool);
     int knife               (player *, item *, bool);
     static int cut_log_into_planks(player *p, item *it);

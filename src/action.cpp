@@ -148,6 +148,10 @@ std::string action_ident(action_id act)
         return "smash";
     case ACTION_EXAMINE:
         return "examine";
+    case ACTION_PEE:
+        return "pee";
+    case ACTION_PEESELF:
+        return "peeself";
     case ACTION_ADVANCEDINV:
         return "advinv";
     case ACTION_PICKUP:
@@ -208,6 +212,8 @@ std::string action_ident(action_id act)
         return "bionics";
     case ACTION_MUTATIONS:
         return "mutations";
+    case ACTION_MUTATIONSC:
+        return "mutationsc";
     case ACTION_SORT_ARMOR:
         return "sort_armor";
     case ACTION_WAIT:
@@ -646,6 +652,8 @@ action_id handle_action_menu()
             REGISTER_ACTION(ACTION_TOGGLE_DEBUG_MODE);
         } else if(category == "interact") {
             REGISTER_ACTION(ACTION_EXAMINE);
+            REGISTER_ACTION(ACTION_PEE);
+            REGISTER_ACTION(ACTION_PEESELF);
             REGISTER_ACTION(ACTION_SMASH);
             REGISTER_ACTION(ACTION_MOVE_DOWN);
             REGISTER_ACTION(ACTION_MOVE_UP);
@@ -683,6 +691,7 @@ action_id handle_action_menu()
             REGISTER_ACTION(ACTION_SLEEP);
             REGISTER_ACTION(ACTION_BIONICS);
             REGISTER_ACTION(ACTION_MUTATIONS);
+            REGISTER_ACTION(ACTION_MUTATIONSC);
             REGISTER_ACTION(ACTION_CONTROL_VEHICLE);
 #ifdef TILES
             if (use_tiles) {

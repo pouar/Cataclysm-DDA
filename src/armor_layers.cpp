@@ -426,7 +426,7 @@ std::vector<std::string> clothing_properties(item *worn_item, int width)
     props.push_back(name_and_value(_("Warmth:"),
                                    string_format("%3d", int(each_armor->warmth)), width));
     props.push_back(name_and_value(_("Storage:"),
-                                   string_format("%3d", int(each_armor->storage)), width));
+                                string_format("%3d", int(each_armor->storage)), width));
 
     return props;
 }
@@ -467,6 +467,42 @@ std::vector<std::string> clothing_flags_description(item *worn_item)
     }
     if (worn_item->has_flag("SWIM_GOGGLES")) {
         description_stack.push_back(_("It helps you to see clearly underwater."));
+    }
+    if (worn_item->has_flag("DIAPER")) {
+        description_stack.push_back(_("An adult diaper that can be used as a toilet"));
+        if(worn_item->pee>0)
+        {
+            if(worn_item->pee>=worn_item->type->peecap)
+            {
+				if(worn_item->has_flag("EVERDIAPER"))
+					description_stack.push_back(_("Even though it's not leaking, it looks and feels like it should badly."));
+				else
+					description_stack.push_back(_("Urine is visibly leaking down the legs."));
+			}
+            else if(worn_item->pee>=worn_item->type->peecap*.75)
+			{
+				if(worn_item->has_flag("EVERDIAPER"))
+					description_stack.push_back(_("it is visibly soaked and yellow from urine."));
+				else
+					description_stack.push_back(_("it is visibly soaked and yellow from urine, you might want to change before it leaks."));
+			}
+            else if(worn_item->pee>=worn_item->type->peecap*.25)
+                description_stack.push_back(_("It has been used. but it can hold more."));
+            else
+                description_stack.push_back(_("You can barely tell you wet it."));
+        }
+    }
+    else {
+        if(worn_item->pee>0)
+        {
+            if(worn_item->pee<worn_item->type->peecap)
+                description_stack.push_back(_("Your pants feel wet but it isn't visible"));
+            else
+                description_stack.push_back(_("Has a big dark stain in the front that is impossible not to notice."));
+        }
+    }
+    if (worn_item->has_flag("DIAPERLOCKED")) {
+        description_stack.push_back(_("You can't remove this."));
     }
 
     return description_stack;
