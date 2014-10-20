@@ -1750,23 +1750,27 @@ void game::activity_on_turn_refill_vehicle()
         u.activity.moves_left = 0;
         return;
     }
+    bool fuel_pumped = false;
     for(int i = -1; i <= 1; i++) {
         for(int j = -1; j <= 1; j++) {
-            if(m.ter(u.posx + i, u.posy + j) == t_gas_pump || m.ter_at(u.posx + i, u.posy + j).id == "t_gas_pump_a") {
+            if( m.ter(u.posx + i, u.posy + j) == t_gas_pump ||
+                m.ter_at(u.posx + i, u.posy + j).id == "t_gas_pump_a" ||
+                m.ter(u.posx +i, u.posy + j) == t_diesel_pump ) {
                 for( auto it = m.i_at(u.posx + i, u.posy + j).begin();
-                     it != m.i_at(u.posx + i, u.posy + j).end();) {
-                    if (it->type->id == "gasoline") {
+                     it != m.i_at(u.posx + i, u.posy + j).end(); ) {
+                    if( it->type->id == "gasoline" || it->type->id == "diesel" ) {
+                        fuel_pumped = true;
                         item *gas = &*it;
-                        int lack = (veh->fuel_capacity("gasoline") - veh->fuel_left("gasoline")) < 200 ?
-                                   (veh->fuel_capacity("gasoline") - veh->fuel_left("gasoline")) : 200;
+                        int lack = std::min( veh->fuel_capacity(it->type->id) -
+                                             veh->fuel_left(it->type->id),  200 );
                         if (gas->charges > lack) {
-                            veh->refill("gasoline", lack);
+                            veh->refill(it->type->id, lack);
                             gas->charges -= lack;
                             u.activity.moves_left -= 100;
                             it++;
                         } else {
-                            add_msg(m_bad, _("With a clang and a shudder, the gasoline pump goes silent."));
-                            veh->refill ("gasoline", gas->charges);
+                            add_msg(m_bad, _("With a clang and a shudder, the pump goes silent."));
+                            veh->refill (it->type->id, gas->charges);
                             it = m.i_at(u.posx + i, u.posy + j).erase(it);
                             u.activity.moves_left = 0;
                         }
@@ -1777,6 +1781,12 @@ void game::activity_on_turn_refill_vehicle()
                 }
             }
         }
+    }
+    if( !fuel_pumped ) {
+        // Can't find any fuel, give up.
+        debugmsg("Can't find any fuel, cancelling pumping.");
+        u.cancel_activity();
+        return;
     }
     u.pause();
 }
@@ -2026,7 +2036,7 @@ void game::activity_on_finish_firstaid()
 {
     item &it = u.i_at(u.activity.position);
     iuse tmp;
-    tmp.completefirstaid(&u, &it, false);
+    tmp.completefirstaid(&u, &it, false, u.pos());
     u.reduce_charges(u.activity.position, 1);
     // Erase activity and values.
     u.activity.type = ACT_NULL;
@@ -2036,10 +2046,8 @@ void game::activity_on_finish_firstaid()
 void game::activity_on_finish_start_fire()
 {
         item &it = u.i_at(u.activity.position);
-        const int dirx = u.activity.placement.x;
-        const int diry = u.activity.placement.y;
         iuse tmp;
-        tmp.resolve_firestarter_use(&u, &it, dirx, diry);
+        tmp.resolve_firestarter_use(&u, &it, u.activity.placement);
         u.activity.type = ACT_NULL;
 }
 
@@ -6064,81 +6072,6 @@ bool game::u_see(const monster *critter)
     return u.sees(critter);
 }
 
-// temporary item and location of it for processing items
-// in vehicle cargo parts. See map::process_active_items_in_vehicle
-std::pair<item, point> tmp_active_item_pos(item(), point(-999, -999));
-/**
- * Attempts to find which map co-ordinates the specified item is located at,
- * looking at the player, the ground, NPCs, and vehicles in that order.
- * @param it A pointer to the item to find.
- * @return The location of the item, or (-999, -999) if it wasn't found.
- */
-point game::find_item(item *it)
-{
-    if (&tmp_active_item_pos.first == it) {
-        return tmp_active_item_pos.second;
-    }
-    //Does the player have it?
-    if (u.has_item(it)) {
-        return point(u.posx, u.posy);
-    }
-    //Is it in a vehicle?
-    for (std::set<vehicle *>::iterator veh_iterator = m.vehicle_list.begin();
-         veh_iterator != m.vehicle_list.end(); veh_iterator++) {
-        vehicle *next_vehicle = *veh_iterator;
-        std::vector<int> cargo_parts = next_vehicle->all_parts_with_feature("CARGO", false);
-        for (std::vector<int>::iterator part_index = cargo_parts.begin();
-             part_index != cargo_parts.end(); part_index++) {
-            std::vector<item> *items_in_part = &(next_vehicle->parts[*part_index].items);
-            for (int n = items_in_part->size() - 1; n >= 0; n--) {
-                if (&((*items_in_part)[n]) == it) {
-                    int mapx = next_vehicle->global_x() + next_vehicle->parts[*part_index].precalc_dx[0];
-                    int mapy = next_vehicle->global_y() + next_vehicle->parts[*part_index].precalc_dy[0];
-                    return point(mapx, mapy);
-                }
-            }
-        }
-    }
-    //Does an NPC have it?
-    for (std::vector<npc *>::iterator npc = active_npc.begin();
-         npc != active_npc.end(); ++npc) {
-        if ((*npc)->has_item(it)) {
-            return point((*npc)->posx, (*npc)->posy);
-        }
-    }
-    //Is it on the ground? (Check this last - takes the most time)
-    point ret = m.find_item(it);
-    if (ret.x != -1 && ret.y != -1) {
-        return ret;
-    }
-    //Not found anywhere
-    return point(-999, -999);
-}
-
-void game::remove_item(const item *it)
-{
-    point ret;
-    if( u.has_item( it ) ) {
-        u.i_rem( it );
-        return;
-    }
-    ret = m.find_item(it);
-    if (ret.x != -1 && ret.y != -1) {
-        for (size_t i = 0; i < m.i_at(ret.x, ret.y).size(); i++) {
-            if (it == &m.i_at(ret.x, ret.y)[i]) {
-                m.i_rem(ret.x, ret.y, i);
-                return;
-            }
-        }
-    }
-    for( auto &npc : active_npc ) {
-        if( npc->has_item( it ) ) {
-            npc->i_rem( it );
-            return;
-        }
-    }
-}
-
 Creature *game::is_hostile_nearby()
 {
     int distance = (OPTIONS["SAFEMODEPROXIMITY"] <= 0) ? 60 : OPTIONS["SAFEMODEPROXIMITY"];
@@ -8186,7 +8119,7 @@ bool game::refill_vehicle_part(vehicle &veh, vehicle_part *part, bool test)
         if (part->amount == max_fuel) {
             add_msg(m_good, _("The battery is fully charged."));
         }
-    } else if (ftype == "gasoline") {
+    } else if (ftype == "gasoline" || ftype == "diesel") {
         add_msg(_("You refill %s's fuel tank."), veh.name.c_str());
         if (part->amount == max_fuel) {
             add_msg(m_good, _("The tank is full."));
@@ -8805,7 +8738,7 @@ bool pet_menu(monster *z)
 
             item ball("pheromone", 0);
             iuse pheromone;
-            pheromone.pheromone(&(g->u), &ball, true);
+            pheromone.pheromone(&(g->u), &ball, true, g->u.pos());
         }
 
     }
@@ -10710,13 +10643,14 @@ void game::grab()
 bool game::handle_liquid(item &liquid, bool from_ground, bool infinite, item *source,
                          item *cont)
 {
-    if (!liquid.made_of(LIQUID)) {
+    if( !liquid.made_of(LIQUID) ) {
         dbg(D_ERROR) << "game:handle_liquid: Tried to handle_liquid a non-liquid!";
         debugmsg("Tried to handle_liquid a non-liquid!");
         return false;
     }
 
-    if (liquid.type->id == "gasoline" && vehicle_near() && query_yn(_("Refill vehicle?"))) {
+    if( (liquid.type->id == "gasoline" || liquid.type->id == "diesel") &&
+         vehicle_near() && query_yn(_("Refill vehicle?")) ) {
         int vx = u.posx, vy = u.posy;
         refresh_all();
         if (!choose_adjacent(_("Refill vehicle where?"), vx, vy)) {
@@ -10727,7 +10661,7 @@ bool game::handle_liquid(item &liquid, bool from_ground, bool infinite, item *so
             add_msg(m_info, _("There isn't any vehicle there."));
             return false;
         }
-        const ammotype ftype = "gasoline";
+        const ammotype ftype = liquid.type->id;
         int fuel_cap = veh->fuel_capacity(ftype);
         int fuel_amnt = veh->fuel_left(ftype);
         if (fuel_cap <= 0) {
