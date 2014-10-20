@@ -18851,6 +18851,12 @@
 					"id": "booster_pad_pack",
 					"fg": 17,
 					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "adult_footy_pjs",
+					"fg": 18,
+					"bg": 0
 				}
 			]
 		},
