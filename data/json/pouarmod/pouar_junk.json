@@ -784,12 +784,74 @@
 		"type" : "snippet",
 		"category" : "flier",
 		"text": "This is an advertisement from some company. In the background of the pic is a bunch of computers. Even this far in the future and into the apocalypse people are still using Windows XP and Internet Explorer 6"
-	},{
-        "type" : "mutation",
-        "id" : "SONIC",
-        "name" : "Sonic Speed",
-        "points" : 4,
-        "description" : "Gotta go fast.",
-        "valid" : false
-    }
+	},
+	{
+		"type" : "mutation",
+		"id" : "SONIC",
+		"name" : "Sonic Speed",
+		"points" : 4,
+		"description" : "Gotta go fast.",
+		"valid" : false
+	},
+	{
+		"type" : "COMESTIBLE",
+		"id" : "headcheese",
+		"name" : "headcheese",
+		"weight" : 238,
+		"color" : "red",
+		"addiction_type" : "none",
+		"spoils_in" : 24,
+		"stim" : 0,
+		"container" : "null",
+		"to_hit" : 0,
+		"comestible_type" : "FOOD",
+		"use_action" : "POISON",
+		"symbol" : "%",
+		"quench" : 0,
+		"healthy" : -3,
+		"addiction_potential" : 0,
+		"nutrition" : 50,
+		"description" : "Estranged outcast. Condemned to trash and leftover. Slid off the plate into a vat. Churned with milk and animal fat. Nose, ears, lips, and eyelids, fuzzy strips of pigskin and cow-clits, made into the finest cheeses-throbbing and lined with diseases. A sight worse than human jerky. Poultry products turned to meat and pus compund. Jellified pig parts smothered in succulent lard. Rotten hors d'ourves for the gorging.",
+		"price" : 0,
+		"material" : "flesh",
+		"tool" : "null",
+		"volume" : 1,
+		"cutting" : 0,
+		"phase" : "solid",
+		"charges" : 1,
+		"bashing" : 0,
+		"flags" : ["EATEN_HOT"],
+		"fun" : -10
+    },
+    {
+        "type" : "recipe",
+		"result": "headcheese",
+		"category": "CC_FOOD",
+		"subcategory": "CSC_FOOD_MEAT",
+		"skill_used": "cooking",
+		"difficulty": 0,
+		"time": 1000,
+		"reversible": false,
+		"autolearn": true,
+		"qualities":[
+			{"id":"BOIL","level":1,"amount":1}
+		],
+		"tools": [
+			[
+				[ "hotplate", 3 ],
+				[ "char_smoker", 1 ],
+				[ "toolset", 3 ],
+				[ "coffeemaker", 3],
+				[ "atomic_coffeepot", -1 ],
+				[ "fire", -1 ]
+			]
+		],
+		"components": [
+			[
+			[ "meat", 1 ],
+			[ "fat", 1 ],
+			[ "milk", 1 ]
+			]
+		]
+	}
 ]

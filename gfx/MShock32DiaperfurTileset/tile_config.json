@@ -19035,6 +19035,12 @@
 					"id": "toddlerdress_short",
 					"fg": 24,
 					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "headcheese",
+					"fg": 25,
+					"bg": 0
 				}
 			]
 		}
