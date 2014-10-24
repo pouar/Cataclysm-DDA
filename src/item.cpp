@@ -1495,8 +1495,7 @@ int item::weight() const
     } else if (type->is_gun() && charges >= 1) {
         ret += curammo->weight * charges;
     } else if (type->is_tool() && charges >= 1 && ammo_type() != "NULL") {
-        if (typeId() == "adv_UPS_off" || typeId() == "adv_UPS_on" || has_flag("ATOMIC_AMMO") ||
-            typeId() == "rm13_armor" || typeId() == "rm13_armor_on") {
+        if( ammo_type() == "plutonium" ) {
             ret += item_controller->find_template(default_ammo(this->ammo_type()))->weight * charges / 500;
         } else {
             ret += item_controller->find_template(default_ammo(this->ammo_type()))->weight * charges;
@@ -2837,12 +2836,8 @@ int item::pick_reload_ammo(player &u, bool interactive)
             am.insert(am.end(), tmpammo.begin(), tmpammo.end());
         }
     } else { //non-gun.
-        // this is probably a tool.  Check if it uses atomic power instead of batteries
-        if (has_flag("ATOMIC_AMMO")) {
-            am = u.has_ammo("plutonium");
-        } else {
-            am = u.has_ammo(ammo_type());
-        }
+        // this is probably a tool.
+        am = u.has_ammo( ammo_type() );
     }
 
     if (am.empty()) {
@@ -3047,9 +3042,7 @@ bool item::reload(player &u, int pos)
             reload_target->charges++;
             ammo_to_use->charges--;
         }
-        else if (reload_target->typeId() == "adv_UPS_off" ||
-                 reload_target->typeId() == "adv_UPS_on" || reload_target->has_flag("ATOMIC_AMMO") ||
-                 reload_target->typeId() == "rm13_armor" || reload_target->typeId() == "rm13_armor_on") {
+        else if( reload_target->ammo_type() == "plutonium" ) {
             int charges_per_plut = 500;
             long max_plut = floor( static_cast<float>((max_load - reload_target->charges) /
                                                       charges_per_plut) );
@@ -3908,7 +3901,7 @@ bool item::process_tool( player *carrier, point pos )
             if( charges > charges_used ) {
                 charges -= charges_used;
                 charges_used = 0;
-            } else if( carrier->use_charges_if_avail( "UPS_on", charges_used ) ) {
+            } else if( carrier->use_charges_if_avail( "UPS", charges_used ) ) {
                 charges_used = 0;
             }
         } else if( charges > 0 ) {
@@ -3929,7 +3922,7 @@ bool item::process_tool( player *carrier, point pos )
         }
     } else {
         if( carrier != nullptr && has_flag( "USE_UPS" ) && charges < charges_used ) {
-            carrier->add_msg_if_player( m_info, _( "You need an active UPS to run %s!" ), tname().c_str() );
+            carrier->add_msg_if_player( m_info, _( "You need an UPS to run %s!" ), tname().c_str() );
         }
         // TODO: iuse functions should expect a nullptr as player, but many of them
         // don't and therefor will fail.
@@ -3954,7 +3947,7 @@ bool item::process_charger_gun( player *carrier, point pos )
         return false;
     }
     if( charges == 8 ) { // Maintaining charge takes less power.
-        if( carrier->use_charges_if_avail( "UPS_on", 4 ) ) {
+        if( carrier->use_charges_if_avail( "UPS", 4 ) ) {
             poison++;
         } else {
             poison--;
@@ -3972,7 +3965,7 @@ bool item::process_charger_gun( player *carrier, point pos )
             carrier->add_msg_player_or_npc( m_warning, _( "Your %s beeps alarmingly." ), _( "<npcname>'s %s beeps alarmingly." ), tname().c_str() );
         }
     } else { // We're chargin it up!
-        if( carrier->use_charges_if_avail( "UPS_on", 1 + charges ) ) {
+        if( carrier->use_charges_if_avail( "UPS", 1 + charges ) ) {
             poison++;
         } else {
             poison--;
