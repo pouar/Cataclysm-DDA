@@ -18990,26 +18990,8 @@
 				},
 				{
 					"rotates": false,
-					"id": "archtshirt",
+					"id": "linuxtshirt",
 					"fg": 17,
-					"bg": 0
-				},
-				{
-					"rotates": false,
-					"id": "ubuntutshirt",
-					"fg": 18,
-					"bg": 0
-				},
-				{
-					"rotates": false,
-					"id": "fedoratshirt",
-					"fg": 19,
-					"bg": 0
-				},
-				{
-					"rotates": false,
-					"id": "redhattshirt",
-					"fg": 20,
 					"bg": 0
 				},
 				{
