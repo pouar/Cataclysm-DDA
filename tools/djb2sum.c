@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 int djb2_hash(unsigned char *str)
 {
@@ -11,9 +12,12 @@ int djb2_hash(unsigned char *str)
 	return hash;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-		char djb2_char[1000];
-		fread( djb2_char, 1, 1000, stdin );
-		printf("%u",djb2_hash((unsigned char *)djb2_char));
+	char djb2_char[4096];
+	read(0,djb2_char, 4096 );
+	printf("%u",djb2_hash((unsigned char *)djb2_char));
+	if (!*++argv || strcmp(*argv, "-n"))
+		putchar('\n');
+	return 0;
 }
