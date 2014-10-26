@@ -125,10 +125,9 @@ void Item_factory::load_item_whitelist(JsonObject &json)
 
 Item_factory::~Item_factory()
 {
-    reset();
+    clear();
 }
 
-//Every item factory comes with a missing item
 Item_factory::Item_factory()
 {
     init();
@@ -348,6 +347,8 @@ void Item_factory::init()
     iuse_function_list["MULTICOOKER"] = &iuse::multicooker;
 
     create_inital_categories();
+
+    init_old();
 }
 
 void Item_factory::create_inital_categories()
@@ -1093,6 +1094,12 @@ bool Item_factory::is_mod_target(JsonObject &jo, std::string member, std::string
 
 void Item_factory::reset()
 {
+    clear();
+    init();
+}
+
+void Item_factory::clear()
+{
     // clear groups
     for (GroupMap::iterator ig = m_template_groups.begin(); ig != m_template_groups.end(); ++ig) {
         delete ig->second;
@@ -1101,6 +1108,8 @@ void Item_factory::reset()
 
     m_categories.clear();
     create_inital_categories();
+    // Also clear functions refering to lua
+    iuse_function_list.clear();
 
     for (std::map<Item_tag, itype *>::iterator it = m_templates.begin(); it != m_templates.end();
          ++it) {
@@ -1684,7 +1693,7 @@ Item_tag Item_factory::create_artifact_id() const
     do {
         id = string_format( "artifact_%d", i );
         i++;
-    } while( !has_template( id ) );
+    } while( has_template( id ) );
     return id;
 }
 

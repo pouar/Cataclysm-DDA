@@ -194,8 +194,6 @@ void game::load_core_data()
     // core data can be loaded only once and must be first
     // anyway.
     DynamicDataLoader::get_instance().unload_data();
-    // Special handling for itypes created in itypedef.cpp
-    item_controller->init_old();
 
     load_data_from_dir(FILENAMES["jsondir"]);
 }
@@ -951,7 +949,7 @@ void game::cleanup_at_end()
         if (!sLastWords.empty()) {
             u.add_memorial_log( _("Last words: %s"), sLastWords.c_str(), _("Last words: %s"), sLastWords.c_str() );
         }
-        save_player_data();
+        // Struck the save_player_data here to forestall Weirdness
         move_save_to_graveyard();
         write_memorial_file(sLastWords);
         u.memorial_log.clear();
@@ -8051,8 +8049,8 @@ bool game::refill_vehicle_part(vehicle &veh, vehicle_part *part, bool test)
     if (!part_info.has_flag("FUEL_TANK")) {
         return false;
     }
-    item *it = NULL;
-    item *p_itm = NULL;
+    item *it = nullptr; // the container or the fuel item,
+    item *p_itm = nullptr; // always the actual fuel item
     long min_charges = -1;
     bool in_container = false;
 
@@ -8081,7 +8079,8 @@ bool game::refill_vehicle_part(vehicle &veh, vehicle_part *part, bool test)
             min_charges = p_itm->charges;
         }
     }
-    if (p_itm->is_null() || it->is_null()) {
+    // Check for p_itm->type->id == itid is already done above
+    if( p_itm == nullptr || it->is_null()) {
         return false;
     } else if (test) {
         return true;
