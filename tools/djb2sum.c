@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 {
 	char djb2_char[4096];
 	read(0,djb2_char, 4096 );
-	printf("%u",djb2_hash((unsigned char *)djb2_char));
+	printf("%d",(signed int)djb2_hash((unsigned char *)djb2_char));
 	if (!*++argv || strcmp(*argv, "-n"))
 		putchar('\n');
 	return 0;
