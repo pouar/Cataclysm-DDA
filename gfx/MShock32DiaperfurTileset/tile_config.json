@@ -18753,109 +18753,109 @@
 				{
 					"rotates": false,
 					"id": "pink_ever_diaper_pack",
-					"fg": 14,
+					"fg": 15,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "thick_pink_ever_diaper_pack",
-					"fg": 14,
+					"fg": 15,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "thick_pink_diaper_pack",
-					"fg": 14,
+					"fg": 15,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "pink_diaper_pack",
-					"fg": 14,
+					"fg": 15,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "ever_diaper_pack",
-					"fg": 15,
+					"fg": 16,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "thick_ever_diaper_pack",
-					"fg": 15,
+					"fg": 16,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "thick_diaper_pack",
-					"fg": 15,
+					"fg": 16,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "diaper_pack",
-					"fg": 15,
+					"fg": 16,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "v_pullon_pack",
-					"fg": 15,
+					"fg": 16,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "v_us_pullon_pack",
-					"fg": 15,
+					"fg": 16,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "us_diaper_pack",
-					"fg": 15,
+					"fg": 16,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "thick_crinkle_diaper_pack",
-					"fg": 15,
+					"fg": 16,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "crinkle_diaper_pack",
-					"fg": 15,
+					"fg": 16,
 					"bg": 0
 				},
 				{
 					"rotates": false,
 					"id": "pullon_pack",
-					"fg": 16,
-					"bg": 0
-				},
-				{
-					"rotates": false,
-					"id": "us_pullon_pack",
-					"fg": 16,
-					"bg": 0
-				},
-				{
-					"rotates": false,
-					"id": "pullup_pack",
-					"fg": 16,
-					"bg": 0
-				},
-				{
-					"rotates": false,
-					"id": "booster_pad_pack",
 					"fg": 17,
 					"bg": 0
 				},
 				{
 					"rotates": false,
-					"id": "adult_footy_pjs",
+					"id": "us_pullon_pack",
+					"fg": 17,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "pullup_pack",
+					"fg": 17,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "booster_pad_pack",
 					"fg": 18,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "adult_footy_pjs",
+					"fg": 19,
 					"bg": 0
 				}
 			]
