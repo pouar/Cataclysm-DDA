@@ -82,7 +82,6 @@ public:
     int diaperlock          (player *, item *, bool, point);
     int extra_battery       (player *, item *, bool, point);
     int rechargeable_battery(player *, item *, bool, point);
-    int cut_up              (player *, item *, item *, bool, point);
     int scissors            (player *, item *, bool, point);
     int extinguisher        (player *, item *, bool, point);
     int hammer              (player *, item *, bool, point);
