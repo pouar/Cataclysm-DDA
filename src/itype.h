@@ -476,7 +476,7 @@ struct it_armor : public virtual itype {
     {
         std::string chosen_mat_id = "null";
         if (materials.size()) {
-            chosen_mat_id = materials[rng(0, materials.size())];
+            chosen_mat_id = materials[rng(0, materials.size() - 1)];
         }
         return material_type::find_material(chosen_mat_id)->bash_dmg_verb();
     }
@@ -484,7 +484,7 @@ struct it_armor : public virtual itype {
     {
         std::string chosen_mat_id = "null";
         if (materials.size()) {
-            chosen_mat_id = materials[rng(0, materials.size())];
+            chosen_mat_id = materials[rng(0, materials.size() - 1)];
         }
         return material_type::find_material(chosen_mat_id)->cut_dmg_verb();
     }
