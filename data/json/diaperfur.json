@@ -92,7 +92,7 @@
 		"bashing" : -20,
 		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT"],
 		"coverage" : 30,
-		"peecap": 24000,
+		"peecap": 16400,
 		"material_thickness" : 76
 	},
 	{
@@ -143,7 +143,7 @@
 		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT"],
 		"coverage" : 20,
 		"material_thickness" : 13,
-		"peecap": 4100
+		"peecap": 2800
 	},
 	{
 		"type" : "ARMOR",
@@ -167,7 +167,7 @@
 		"bashing" : -20,
 		"flags" : ["VARSIZE","SKINTIGHT","CRINKLE","DIAPER","FIT"],
 		"coverage" : 30,
-		"peecap": 24000,
+		"peecap": 16400,
 		"material_thickness" : 76
 	},
 	{
@@ -192,7 +192,7 @@
 		"bashing" : -5,
 		"flags" : ["VARSIZE","SKINTIGHT","CRINKLE","DIAPER","FIT"],
 		"coverage" : 20,
-		"peecap": 4100,
+		"peecap": 2800,
 		"material_thickness" : 13
 	},
 	{
@@ -1001,7 +1001,7 @@
 		"bashing" : -5,
 		"flags" : ["VARSIZE","SKINTIGHT","DIAPER"],
 		"coverage" : 20,
-		"peecap": 4100,
+		"peecap": 2800,
 		"material_thickness" : 13
 	},
 	{
@@ -1027,7 +1027,7 @@
 		"bashing" : -5,
 		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT"],
 		"coverage" : 20,
-		"peecap": 4100,
+		"peecap": 2800,
 		"material_thickness" : 13
 	},
 	{
@@ -1401,7 +1401,7 @@
 		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT","EVERDIAPER"],
 		"coverage" : 20,
 		"material_thickness" : 13,
-		"peecap": 4100
+		"peecap": 2800
 	},
 	{
 		"type" : "ARMOR",
@@ -1425,7 +1425,7 @@
 		"bashing" : -20,
 		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT","EVERDIAPER"],
 		"coverage" : 30,
-		"peecap": 24000,
+		"peecap": 16400,
 		"material_thickness" : 76
 	},
 	{
@@ -1499,7 +1499,7 @@
 		"bashing" : -20,
 		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT","SUPER_FANCY"],
 		"coverage" : 30,
-		"peecap": 24000,
+		"peecap": 16400,
 		"material_thickness" : 76
 	},
 	{
@@ -1524,7 +1524,7 @@
 		"bashing" : -20,
 		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT","EVERDIAPER","SUPER_FANCY"],
 		"coverage" : 30,
-		"peecap": 24000,
+		"peecap": 16400,
 		"material_thickness" : 76
 	},
 	{
@@ -1575,7 +1575,7 @@
 		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT","EVERDIAPER","SUPER_FANCY"],
 		"coverage" : 20,
 		"material_thickness" : 13,
-		"peecap": 4100
+		"peecap": 2800
 	},
 	{
 		"type" : "ARMOR",
@@ -1600,7 +1600,7 @@
 		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT","SUPER_FANCY"],
 		"coverage" : 20,
 		"material_thickness" : 13,
-		"peecap": 4100
+		"peecap": 2800
 	},
 	{
 		"type" : "ARMOR",
