@@ -12,6 +12,7 @@
 #include "helper.h" //to_string_int
 #include "messages.h"
 #include "disease.h"
+#include "artifact.h"
 
 #include <cmath> // floor
 #include <sstream>
@@ -265,6 +266,9 @@ bool item::invlet_is_okay()
 bool item::stacks_with( const item &rhs ) const
 {
     if( type != rhs.type ) {
+        return false;
+    }
+    if( !count_by_charges() && charges != rhs.charges ) {
         return false;
     }
     if( damage != rhs.damage ) {
@@ -956,6 +960,18 @@ std::string item::info(bool showtext, std::vector<iteminfo> *dump, bool debug)
             dump->push_back(iteminfo("DESCRIPTION", "--"));
             dump->push_back(iteminfo("DESCRIPTION",
                 _("This piece of clothing lies close to the skin and layers easily.")));
+        } else if (is_armor() && has_flag("BELTED")) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION",
+                _("This gear is strapped onto you.")));
+        } else if (is_armor() && has_flag("OUTER")) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION",
+                _("This gear is generally worn over clothing.")));
+        } else if (is_armor()) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION",
+                _("This gear is generally worn as clothing.")));
         }
         if (is_armor() && has_flag("OVERSIZE")) {
             dump->push_back(iteminfo("DESCRIPTION", "--"));
@@ -1001,6 +1017,11 @@ std::string item::info(bool showtext, std::vector<iteminfo> *dump, bool debug)
             dump->push_back(iteminfo("DESCRIPTION", "--"));
             dump->push_back(iteminfo("DESCRIPTION",
                 _("This piece of clothing allows you to see much further under water.")));
+        }
+        if (is_armor() && has_flag("FLOATATION")) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION",
+                _("This piece of clothing prevents you from going underwater (including voluntary diving).")));
         }
         if (is_armor() && type->id == "rad_badge") {
             size_t i;
@@ -4187,5 +4208,46 @@ bool item::reduce_charges( long quantity )
         return true;
     }
     charges -= quantity;
+    return false;
+}
+
+bool item::has_effect_when_wielded( art_effect_passive effect ) const
+{
+    const auto tool = dynamic_cast<const it_artifact_tool*>( type );
+    if( tool != nullptr ) {
+        auto &ew = tool->effects_wielded;
+        if( std::find( ew.begin(), ew.end(), effect ) != ew.end() ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool item::has_effect_when_worn( art_effect_passive effect ) const
+{
+    const auto armor = dynamic_cast<const it_artifact_armor*>( type );
+    if( armor != nullptr ) {
+        auto &ew = armor->effects_worn;
+        if( std::find( ew.begin(), ew.end(), effect ) != ew.end() ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool item::has_effect_when_carried( art_effect_passive effect ) const
+{
+    const auto tool = dynamic_cast<const it_artifact_tool*>( type );
+    if( tool != nullptr ) {
+        auto &ec = tool->effects_carried;
+        if( std::find( ec.begin(), ec.end(), effect ) != ec.end() ) {
+            return true;
+        }
+    }
+    for( auto &i : contents ) {
+        if( i.has_effect_when_carried( effect ) ) {
+            return true;
+        }
+    }
     return false;
 }
