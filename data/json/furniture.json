@@ -1590,7 +1590,7 @@
         "flags": ["TRANSPARENT", "SEALED", "CONTAINER", "NOITEM"],
         "deconstruct": {
             "items": [
-                { "item": "forge", "amount": 1 }
+                { "item": "char_forge", "amount": 1 }
             ]
         },
         "examine_action": "reload_furniture",
@@ -1599,7 +1599,7 @@
             "sound": "crunch!",
             "sound_fail": "whump.",
             "items": [
-                { "item": "forge", "amount": 1 }
+                { "item": "char_forge", "amount": 1 }
             ]
         }
     },{
