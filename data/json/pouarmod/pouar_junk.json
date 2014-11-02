@@ -10,26 +10,26 @@
 		"storage" : 0,
 		"symbol" : "[",
 		"description" : "A t-shirt with the Cannibal Corpse logo on it",
-        "snippet_category" : [
-            { "id" : "cannibalcorpse",
-              "text" : "A t-shirt with the Cannibal Corpse logo on it"
-            },
-            { "id" : "butcheredatbirth",
-              "text" : "A t-shirt featuring the album art from Butchered At Birth, the 2nd album by Cannibal Corpse. The gory artwork shows a zombie dissecting a pregnant woman with another zombie butchering her unborn child and dead fetuses hanging from the ceiling on hooks and nooses."
-            },
-            { "id" : "theharvestfloor",
-              "text" : "A t-shirt featuring the album art from The Harvest Floor, the 5th album by Cattle Decapitation. The artwork shows a picture of a slaughterhouse with the general public being herded inside to meet their demise."
-            },
-            { "id" : "thyartismurder",
-              "text" : "A t-shirt with the band Thy Art Is Murder's logo on it."
-            },
-            { "id" : "whitechapel",
-              "text" : "A t-shirt with the band Whitechapel's logo on it."
-            },
-            { "id" : "mitchluckermemoriam",
-              "text" : "Made in memoriam of Mitch Lucker. 1984-2012. You Only Live Once. Has the Suicide Silence logo on it and a picture of Mitch Lucker screaming into the mic"
-            }
-        ],
+		"snippet_category" : [
+			{ "id" : "cannibalcorpse",
+			"text" : "A t-shirt with the Cannibal Corpse logo on it"
+			},
+			{ "id" : "butcheredatbirth",
+			"text" : "A t-shirt featuring the album art from Butchered At Birth, the 2nd album by Cannibal Corpse. The gory artwork shows a zombie dissecting a pregnant woman with another zombie butchering her unborn child and dead fetuses hanging from the ceiling on hooks and nooses."
+			},
+			{ "id" : "theharvestfloor",
+			"text" : "A t-shirt featuring the album art from The Harvest Floor, the 5th album by Cattle Decapitation. The artwork shows a picture of a slaughterhouse with the general public being herded inside to meet their demise."
+			},
+			{ "id" : "thyartismurder",
+			"text" : "A t-shirt with the band Thy Art Is Murder's logo on it."
+			},
+			{ "id" : "whitechapel",
+			"text" : "A t-shirt with the band Whitechapel's logo on it."
+			},
+			{ "id" : "mitchluckermemoriam",
+			"text" : "Made in memoriam of Mitch Lucker. 1984-2012. You Only Live Once. Has the Suicide Silence logo on it and a picture of Mitch Lucker screaming into the mic"
+			}
+		],
 		"price" : 2000,
 		"material" : ["cotton", "null"],
 		"volume" : 2,
@@ -410,9 +410,9 @@
 		"bashing" : 0,
 		"flags" : ["EATEN_HOT"],
 		"fun" : -10
-    },
-    {
-        "type" : "recipe",
+	},
+	{
+		"type" : "recipe",
 		"result": "headcheese",
 		"category": "CC_FOOD",
 		"subcategory": "CSC_FOOD_MEAT",
@@ -448,5 +448,62 @@
 				[ "lard", 1 ]
 			]
 		]
+	},
+	{
+        "type" : "overmap_terrain",
+        "id" : "public_bath",
+        "name" : "the public bath",
+        "sym" : 79,
+        "color" : "blue",
+        "see_cost" : 2,
+        "mondensity" : 0,
+        "sidewalk" : true
+	},
+	{
+		"type" : "mapgen",
+		"om_terrain" : ["public_bath"],
+		"method": "json",
+		"weight": 250,
+		"object": {
+			"fill_ter": "t_grass",
+			"rows": [
+				"........................",
+				"........................",
+				"..++++++++++++++++++++..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..+wwwwwwwwwwwwwwwwww+..",
+				"..++++++++++++++++++++..",
+				"...........s............",
+				"........................"
+			],
+			"terrain": {
+				"w": "t_sewage",
+				"+": "t_concrete",
+				".": "t_grass",
+				"s": "t_grass"
+			},
+			"furniture": {
+				"s": "f_sign"
+			},
+			"place_specials": [
+				{ "type": "sign", "x": 11, "y": 22, "signage": "Into the public bath. Reservoir of human excretions. The sweat and urine of a thousand men. A goddamned bacteria trap. Microbes making love to amoebas. Spawning secondary human byproducts. Dead skin cells, ejaculate and flora. Disgusting cocktail for the gargling." }
+			]
+		}
 	}
 ]
