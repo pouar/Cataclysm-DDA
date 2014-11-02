@@ -19023,6 +19023,12 @@
 					"id": "headcheese",
 					"fg": 25,
 					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "jerky_human",
+					"fg": 18,
+					"bg": 0
 				}
 			]
 		}
