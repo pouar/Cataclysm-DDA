@@ -59,6 +59,7 @@ void remove_recharge_mod( item &it, player &p )
     p.i_add_or_drop( mod, 1 );
     it.item_tags.erase( "RECHARGE" );
     it.item_tags.erase( "NO_UNLOAD" );
+    it.item_tags.erase( "NO_RELOAD" );
 }
 
 void remove_atomic_mod( item &it, player &p )
@@ -3172,6 +3173,7 @@ int iuse::rechargeable_battery(player *p, item *it, bool, point)
     modded->charges = it->charges;
     modded->item_tags.insert("RECHARGE");
     modded->item_tags.insert("NO_UNLOAD");
+    modded->item_tags.insert("NO_RELOAD");
     return 1;
 }
 
@@ -8302,6 +8304,32 @@ int iuse::holster_ankle(player *p, item *it, bool b, point pos)
     return it->type->charges_to_use();
 }
 
+int iuse::survivor_belt(player *p, item *it, bool b, point pos)
+{
+    int choice = -1;
+
+    choice = menu( true,
+                   _( "Using survivor belt:" ),
+                   it->contents.empty() ? _( "Sheathe a knife" ) : _( "Unsheathe a knife" ),
+                   _( "Use hammer" ),
+                   _( "Use hacksaw" ),
+                   _( "Use wood saw" ),
+                   _( "Cancel" ),
+                   NULL );
+
+    switch ( choice ) {
+        case 1:
+            return sheath_knife( p, it, b, pos );
+        case 2:
+            return hammer( p, it, b, pos );
+        case 3:
+            return hacksaw( p, it, b, pos );
+        case 4:
+            return lumber( p, it, b, pos );
+    }
+    return 0;
+}
+
 int iuse::boots(player *p, item *it, bool, point)
 {
     int choice = -1;
@@ -10389,5 +10417,14 @@ int iuse::cable_attach(player *p, item *it, bool, point)
         }
     }
 
+    return 0;
+}
+
+int iuse::pocket_meteorolgist(player *p, item *, bool, point)
+{
+    const w_point weatherPoint = g->weatherGen.get_weather( p->pos(), calendar::turn );
+    add_msg("Temperature: %d, pressure: %d, humidity: %d",
+            (int)weatherPoint.temperature, (int)weatherPoint.pressure,
+            (int)weatherPoint.humidity);
     return 0;
 }
