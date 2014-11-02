@@ -19029,6 +19029,12 @@
 					"id": "jerky_human",
 					"fg": 18,
 					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "cookbook_human",
+					"fg": 19,
+					"bg": 0
 				}
 			]
 		}
