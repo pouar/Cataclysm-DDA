@@ -1619,9 +1619,6 @@ void game::process_activity()
             activity_on_finish();
         }
     } while( u.moves > 0 && u.activity.type != ACT_NULL );
-    // Cleanup
-    u.activity.values.clear();
-    u.activity.str_values.clear();
 }
 
 void on_turn_activity_pickaxe(player *p);
@@ -1780,7 +1777,7 @@ void game::activity_on_turn_fill_liquid()
     water.poison = u.activity.values[0];
     // Fill up 10 charges per time
     water.charges = 10;
-    
+
     if (handle_liquid(water, true, true, NULL, container) == false) {
         u.activity.moves_left = 0;
     }

@@ -2867,7 +2867,7 @@ int iuse::firestarter(player *p, item *it, bool t, point pos)
             p->activity.placement = pos;
             p->practice("survival", 10);
             // charges used tied with moves_modifier (range 1 to 12).
-            it->charges -= it->type->charges_to_use() * std::round(moves_modifier);
+            it->charges -= it->type->charges_to_use() * round(moves_modifier);
             return 0;
         }
     } else if (it->has_flag("REFILLABLE_LIGHTER")) {
@@ -8971,8 +8971,10 @@ bool einkpc_download_memory_card(player *p, item *eink, item *mc)
                 const int dif = (*list_iter)->difficulty;
 
                 if (science) {
-                    if (dif >= 3 && one_in(dif + 1)) {
-                        candidates.push_back(*list_iter);
+                    if ((*list_iter)->cat != "CC_NONCRAFT") {
+                        if (dif >= 3 && one_in(dif + 1)) {
+                            candidates.push_back(*list_iter);
+                        }
                     }
                 } else {
                     if ((*list_iter)->cat == "CC_FOOD") {
