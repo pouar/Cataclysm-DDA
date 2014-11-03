@@ -1,0 +1,131 @@
+[
+    {
+        "type" : "MONSTER",
+        "id" : "mon_anamatronic_fox",
+        "name": "Anamatronic Fox",
+        "species":"ROBOT",
+        "symbol":"F",
+        "color":"red",
+        "size":"LARGE",
+        "material":"steel",
+        "diff":12,
+        "aggression":100,
+        "morale":100,
+        "speed":150,
+        "melee_skill":6,
+        "melee_dice":4,
+        "melee_dice_sides":6,
+        "melee_cut":8,
+        "dodge":8,
+        "armor_bash":12,
+        "armor_cut":8,
+        "item_chance":0,
+        "luminance":0,
+        "hp":200,
+        "special_freq":[0],
+        "death_function":"BROKEN",
+        "special_attack":["NONE"],
+        "description":"A bipedal anamatronic fox, nearly twice your size.  Its teeth and claws look quite sharp.  Though it is a robot, it stinks like a zombie.",
+        "flags":["SEES", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE", "VIS50"]
+    }
+
+,{
+        "type" : "MONSTER",
+        "id" : "mon_anamatronic_bunny",
+        "name": "Anamatronic Bunny",
+        "species":"ROBOT",
+        "symbol":"B",
+        "color":"blue",
+        "size":"LARGE",
+        "material":"steel",
+        "diff":12,
+        "aggression":100,
+        "morale":100,
+        "speed":100,
+        "melee_skill":6,
+        "melee_dice":4,
+        "melee_dice_sides":6,
+        "melee_cut":6,
+        "dodge":8,
+        "armor_bash":12,
+        "armor_cut":8,
+        "item_chance":0,
+        "luminance":0,
+        "hp":200,
+        "special_freq":[0],
+        "death_function":"BROKEN",
+        "special_attack":["NONE"],
+        "description":"A bipedal anamatronic bunny, nearly twice your size.  Its eyes are lit, but they still look deep and souless.  Though it is a robot, it stinks like a death.",
+        "flags":["SEES", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE", "VIS50"]
+    }
+
+,{
+        "type" : "MONSTER",
+        "id" : "mon_anamatronic_chicken",
+        "name": "Anamatronic Chicken",
+        "species":"ROBOT",
+        "symbol":"C",
+        "color":"yellow",
+        "size":"LARGE",
+        "material":"steel",
+        "diff":12,
+        "aggression":100,
+        "morale":100,
+        "speed":100,
+        "melee_skill":6,
+        "melee_dice":4,
+        "melee_dice_sides":6,
+        "melee_cut":6,
+        "dodge":8,
+        "armor_bash":12,
+        "armor_cut":8,
+        "item_chance":0,
+        "luminance":0,
+        "hp":200,
+        "special_freq":[0],
+        "death_function":"BROKEN",
+        "special_attack":["NONE"],
+        "description":"A bipedal anamatronic chicken, nearly twice your size.  It wears a bib  that reads 'Let's Eat!' .  Though it is a robot, it stinks like a death.",
+        "flags":["SEES", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE", "VIS50"]
+    }
+
+
+,{
+        "type" : "MONSTER",
+        "id" : "mon_anamatronic_bear",
+        "name": "Anamatronic Bear",
+        "species":"ROBOT",
+        "symbol":"B",
+        "color":"brown",
+        "size":"LARGE",
+        "material":"steel",
+        "diff":12,
+        "aggression":100,
+        "morale":100,
+        "speed":125,
+        "melee_skill":6,
+        "melee_dice":4,
+        "melee_dice_sides":6,
+        "melee_cut":6,
+        "dodge":8,
+        "armor_bash":12,
+        "armor_cut":8,
+        "item_chance":0,
+        "luminance":0,
+        "hp":250,
+        "special_freq":[0],
+        "death_function":"BROKEN",
+        "special_attack":["NONE"],
+        "description":"A bipedal anamatronic bear, nearly twice your size.  It 's holding a mircophone.  Though it is a robot, it stinks like a death.",
+        "flags":["SEES", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE", "VIS50"]
+    }]
+
+
+
+
+
+
+
+
+
+

@@ -47,7 +47,8 @@
           "parks": {                        "//": "weighted list for park overmap terrains",
               "park": 4,
               "pool": 1,
-              "public_bath": 1
+              "public_bath": 1,
+              "bankruptpizzera": 5
           },
           "shops": {                        "//": "weighted list of oterrains for commercial zoning",
               "s_gas": 5,
