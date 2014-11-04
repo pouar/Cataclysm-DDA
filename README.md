@@ -11,3 +11,6 @@ The latest instructions on how to compile can be found on [the CDDA wiki](http:/
 to see what changes I made, checkout both the master and diaperfur branch, makes sure both branches are up to date with "git pull" then run "git diff master..diaperfur"
 
 Also, It seems I diverged enough from the original that the saves are no longer compatible with the original. Probably a good idea to have a seperate world.
+
+![screenshot](http://thepouar.dnsdojo.com/pouar/downloads/cataclysm-ss5.png "screenshot 1")
+![screenshot](http://thepouar.dnsdojo.com/pouar/downloads/cataclysm-ss4.png "screenshot 2")
