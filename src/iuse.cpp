@@ -7955,7 +7955,7 @@ int iuse::tanning_hide(player *p, item *it, bool, point)
         if (it->type->id == "tanning_hide") {
         it->make("tanned_hide");
         } else {
-        it->make("tanned_fur");
+        it->make("tanned_pelt");
         }
         return 0;
     } else {
