@@ -9200,13 +9200,13 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
                                                f_null,      f_null,  f_null,   f_null,      f_null,   f_null,   f_null,   f_null,
                                                f_desk,  f_chair, f_bed,   f_dresser));
             place_items("corpse", 65, 12, 11, 12, 11, false, 0);
-            place_items("kitchen", 70, 10, 15, 14, 11, false, 0);
+            place_items("corpse", 70, 10, 15, 14, 11, false, 0);
             place_items("moonshine_brew", 65, 10, 15, 14, 11, false, 0);
             place_items("livingroom", 65, 15, 11, 22, 13, false, 0);
             place_items("dresser", 80, 19, 18, 19, 18, false, 0);
             place_items("dresser", 80, 22, 18, 22, 18, false, 0);
             place_items("bedroom", 65, 15, 15, 22, 18, false, 0);
-            place_items("softdrugs", 70, 11, 16, 12, 17, false, 0);
+            place_items("corpse", 70, 11, 16, 12, 17, false, 0);
             place_items("bigtools", 50, 1, 11, 6, 18, true, 0);
             place_items("homeguns", 20, 1, 11, 6, 18, true, 0);
             place_items("bed", 60, 20, 21, 17, 18, true, 0);
@@ -9269,8 +9269,8 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
                         place_items("corpse", 20,  i,  j, i,  j, false, 0);
                     }
                     if (this->furn(i, j) == f_cupboard) {
-                        place_items("kitchen", 70,  i,  j, i,  j, false, 0);
-                        place_items("softdrugs", 40,  i,  j, i,  j, false, 0);
+                        place_items("corpse", 70,  i,  j, i,  j, false, 0);
+                        place_items("corpse", 40,  i,  j, i,  j, false, 0);
                         place_items("corpse", 40,  i,  j, i,  j, false, 0);
                     }
                     if (this->furn(i, j) == f_makeshift_bed || this->furn(i, j) == f_bed) {
