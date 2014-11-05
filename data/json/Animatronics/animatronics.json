@@ -1,8 +1,8 @@
 [
     {
         "type" : "MONSTER",
-        "id" : "mon_anamatronic_fox",
-        "name": "Anamatronic Fox",
+        "id" : "mon_animatronic_fox",
+        "name": "Animatronic Fox",
         "species":"ROBOT",
         "symbol":"F",
         "color":"red",
@@ -25,14 +25,14 @@
         "special_freq":[0],
         "death_function":"BROKEN",
         "special_attack":["NONE"],
-        "description":"A bipedal anamatronic fox, nearly twice your size.  Its teeth and claws look quite sharp.  Though it is a robot, it stinks like a zombie.",
+        "description":"A bipedal animatronic fox, nearly twice your size.  Its teeth and claws look quite sharp.  Though it is a robot, it stinks like a zombie.",
         "flags":["SEES", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE", "VIS50"]
     }
 
 ,{
         "type" : "MONSTER",
-        "id" : "mon_anamatronic_bunny",
-        "name": "Anamatronic Bunny",
+        "id" : "mon_animatronic_bunny",
+        "name": "Animatronic Bunny",
         "species":"ROBOT",
         "symbol":"B",
         "color":"blue",
@@ -55,14 +55,14 @@
         "special_freq":[0],
         "death_function":"BROKEN",
         "special_attack":["NONE"],
-        "description":"A bipedal anamatronic bunny, nearly twice your size.  Its eyes are lit, but they still look deep and souless.  Though it is a robot, it stinks like a death.",
+        "description":"A bipedal animatronic bunny, nearly twice your size.  Its eyes are lit, but they still look deep and souless.  Though it is a robot, it stinks like a death.",
         "flags":["SEES", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE", "VIS50"]
     }
 
 ,{
         "type" : "MONSTER",
-        "id" : "mon_anamatronic_chicken",
-        "name": "Anamatronic Chicken",
+        "id" : "mon_animatronic_chicken",
+        "name": "Animatronic Chicken",
         "species":"ROBOT",
         "symbol":"C",
         "color":"yellow",
@@ -85,15 +85,15 @@
         "special_freq":[0],
         "death_function":"BROKEN",
         "special_attack":["NONE"],
-        "description":"A bipedal anamatronic chicken, nearly twice your size.  It wears a bib  that reads 'Let's Eat!' .  Though it is a robot, it stinks like a death.",
+        "description":"A bipedal animatronic chicken, nearly twice your size.  It wears a bib  that reads 'Let's Eat!' .  Though it is a robot, it stinks like a death.",
         "flags":["SEES", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE", "VIS50"]
     }
 
 
 ,{
         "type" : "MONSTER",
-        "id" : "mon_anamatronic_bear",
-        "name": "Anamatronic Bear",
+        "id" : "mon_animatronic_bear",
+        "name": "Animatronic Bear",
         "species":"ROBOT",
         "symbol":"B",
         "color":"brown",
@@ -116,17 +116,17 @@
         "special_freq":[0],
         "death_function":"BROKEN",
         "special_attack":["NONE"],
-        "description":"A bipedal anamatronic bear, nearly twice your size.  It 's holding a mircophone.  Though it is a robot, it stinks like a death.",
+        "description":"A bipedal animatronic bear, nearly twice your size.  It 's holding a mircophone.  Though it is a robot, it stinks like a death.",
         "flags":["SEES", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE", "VIS50"]
     },
     {
         "type":"GENERIC",
-        "id": "broken_anamatronic_bear",
+        "id": "broken_animatronic_bear",
         "symbol": "%",
         "color": "brown",
-        "name": "broken Anamatronic Bear",
+        "name": "broken Animatronic Bear",
         "category": "other",
-        "description": "A broken bipedal anamatronic bear.  Much less threatening now that it's quiet and still.  Could be gutted for parts.",
+        "description": "A broken bipedal animatronic bear.  Much less threatening now that it's quiet and still.  Could be gutted for parts.",
         "price": 30000,
         "material": ["steel", "plastic"],
         "weight": 14003,
@@ -137,12 +137,12 @@
     },
     {
         "type":"GENERIC",
-        "id": "broken_anamatronic_chicken",
+        "id": "broken_animatronic_chicken",
         "symbol": "%",
         "color": "yellow",
-        "name": "broken Anamatronic Chicken",
+        "name": "broken Animatronic Chicken",
         "category": "other",
-        "description": "A broken bipedal anamatronic chicken.  Much less threatening now that it's quiet and still.  Could be gutted for parts.",
+        "description": "A broken bipedal animatronic chicken.  Much less threatening now that it's quiet and still.  Could be gutted for parts.",
         "price": 30000,
         "material": ["steel", "plastic"],
         "weight": 14003,
@@ -153,12 +153,12 @@
     },
     {
         "type":"GENERIC",
-        "id": "broken_anamatronic_bunny",
+        "id": "broken_animatronic_bunny",
         "symbol": "%",
         "color": "blue",
-        "name": "broken Anamatronic Bunny",
+        "name": "broken Animatronic Bunny",
         "category": "other",
-        "description": "A broken bipedal anamatronic bunny.  Much less threatening now that it's quiet and still.  Could be gutted for parts.",
+        "description": "A broken bipedal animatronic bunny.  Much less threatening now that it's quiet and still.  Could be gutted for parts.",
         "price": 30000,
         "material": ["steel", "plastic"],
         "weight": 14003,
@@ -169,12 +169,12 @@
     },
     {
         "type":"GENERIC",
-        "id": "broken_anamatronic_fox",
+        "id": "broken_animatronic_fox",
         "symbol": "%",
         "color": "red",
-        "name": "broken Anamatronic Fox",
+        "name": "broken Animatronic Fox",
         "category": "other",
-        "description": "A broken bipedal anamatronic fox.  Much less threatening now that it's quiet and still.  Could be gutted for parts.",
+        "description": "A broken bipedal animatronic fox.  Much less threatening now that it's quiet and still.  Could be gutted for parts.",
         "price": 30000,
         "material": ["steel", "plastic"],
         "weight": 14003,
