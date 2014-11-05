@@ -4712,6 +4712,25 @@ void mapgen_cabin(map *m, oter_id, mapgendata dat, int, float)
 }
 
 
+void mapgen_body_farm(map *m, oter_id terrain_type, mapgendata dat, int turn, float density)
+{
+    (void)m; (void)terrain_type; (void)dat; (void)turn; (void)density; // STUB
+/*
+
+*/
+}
+
+
+void mapgen_body_farm_field(map *m, oter_id terrain_type, mapgendata dat, int turn, float density)
+{
+    (void)m; (void)terrain_type; (void)dat; (void)turn; (void)density; // STUB
+/*
+
+*/
+}
+
+
+
 void mapgen_farm(map *m, oter_id terrain_type, mapgendata dat, int turn, float density)
 {
     (void)m; (void)terrain_type; (void)dat; (void)turn; (void)density; // STUB

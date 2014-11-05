@@ -8862,5 +8862,12 @@
       ["boxer_shorts", 30],
       ["briefs", 30]
     ]
+  },{
+    "type" : "item_group",
+    "id" : "corpse",
+    "note" : "corpses",
+    "items":[
+      ["corpse", 1]
+    ]
   }
 ]

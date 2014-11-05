@@ -181,6 +181,29 @@
         "flags" : [ "CLASSIC" ]
     },{
         "type" : "overmap_special",
+        "id" : "A Body Farm",
+        "overmaps" :
+        [
+            { "point":[0,0,0], "overmap": "body_farm_field"},
+            { "point":[1,0,0], "overmap": "body_farm", "connect": "road"},
+            { "point":[2,0,0], "overmap": "body_farm_field"},
+            { "point":[0,1,0], "overmap": "body_farm_field"},
+            { "point":[1,1,0], "overmap": "body_farm_field"},
+            { "point":[2,1,0], "overmap": "body_farm_field"},
+            { "point":[0,2,0], "overmap": "body_farm_field"},
+            { "point":[1,2,0], "overmap": "body_farm_field"},
+            { "point":[2,2,0], "overmap": "body_farm_field"}
+        ],
+        "locations" : [ "wilderness" ], "//":"what special locations does it spawn",
+        "city_distance" : [20, -1], "//":"how far from a city it should be",
+        "city_sizes" : [4, 12], "//":"what city sizes should it spawn in",
+        "occurrences" : [0, 20], "//":"how many per overmap",
+        "rotate" : false, "//":"allow rotation",
+        "unique" : false, "//":"only allow one per city",
+        "required" : false, "//":"is this special required for valid city sizes",
+        "flags" : [ "CLASSIC" ]
+    },{
+        "type" : "overmap_special",
         "id" : "Farm",
         "overmaps" :
         [

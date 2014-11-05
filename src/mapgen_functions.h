@@ -129,6 +129,8 @@ void mapgen_cabin_strange_b(map *m, oter_id terrain_type, mapgendata dat, int tu
 void mapgen_cabin(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 void mapgen_farm(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 void mapgen_farm_field(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
+void mapgen_body_farm(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
+void mapgen_body_farm_field(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 void mapgen_police(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 void mapgen_bank(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 void mapgen_pawn(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
