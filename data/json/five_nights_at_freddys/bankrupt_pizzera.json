@@ -143,8 +143,8 @@
         "name" : "GROUP_PIZZAPARLOR_ROBOT",
         "default" : "mon_null",
         "monsters" : [
-            { "monster" : "mon_anamatronic_fox", "freq" : 100, "cost_multiplier": 2}
-,{ "monster" : "mon_anamatronic_bunny", "freq" : 100, "cost_multiplier": 2},{ "monster" : "mon_anamatronic_chicken", "freq" : 100, "cost_multiplier": 2},{ "monster" : "mon_anamatronic_bear", "freq" : 100, "cost_multiplier": 2}        ]
+            { "monster" : "mon_animatronic_fox", "freq" : 100, "cost_multiplier": 2}
+,{ "monster" : "mon_animatronic_bunny", "freq" : 100, "cost_multiplier": 2},{ "monster" : "mon_animatronic_chicken", "freq" : 100, "cost_multiplier": 2},{ "monster" : "mon_animatronic_bear", "freq" : 100, "cost_multiplier": 2}        ]
     },
     {
         "type": "overmap_terrain",
