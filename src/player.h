@@ -268,7 +268,6 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         /** Generates and handles the UI for player interaction with installed bionics */
         void power_bionics();
         void power_mutations();
-        void power_mutationsc();
         /** Handles bionic activation effects of the entered bionic */
         void activate_bionic(int b);
         void activate_mutation(int b);

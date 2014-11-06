@@ -1208,6 +1208,7 @@ void trapfunc::snake(Creature *c, int x, int y)
         }
     }
 }
+
 void trapfunc::chunkblower(Creature *c, int x, int y)
 {
     if (c != NULL) {

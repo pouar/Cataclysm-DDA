@@ -2791,6 +2791,7 @@ void iexamine::pay_gas(player *p, map *m, const int examx, const int examy)
         }
     }
 }
+
 void iexamine::chunk_blower(player *p, map *m, const int examx, const int examy)
 {
                 p->add_msg_if_player(m_bad, _("A gigantic grinder fused of steel and turbine. Blades flay muscle from bone. Nobody dies alone. As hundreds wait for death. The sound of engines grinding. Every tissue, organ and lining explode in a mulch of compost. Churning corkscrews of pain. Razor-sharp gears and cogs. For the creation of human sausage logs. The splattering of meat on flesh. Enzymes, acids and fats trickle down into vats. Nightmarish humanoid mower. Behold, the chunk blower."));

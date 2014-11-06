@@ -1237,6 +1237,7 @@ bool game::do_turn()
             u.add_disease("lack_sleep", 50);
         }
     }
+
     if (calendar::turn % u.peerate == 0 && !u.has_disease("sleep")) {
         u.bladder++;
     }
@@ -2926,7 +2927,6 @@ input_context get_default_mode_input_context()
     ctxt.register_action("drop_adj");
     ctxt.register_action("bionics");
     ctxt.register_action("mutations");
-    ctxt.register_action("mutationsc");
     ctxt.register_action("sort_armor");
     ctxt.register_action("wait");
     ctxt.register_action("craft");
@@ -3701,10 +3701,6 @@ bool game::handle_action()
         break;
     case ACTION_MUTATIONS:
         u.power_mutations();
-        refresh_all();
-        break;
-    case ACTION_MUTATIONSC:
-        u.power_mutationsc();
         refresh_all();
         break;
 

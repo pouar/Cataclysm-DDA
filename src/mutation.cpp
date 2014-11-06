@@ -185,24 +185,6 @@ void show_mutations_titlebar(WINDOW *window, player *p, std::string menu_mode)
 
     wrefresh(window);
 }
-void player::power_mutationsc()
-{
-    int i = query_int("mutation");
-    std::string *tmp = &my_mutations[i];
-    std::string mut_id = *tmp;
-    const trait mut_data = traits[mut_id];
-    int b = tmp - &my_mutations[0];
-    if (!traits[*tmp].powered) {
-    activate_mutation(b);
-    add_msg(m_neutral, _("toggle %s on"), mut_data.name.c_str());
-    }
-    else
-    {
-    traits[*tmp].powered = false;
-    deactivate_mutation(b);
-    add_msg(m_neutral, _("toggle %s off"), mut_data.name.c_str());
-    }
-}
 void player::power_mutations()
 {
     std::vector <std::string> passive;

@@ -593,7 +593,6 @@ void player::apply_persistent_morale()
                     bonus += 1;
                 }
             }
-	    
         }
         if(covered.test(bp_torso)) {
             bonus += 6;
@@ -1697,6 +1696,7 @@ int player::run_cost(int base_cost, bool diag)
     if (diag) {
         movecost *= 1.4142;
     }
+
     return int(movecost);
 }
 int player::peeself(bool ctrl)
@@ -9592,6 +9592,7 @@ bool player::takeoff(int inventory_position, bool autodrop, std::vector<item> *i
             add_msg(m_info, _("You are not wearing that item."));
         }
     }
+
     recalc_sight_limits();
 
     return taken_off;

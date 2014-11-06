@@ -66,7 +66,6 @@ enum action_id {
     ACTION_DIR_DROP,
     ACTION_BIONICS,
     ACTION_MUTATIONS,
-    ACTION_MUTATIONSC,
     ACTION_SORT_ARMOR,
     // Long-term / special actions
     ACTION_WAIT,

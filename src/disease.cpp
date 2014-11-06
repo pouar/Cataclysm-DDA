@@ -2263,7 +2263,6 @@ std::string dis_name(disease& dis)
     case DI_LACKSLEEP: return _("Lacking Sleep");
     case DI_GRABBED: return _("Grabbed");
     case DI_DIURETIC: return _("Fast filling bladder");
-    
     default: break;
     }
     return "";
@@ -3089,6 +3088,7 @@ void manage_sleep(player& p, disease& dis)
             p.thirst -= 5;
         }
     }
+
     // Check mutation category strengths to see if we're mutated enough to get a dream
     std::string highcat = p.get_highest_category();
     int highest = p.mutation_category_level[highcat];
@@ -3125,6 +3125,7 @@ void manage_sleep(player& p, disease& dis)
             }
         }
     }
+
     int tirednessVal = rng(5, 200) + rng(0,abs(p.fatigue * 2 * 5));
     if (p.has_trait("HEAVYSLEEPER2") && !p.has_trait("HIBERNATE")) {
         // So you can too sleep through noon
