@@ -9210,8 +9210,8 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
             place_items("bigtools", 50, 1, 11, 6, 18, true, 0);
             place_items("homeguns", 20, 1, 11, 6, 18, true, 0);
             place_items("bed", 60, 20, 21, 17, 18, true, 0);
-            furn_set(15, 0, "f_sign");
-            set_signage(15, 0, "Forgive my humble abode. Rotting bodies clogging the commode. Please pardon the stench and the trunk of a man lying on the workbench. Out by the shed are buzzing hives made of human heads. The gestation of larvae tells us the time of death.");
+            furn_set(13, 9, "f_sign");
+            set_signage(13, 9, "Forgive my humble abode. Rotting bodies clogging the commode. Please pardon the stench and the trunk of a man lying on the workbench. Out by the shed are buzzing hives made of human heads. The gestation of larvae tells us the time of death.");
             
             if (one_in(2)) {
                 add_spawn("mon_zombie", rng(1, 6), 4, 14);
@@ -9258,8 +9258,8 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
             place_items("bigtools", 50, 1, 11, 6, 18, true, 0);
             place_items("homeguns", 20, 1, 11, 6, 18, true, 0);
             place_items("bed", 60, 20, 21, 17, 18, true, 0);
-            furn_set(15, 0, "f_sign");
-            set_signage(15, 0, "Forgive my humble abode. Rotting bodies clogging the commode. Please pardon the stench and the trunk of a man lying on the workbench. Out by the shed are buzzing hives made of human heads. The gestation of larvae tells us the time of death.");
+            furn_set(13, 9, "f_sign");
+            set_signage(13, 9, "Forgive my humble abode. Rotting bodies clogging the commode. Please pardon the stench and the trunk of a man lying on the workbench. Out by the shed are buzzing hives made of human heads. The gestation of larvae tells us the time of death.");
             for (int i = 0; i <= 23; i++) {
                 for (int j = 0; j <= 23; j++) {
                     if (this->furn(i, j) == f_dresser) {
