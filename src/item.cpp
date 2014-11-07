@@ -1044,6 +1044,11 @@ std::string item::info(bool showtext, std::vector<iteminfo> *dump, bool debug)
             dump->push_back(iteminfo("DESCRIPTION",
                 _("This piece of clothing is designed to protect you from harm and withstand a lot of abuse.")));
         }
+        if (is_armor() && has_flag("DEAF")) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION",
+                _("This gear prevents you from hearing any sounds.")));
+        }
         if (is_armor() && has_flag("SWIM_GOGGLES")) {
             dump->push_back(iteminfo("DESCRIPTION", "--"));
             dump->push_back(iteminfo("DESCRIPTION",
@@ -1054,6 +1059,41 @@ std::string item::info(bool showtext, std::vector<iteminfo> *dump, bool debug)
             dump->push_back(iteminfo("DESCRIPTION",
                 _("This piece of clothing prevents you from going underwater (including voluntary diving).")));
         }
+        if (is_armor() && has_flag("RAD_PROOF")) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION",
+                _("This piece of clothing completely protects you from radiation.")));
+        } else if (is_armor() && has_flag("RAD_RESIST")) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION",
+                _("This piece of clothing partially protects you from radiation.")));
+        } else if (is_armor() && type->is_power_armor()) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION",
+                _("This gear is a part of power armor.")));
+            if (covers.test(bp_head)) {
+                dump->push_back(iteminfo("DESCRIPTION",
+                    _("When worn with a power armor suit, it will fully protect you from radiation.")));
+            } else {
+                dump->push_back(iteminfo("DESCRIPTION",
+                    _("When worn with a power armor helmet, it will fully protect you from radiation.")));
+            }
+        }
+        if (is_armor() && has_flag("ELECTRIC_IMMUNE")) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION",
+                _("This gear completely protects you from electric discharges.")));
+        }
+        if (is_armor() && has_flag("THERMOMETER")) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION",
+                _("This gear is equipped with an accurate thermometer.")));
+        }
+        if (is_armor() && has_flag("ALARMCLOCK")) {
+            dump->push_back(iteminfo("DESCRIPTION", "--"));
+            dump->push_back(iteminfo("DESCRIPTION",
+                _("This gear has an alarm clock feature.")));
+        }
         if (is_armor() && has_flag("FANCY")) {
             dump->push_back(iteminfo("DESCRIPTION", "--"));
             dump->push_back(iteminfo("DESCRIPTION",
@@ -1062,7 +1102,7 @@ std::string item::info(bool showtext, std::vector<iteminfo> *dump, bool debug)
             dump->push_back(iteminfo("DESCRIPTION", "--"));
             dump->push_back(iteminfo("DESCRIPTION",
                 _("This piece of clothing is very fancy.")));
-        } 
+        }
         if (is_armor() && type->id == "rad_badge") {
             size_t i;
             for( i = 1; i < sizeof(rad_dosage_thresholds) / sizeof(rad_dosage_thresholds[0]); i++ ) {
@@ -1331,7 +1371,7 @@ std::string item::tname( unsigned int quantity, bool with_prefix ) const
             } else {
                 damtext = rmp_format("%s ", type->dmg_adj(damage).c_str());
             }
-            }
+        }
     }
 
     std::string vehtext = "";

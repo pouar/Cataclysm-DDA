@@ -270,10 +270,8 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         void power_mutations();
         /** Handles bionic activation effects of the entered bionic */
         void activate_bionic(int b);
-        void activate_mutation(int b);
         /** Handles bionic deactivation effects of the entered bionic */
         void deactivate_bionic(int b);
-        void deactivate_mutation(int b);
         /** Randomly removes a bionic from my_bionics[] */
         bool remove_random_bionic();
         /** Returns the size of my_bionics[] */
@@ -1170,6 +1168,9 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         bool valid_aoe_technique( Creature &t, ma_technique &technique,
                                   std::vector<int> &mon_targets, std::vector<int> &npc_targets );
 
+        // Trigger and disable mutations that can be so toggled.
+        void activate_mutation( std::string mutation );
+        void deactivate_mutation( std::string mutation );
         bool has_fire(const int quantity) const;
         void use_fire(const int quantity);
         /**
