@@ -420,10 +420,12 @@ void game::init_ui()
         messX = MINIMAP_WIDTH;
         messY = 0;
         messW = sidebarWidth - messX;
-        messH = 20;
+        messH = TERMY - 5; // 1 for w_location + 4 for w_stat, w_messages starts at 0
         hpX = 0;
         hpY = MINIMAP_HEIGHT;
-        hpH = 14;
+        // under the minimap, but down to the same line as w_messages (even when that is to much),
+        // so it erases the space between w_terrain and w_messages
+        hpH = messH - MINIMAP_HEIGHT;
         hpW = 7;
         locX = MINIMAP_WIDTH;
         locY = messY + messH;
@@ -5451,16 +5453,21 @@ void game::draw_sidebar()
         return;
     }
 
+    // w_status2 is not used with the wide sidebar (wide == !narrow)
+    // Don't draw anything on it (no werase, wrefresh) in this case to avoid flickering
+    // (it overlays other windows)
+    const bool sideStyle = use_narrow_sidebar();
+
     // Draw Status
     draw_HP();
     werase(w_status);
-    werase(w_status2);
+    if( sideStyle ) {
+        werase(w_status2);
+    }
     if (!liveview.compact_view) {
         liveview.hide(true, false);
     }
     u.disp_status(w_status, w_status2);
-
-    bool sideStyle = use_narrow_sidebar();
 
     WINDOW *time_window = sideStyle ? w_status2 : w_status;
     wmove(time_window, sideStyle ? 0 : 1, sideStyle ? 15 : 41);
@@ -5541,7 +5548,9 @@ void game::draw_sidebar()
         }
     }
     wrefresh(w_status);
-    wrefresh(w_status2);
+    if( sideStyle ) {
+        wrefresh(w_status2);
+    }
 
     werase(w_messages);
     int maxlength = getmaxx(w_messages);
