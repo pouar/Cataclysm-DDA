@@ -12213,6 +12213,10 @@ void game::unload(int pos)
 
 void game::unload(item &it)
 {
+    if( it.is_null() ) {
+        add_msg(m_info, _("You're not wielding anything."));
+        return;
+    }
     if (!it.is_gun() && it.contents.empty() && (!it.is_tool() || it.ammo_type() == "NULL")) {
         add_msg(m_info, _("You can't unload a %s!"), it.tname().c_str());
         return;
@@ -13589,6 +13593,9 @@ void game::fling_creature(Creature *c, const int &dir, float flvel, bool control
                 if( is_u && ( x < SEEX * int(MAPSIZE / 2) || y < SEEY * int(MAPSIZE / 2) ||
                     x >= SEEX * (1 + int(MAPSIZE / 2)) || y >= SEEY * (1 + int(MAPSIZE / 2)) ) ) {
                     update_map( x, y );
+                }
+                if (p->in_vehicle) {
+                    m.unboard_vehicle(p->posx, p->posy);
                 }
                 p->posx = x;
                 p->posy = y;
