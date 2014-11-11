@@ -700,5 +700,15 @@
 		"see_cost" : 5,
 		"extras" : "field",
 		"mondensity" : 2
+	},
+	{
+		"color": "light_gray",
+		"id": "monolith_of_inhumanity",
+		"mondensity": 0,
+		"name": "Monolith Of Inhumanity",
+		"see_cost": 5,
+		"sidewalk": false,
+		"sym": 23,
+		"type": "overmap_terrain"
 	}
 ]

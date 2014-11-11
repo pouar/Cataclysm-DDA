@@ -51,6 +51,7 @@ void mapgen_null(map *m, oter_id terrain_type, mapgendata dat, int turn, float d
 void mapgen_crater(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 void mapgen_field(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 void mapgen_dirtlot(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
+void mapgen_monolith_of_inhumanity(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 void mapgen_forest_general(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 void mapgen_hive(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 void mapgen_spider_pit(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
