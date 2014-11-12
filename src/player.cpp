@@ -4199,10 +4199,17 @@ void player::toggle_str_set( std::unordered_set< std::string > &set, const std::
     }
 }
 
+void mutation_effect(player &p, std::string mut);
+void mutation_loss_effect(player &p, std::string mut);
 void player::toggle_trait(const std::string &flag)
 {
     toggle_str_set(my_traits, flag); //Toggles a base trait on the player
     toggle_str_set(my_mutations, flag); //Toggles corresponding trait in mutations list as well.
+    if( has_trait( flag ) ) {
+        mutation_effect( *this, flag );
+    } else {
+        mutation_loss_effect( *this, flag );
+    }
     recalc_sight_limits();
 }
 
@@ -12182,22 +12189,15 @@ bool player::sees(int x, int y, int &t) const
     static const std::string str_bio_night("bio_night");
     const int wanted_range = rl_dist(posx, posy, x, y);
     bool can_see = false;
-
-    // Uses the seen cache in map to quickly resolve the most common case.
-    if( is_player() ) {
-        if( g->m.pl_sees(posx, posy, x, y, wanted_range) ) {
-            can_see = true;
-        }
-    } else {
-        const int s_range = sight_range(g->light_level());
-        if( wanted_range <= s_range ||
-            (wanted_range <= sight_range(DAYLIGHT_LEVEL) &&
-             g->m.light_at(x, y) >= LL_LOW)) {
-            if (g->m.light_at(x, y) >= LL_LOW) {
-                can_see = g->m.sees(posx, posy, x, y, wanted_range, t);
-            } else {
-                can_see = g->m.sees(posx, posy, x, y, s_range, t);
-            }
+    const int s_range = sight_range(g->light_level());
+    if( wanted_range <= s_range || (wanted_range <= sight_range(DAYLIGHT_LEVEL) &&
+         g->m.light_at(x, y) >= LL_LOW) ) {
+        if( is_player() ) {
+            can_see = g->m.pl_sees(posx, posy, x, y, wanted_range);
+        } else  if( g->m.light_at(x, y) >= LL_LOW ) {
+            can_see = g->m.sees(posx, posy, x, y, wanted_range, t);
+        } else {
+            can_see = g->m.sees(posx, posy, x, y, s_range, t);
         }
     }
     // Only check if we need to override if we already came to the opposite conclusion.
