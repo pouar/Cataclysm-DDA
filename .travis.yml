@@ -1,13 +1,24 @@
 language: cpp
 compiler:
   - clang
+install:
 
+  - curl -O http://www.libsdl.org/release/SDL2-2.0.0.tar.gz
+  - tar -xzvf SDL2-2.0.0.tar.gz
+  - (cd SDL2-2.0.0 && ./configure && make && sudo make install)
+  - curl -O http://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.0.tar.gz
+  - tar -xzvf SDL2_image-2.0.0.tar.gz
+  - (cd SDL2_image-2.0.0 && ./configure && make && sudo make install)
+  - curl -O http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.0.tar.gz
+  - tar -xzvf SDL2_ttf-2.0.0.tar.gz
+  - (cd SDL2_ttf-2.0.0 && ./configure && make && sudo make install)
 script: make
 branches:
   only:
     - diaperfur
 env:
   - CLANG=1 TILES=1
+  - CLANG=1
 notifications:
   email: 
     - thepouar@gmail.com
