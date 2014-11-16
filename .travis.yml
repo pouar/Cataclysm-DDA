@@ -9,9 +9,9 @@ install:
   - curl -O http://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.0.tar.gz
   - tar -xzvf SDL2_image-2.0.0.tar.gz
   - (cd SDL2_image-2.0.0 && ./configure && make && sudo make install)
-  - curl -O http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.0.tar.gz
-  - tar -xzvf SDL2_ttf-2.0.0.tar.gz
-  - (cd SDL2_ttf-2.0.0 && ./configure && make && sudo make install)
+  - curl -O http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-2.0.12.tar.gz
+  - tar -xzvf SDL2_ttf-2.0.12.tar.gz
+  - (cd SDL2_ttf-2.0.12 && ./configure && make && sudo make install)
 script: make
 branches:
   only:
