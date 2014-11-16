@@ -19400,6 +19400,54 @@
 					"id": "cookbook_human",
 					"fg": 19,
 					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "mon_animatronic_bear",
+					"fg": 20,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "mon_animatronic_fox",
+					"fg": 26,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "mon_animatronic_bunny",
+					"fg": 27,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "mon_animatronic_chicken",
+					"fg": 28,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "broken_animatronic_bear",
+					"fg": 29,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "broken_animatronic_fox",
+					"fg": 30,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "broken_animatronic_bunny",
+					"fg": 31,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "broken_animatronic_chicken",
+					"fg": 32,
+					"bg": 0
 				}
 			]
 		}
