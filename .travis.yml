@@ -1,18 +1,11 @@
 language: cpp
 compiler:
-  - clang
-install:
+  - gcc
 
-  - echo yes|sudo add-apt-repository ppa:zoogie/sdl2-snapshots
-  - sudo apt-get update -qq
-  - sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
 script: make
-branches:
-  only:
-    - diaperfur
-env:
-  - CLANG=1 TILES=1
-  - CLANG=1
+
 notifications:
-  email: 
-    - thepouar@gmail.com
+  irc: "irc.newnet.net#Cataclysm-DDA"
+  irc: "irc.freenode.org#Cataclysm-DDA"
+  use_notice: true
+  skip_join: true
