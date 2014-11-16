@@ -1,11 +1,14 @@
 language: cpp
 compiler:
-  - gcc
+  - clang
 
 script: make
-
+branches:
+  only:
+    - diaperfur
+env:
+  - CLANG=1
+  - TILES=1
 notifications:
-  irc: "irc.newnet.net#Cataclysm-DDA"
-  irc: "irc.freenode.org#Cataclysm-DDA"
-  use_notice: true
-  skip_join: true
+  email: 
+    - thepouar@gmail.com
