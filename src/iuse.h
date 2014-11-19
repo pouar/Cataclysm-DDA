@@ -166,6 +166,8 @@ public:
     int dog_whistle         (player *, item *, bool, point);
     int diaperfur_whistle   (player *, item *, bool, point);
     int vacutainer          (player *, item *, bool, point);
+    static bool valid_to_cut_up(item *it);
+    static int cut_up(player *p, item *it, item *cut, bool);
     int knife               (player *, item *, bool, point);
     static int cut_log_into_planks(player *p, item *it);
     int lumber              (player *, item *, bool, point);

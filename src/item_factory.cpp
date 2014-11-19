@@ -1124,6 +1124,8 @@ void Item_factory::clear()
         delete it->second;
     }
     m_templates.clear();
+    item_blacklist.clear();
+    item_whitelist.clear();
 }
 
 Item_group *make_group_or_throw(Item_spawn_data *&isd, Item_group::Type t)
