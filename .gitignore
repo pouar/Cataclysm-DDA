@@ -82,3 +82,6 @@ nbproject/
 *.project
 
 tools/djb2sum
+# vimdiff backup
+*.orig
+

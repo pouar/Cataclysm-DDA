@@ -2189,5 +2189,12 @@
 		"cutting": 6,
 		"to_hit": -2
 
-	}
+	},
+    {
+        "type": "effect_type",
+        "id": "diuretic",
+        "name":["Fast filling bladder"],
+        "desc": ["Urine Production x 2"],
+        "apply_message": "Your bladder is filling way faster than normal."
+    }
 ] 
