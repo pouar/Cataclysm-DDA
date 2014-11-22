@@ -145,6 +145,10 @@
         "default" : "mon_null",
         "monsters" : [
             { "monster" : "mon_animatronic_fox", "freq" : 100, "cost_multiplier": 2}
+	,{ "monster" : "mon_diaperfur_animatronic_bunny", "freq" : 100, "cost_multiplier": 2}
+	,{ "monster" : "mon_diaperfur_animatronic_fox", "freq" : 100, "cost_multiplier": 2}
+	,{ "monster" : "mon_diaperfur_animatronic_bear", "freq" : 100, "cost_multiplier": 2}
+	,{ "monster" : "mon_diaperfur_animatronic_chicken", "freq" : 100, "cost_multiplier": 2}
 	,{ "monster" : "mon_animatronic_bunny", "freq" : 100, "cost_multiplier": 2}
 	,{ "monster" : "mon_animatronic_bat", "freq" : 100, "cost_multiplier": 2}
 	,{ "monster" : "mon_animatronic_beaver", "freq" : 100, "cost_multiplier": 2}
