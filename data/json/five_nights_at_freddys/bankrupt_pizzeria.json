@@ -150,19 +150,7 @@
 	,{ "monster" : "mon_diaperfur_animatronic_bear", "freq" : 100, "cost_multiplier": 2}
 	,{ "monster" : "mon_diaperfur_animatronic_chicken", "freq" : 100, "cost_multiplier": 2}
 	,{ "monster" : "mon_animatronic_bunny", "freq" : 100, "cost_multiplier": 2}
-	,{ "monster" : "mon_animatronic_bat", "freq" : 100, "cost_multiplier": 2}
-	,{ "monster" : "mon_animatronic_beaver", "freq" : 100, "cost_multiplier": 2}
-	,{ "monster" : "mon_animatronic_cat", "freq" : 100, "cost_multiplier": 2}
-	,{ "monster" : "mon_animatronic_chipmunk", "freq" : 100, "cost_multiplier": 2}
 	,{ "monster" : "mon_animatronic_chicken", "freq" : 100, "cost_multiplier": 2}
-	,{ "monster" : "mon_animatronic_cow", "freq" : 100, "cost_multiplier": 2}
-	,{ "monster" : "mon_animatronic_coyote", "freq" : 100, "cost_multiplier": 2}
-	,{ "monster" : "mon_animatronic_deer", "freq" : 100, "cost_multiplier": 2}
-	,{ "monster" : "mon_animatronic_horse", "freq" : 100, "cost_multiplier": 2}
-	,{ "monster" : "mon_animatronic_pig", "freq" : 100, "cost_multiplier": 2}
-	,{ "monster" : "mon_animatronic_sheep", "freq" : 100, "cost_multiplier": 2}
-	,{ "monster" : "mon_animatronic_squirrel", "freq" : 100, "cost_multiplier": 2}
-	,{ "monster" : "mon_animatronic_wolf", "freq" : 100, "cost_multiplier": 2}
 	,{ "monster" : "mon_animatronic_bear", "freq" : 100, "cost_multiplier": 2}        ]
     },
     {
