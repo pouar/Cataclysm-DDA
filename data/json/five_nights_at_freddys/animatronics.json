@@ -2,7 +2,7 @@
     {
         "type" : "MONSTER",
         "id" : "mon_animatronic_fox",
-        "name": "animatronic fox",
+        "name": "Foxy",
         "species":"ROBOT",
         "symbol":"F",
         "color":"red",
@@ -36,7 +36,7 @@
     },{
         "type" : "MONSTER",
         "id" : "mon_animatronic_bunny",
-        "name": "animatronic bunny",
+        "name": "Bonnie",
         "species":"ROBOT",
         "symbol":"B",
         "color":"blue",
@@ -70,7 +70,7 @@
     },{
         "type" : "MONSTER",
         "id" : "mon_animatronic_chicken",
-        "name": "animatronic chicken",
+        "name": "Chica",
         "species":"ROBOT",
         "symbol":"C",
         "color":"yellow",
@@ -104,7 +104,7 @@
     },{
         "type" : "MONSTER",
         "id" : "mon_animatronic_bear",
-        "name": "animatronic bear",
+        "name": "Freddy Fazbear",
         "species":"ROBOT",
         "symbol":"B",
         "color":"brown",
