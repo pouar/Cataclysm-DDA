@@ -171,6 +171,7 @@ player::player() : Character(), name("")
  start_location = "shelter";
  moves = 100;
  movecounter = 0;
+ cached_turn = -1;
  oxygen = 0;
  next_climate_control_check=0;
  last_climate_control_ret=false;
@@ -1634,6 +1635,7 @@ int player::run_cost(int base_cost, bool diag)
     bool flatground = movecost < 105;
     const ter_id ter_at_pos = g->m.ter(posx, posy);
     // If your floor is hard, flat, and otherwise skateable, list it here
+    // The "FLAT" tag includes soft surfaces, so not a good fit.
     bool offroading = ( flatground && (!((ter_at_pos == t_rock_floor) ||
       (ter_at_pos == t_pit_covered) || (ter_at_pos == t_metal_floor) ||
       (ter_at_pos == t_pit_spiked_covered) || (ter_at_pos == t_pavement) ||
@@ -1644,7 +1646,8 @@ int player::run_cost(int base_cost, bool diag)
       (ter_at_pos == t_door_frame) || (ter_at_pos == t_mdoor_frame) ||
       (ter_at_pos == t_fencegate_o) || (ter_at_pos == t_chaingate_o) ||
       (ter_at_pos == t_door_metal_o) || (ter_at_pos == t_door_bar_o) ||
-      (ter_at_pos == t_pit_glass_covered) )) );
+      (ter_at_pos == t_pit_glass_covered) || (ter_at_pos == t_sidewalk_bg_dp) ||
+      (ter_at_pos == t_pavement_bg_dp) || (ter_at_pos == t_pavement_y_bg_dp))) );
 
     if (has_trait("PARKOUR") && movecost > 100 ) {
         movecost *= .5f;
@@ -11386,7 +11389,7 @@ hint_rating player::rate_action_disassemble(item *it) {
                    assign the activity
                    check tools are available
                    loop over the tools and see what's required...again */
-                inventory crafting_inv = crafting_inventory();
+                const inventory &crafting_inv = crafting_inventory();
                 for (const auto &j : cur_recipe->requirements.tools) {
                     bool have_tool = false;
                     if (j.empty()) { // no tools required, may change this
