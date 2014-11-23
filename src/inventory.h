@@ -2,7 +2,7 @@
 #define INVENTORY_H
 
 #include "item.h"
-#include "artifact.h"
+#include "enums.h"
 
 #include <list>
 #include <string>
@@ -128,7 +128,6 @@ class inventory
         int leak_level(std::string flag) const; // level of leaked bad stuff from items
 
         int butcher_factor() const;
-        bool has_artifact_with(art_effect_passive effect) const;
 
         // NPC/AI functions
         int worst_item_value(npc *p) const;
