@@ -19383,6 +19383,12 @@
 					"id": "broken_diaperfur_animatronic_chicken",
 					"fg": 35,
 					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "mask_guy_fawkes",
+					"fg": 36,
+					"bg": 0
 				}
 			]
 		},

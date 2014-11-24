@@ -17,3 +17,6 @@ TILESET: MShock32DiaperfurTileset/MShock.png
 
 #Pacifier was taken from here
 #http://piffle-stix.deviantart.com/art/AB-Icon-Sets-Pacifiers-186753355
+
+#Guy Fawkes Mask was taken from here
+#http://bubbachrissy.deviantart.com/art/Bubbachrissy-Sprite-Sheet-104316133
