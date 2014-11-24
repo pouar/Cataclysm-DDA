@@ -19412,6 +19412,11 @@
 					"fg": 600,
 					"bg": 500,
 					"rotates": false
+				},
+				{
+					"id": "diaperfur_whistle",
+					"fg": 2031,
+					"rotates": false
 				}
 			]
 		},
