@@ -43,6 +43,7 @@ class mattack
         void vortex             (monster *z, int index);
         void gene_sting         (monster *z, int index);
         void para_sting         (monster *z, int index);
+        void sygg_sting         (monster *z, int index);
         void triffid_growth     (monster *z, int index);
         void stare              (monster *z, int index);
         void fear_paralyze      (monster *z, int index);

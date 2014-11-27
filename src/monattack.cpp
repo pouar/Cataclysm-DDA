@@ -1837,6 +1837,19 @@ void mattack::para_sting(monster *z, int index)
     g->u.add_effect("paralyzepoison", 50);
 }
 
+void mattack::sygg_sting(monster *z, int index)
+{
+    if (within_visual_range(z, 4) < 0) return;
+
+    if (g->u.uncanny_dodge()) {
+        return;
+    }
+    z->moves -= 150;
+    z->reset_special(index); // Reset timer
+    add_msg(m_bad, _("The %s throws a quill at you!"), z->name().c_str());
+    add_msg(m_bad, _("You feel poison enter your body!"));
+    g->u.add_effect("badpoison", 50);
+}
 void mattack::triffid_growth(monster *z, int index)
 {
     (void)index; //unused

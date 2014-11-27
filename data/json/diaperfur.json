@@ -2188,13 +2188,50 @@
 		"bashing": 10,
 		"cutting": 6,
 		"to_hit": -2
-
 	},
-    {
-        "type": "effect_type",
-        "id": "diuretic",
-        "name":["Fast filling bladder"],
-        "desc": ["Urine Production x 2"],
-        "apply_message": "Your bladder is filling way faster than normal."
-    }
+	{
+		"type": "effect_type",
+		"id": "diuretic",
+		"name":["Fast filling bladder"],
+		"desc": ["Urine Production x 2"],
+		"apply_message": "Your bladder is filling way faster than normal."
+	},{
+		"type" : "item_group",
+		"subtype": "collection",
+		"id": "mon_sygg_death_drops",
+		"entries":
+		[
+			{ "item": "diaper"}
+		]
+	},{
+		"type" : "MONSTER",
+		"id" : "mon_sygg",
+		"name": "Sygg",
+		"species":"NETHER",
+		"symbol":"S",
+		"color":"dark_gray",
+		"size":"MEDIUM",
+		"material":"flesh",
+		"diff":100,
+		"aggression":120,
+		"morale":100,
+		"speed":400,
+		"melee_skill":15,
+		"melee_dice":2,
+		"melee_dice_sides":8,
+		"melee_cut":100,
+		"melee_bash":100,
+		"dodge":20,
+		"armor_bash":5,
+		"armor_cut":0,
+		"luminance":1,
+		"hp":1000,
+		"death_function":"NORMAL",
+		"special_attacks":[["SYGG_STING", 10],["FEAR_PARALYZE", 10],["BITE", 3],["LUNGE", 15],["LEAP", 15]],
+		"description":"Syggath'ri Nyl'lggoth is a xhicanid which is an alien species. It is a wolf-like creature covered with black fru and has spines growing out of it's back",
+		"flags":["SEES", "HEARS", "KEENNOSE", "SMELLS", "GOODHEARING", "VIS50","WARM","ATTACKMON","FUR","BONES","FAT","HARDTOSHOOT","BASHES"],
+		"anger_triggers":["PLAYER_CLOSE", "HURT","MEAT","PLAYER_WEAK"],
+		"death_drops": "mon_sygg_death_drops",
+		"//":"Monster and species came from here http://www.furaffinity.net/user/sygg/"
+	}
 ] 
