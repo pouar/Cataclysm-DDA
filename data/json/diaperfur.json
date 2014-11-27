@@ -827,7 +827,8 @@
 		"monsters" : [
 			{ "monster" : "mon_diaperfur_cat", "freq" : 150, "cost_multiplier" : 1 },
 			{ "monster" : "mon_diaperfur_fox", "freq" : 150, "cost_multiplier" : 1 },
-			{ "monster" : "mon_diaperfur_dragon", "freq" : 150, "cost_multiplier" : 1 }
+			{ "monster" : "mon_diaperfur_dragon", "freq" : 150, "cost_multiplier" : 1 },
+			{ "monster" : "mon_sygg", "freq" :  8, "cost_multiplier" : 2}
 		]
 	},
 	{
