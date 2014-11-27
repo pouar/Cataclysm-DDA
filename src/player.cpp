@@ -1813,7 +1813,7 @@ int player::peeself(bool ctrl)
         inwater = true;
     for(unsigned int i = 0;i<worn.size();i++)
     {
-        if((worn[i].covers.test(bp_leg_l) || worn[i].covers.test(bp_leg_r)) && !worn[i].has_flag("SKIRT") && bladder>0)
+        if((worn[i].covers(bp_leg_l) || worn[i].covers(bp_leg_r)) && !worn[i].has_flag("SKIRT") && bladder>0)
         {
             worn[i].item_tags.insert("WETDIAPER");
             wet=true;

@@ -7846,7 +7846,7 @@ void game::pee()
         }
         for(unsigned int i = 0;i<u.worn.size();i++)
         {
-            if((u.worn[i].covers.test(bp_leg_l)) || (u.worn[i].covers.test(bp_leg_r)))
+            if((u.worn[i].covers(bp_leg_l)) || (u.worn[i].covers(bp_leg_r)))
             {
                 if(u.worn[i].has_flag("DIAPERLOCKED"))
                 {
