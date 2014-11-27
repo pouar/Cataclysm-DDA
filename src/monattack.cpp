@@ -1839,16 +1839,57 @@ void mattack::para_sting(monster *z, int index)
 
 void mattack::sygg_sting(monster *z, int index)
 {
-    if (within_visual_range(z, 4) < 0) return;
+    // Make sure our ammo isn't weird.
+    int fire_t = 0;
 
-    if (g->u.uncanny_dodge()) {
-        return;
-    }
-    z->moves -= 150;
+    npc tmp = make_fake_npc(z, 16, 10, 8, 12);
+    tmp.skillLevel("throw").level(20);
+
     z->reset_special(index); // Reset timer
-    add_msg(m_bad, _("The %s throws a quill at you!"), z->name().c_str());
-    add_msg(m_bad, _("You feel poison enter your body!"));
-    g->u.add_effect("badpoison", 50);
+    Creature *target = NULL;
+
+    if (z->friendly != 0) {
+        // Attacking monsters, not the player!
+        int boo_hoo;
+        target = tmp.auto_find_hostile_target(18, boo_hoo, fire_t);
+        if (target == NULL) {// Couldn't find any targets!
+            return;
+        }
+    } else {
+        // Not friendly; hence, firing at the player
+        // (This is a bit generous: 5.56 has 38 range.)
+        if (within_visual_range(z, 36) < 0) return;
+
+        if (!z->has_effect("targeted")) {
+            z->add_effect("targeted", 8);
+            z->moves -= 100;
+            return;
+        }
+        target = &g->u;
+    }
+    z->moves -= 150;   // It takes a while
+    int dam = 100;
+    double goodhit = double(rand() / RAND_MAX) / 2.0;
+    body_part bp = bp_torso;
+
+    if (target == &g->u) {
+        add_msg(m_warning, _("The %s throws one of its quills at you"), z->name().c_str());
+        z->add_effect("targeted", 3);
+        if (goodhit < .1) {
+            bp = bp_head;
+            dam = rng(dam, dam * 3);
+        } else if (goodhit < .2) {
+            dam = rng(dam, dam * 2);
+        } else if (goodhit < .4) {
+            dam = rng(dam / 2, int(dam * 1.5));
+        } else if (goodhit < .5) {
+            dam = rng(0, dam);
+        }
+        target->add_effect("paralyzepoison",20);
+        target->add_effect("badpoison",20);
+    } else
+        add_msg(m_warning, _("The %s throws one of its quills at the enemy"), z->name().c_str());
+    target->apply_damage( nullptr,bp,dam);
 }
 void mattack::triffid_growth(monster *z, int index)
 {

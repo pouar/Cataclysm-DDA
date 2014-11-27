@@ -2202,7 +2202,17 @@
 		"id": "mon_sygg_death_drops",
 		"entries":
 		[
-			{ "item": "diaper"}
+			{ "item": "diaper"},
+			{ "item": "sygg_quill"},
+			{ "item": "sygg_quill"},
+			{ "item": "sygg_quill"},
+			{ "item": "sygg_quill"},
+			{ "item": "sygg_quill"},
+			{ "item": "sygg_quill"},
+			{ "item": "sygg_quill"},
+			{ "item": "sygg_quill"},
+			{ "item": "sygg_quill"},
+			{ "item": "sygg_quill"}
 		]
 	},{
 		"type" : "MONSTER",
@@ -2217,10 +2227,10 @@
 		"aggression":120,
 		"morale":100,
 		"speed":400,
-		"melee_skill":15,
-		"melee_dice":2,
+		"melee_skill":20,
+		"melee_dice":8,
 		"melee_dice_sides":8,
-		"melee_cut":100,
+		"melee_cut":200,
 		"melee_bash":100,
 		"dodge":20,
 		"armor_bash":5,
@@ -2228,11 +2238,28 @@
 		"luminance":1,
 		"hp":1000,
 		"death_function":"NORMAL",
-		"special_attacks":[["SYGG_STING", 10],["FEAR_PARALYZE", 10],["BITE", 3],["LUNGE", 15],["LEAP", 15]],
+		"special_attacks":[["SYGG_STING", 10],["FEAR_PARALYZE", 10],["BITE", 3],["LUNGE", 15],["LEAP", 15],["HOWL",10]],
 		"description":"Syggath'ri Nyl'lggoth is a xhicanid which is an alien species. It is a wolf-like creature covered with black fru and has spines growing out of it's back, it reguarly wears diapers but doesn't seem to need or use them.",
-		"flags":["SEES", "HEARS", "KEENNOSE", "SMELLS", "GOODHEARING", "VIS50","WARM","ATTACKMON","FUR","BONES","FAT","HARDTOSHOOT","BASHES"],
+		"flags":["SEES", "HEARS", "KEENNOSE", "SMELLS", "GOODHEARING","WARM","ATTACKMON","FUR","BONES","FAT","HARDTOSHOOT","BASHES","DESTROYS","NO_BREATHE"],
 		"anger_triggers":["PLAYER_CLOSE", "HURT","MEAT","PLAYER_WEAK"],
 		"death_drops": "mon_sygg_death_drops",
 		"//":"Monster and species came from here http://www.furaffinity.net/user/sygg/"
+	},
+	{
+		"type":"GENERIC",
+		"id" : "sygg_quill",
+		"name" : "xhicanid quill",
+		"description" : "A quill from a xhicanid.  Makes a good melee weapon.",
+		"weight" : 540,
+		"to_hit" : -1,
+		"color" : "dark_gray",
+		"symbol" : ",",
+		"material" : ["flesh", "null"],
+		"techniques" : ["PRECISE","WBLOCK_1", "RAPID", "IMPALE"],
+		"volume" : 3,
+		"bashing" : 10,
+		"cutting" : 200,
+		"flags" : ["SPEAR", "SHEATH_KNIFE"],
+		"price" : 9000
 	}
 ] 
