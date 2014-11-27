@@ -2228,7 +2228,7 @@
 		"hp":1000,
 		"death_function":"NORMAL",
 		"special_attacks":[["SYGG_STING", 10],["FEAR_PARALYZE", 10],["BITE", 3],["LUNGE", 15],["LEAP", 15]],
-		"description":"Syggath'ri Nyl'lggoth is a xhicanid which is an alien species. It is a wolf-like creature covered with black fru and has spines growing out of it's back",
+		"description":"Syggath'ri Nyl'lggoth is a xhicanid which is an alien species. It is a wolf-like creature covered with black fru and has spines growing out of it's back, it reguarly wears diapers but doesn't seem to need or use them.",
 		"flags":["SEES", "HEARS", "KEENNOSE", "SMELLS", "GOODHEARING", "VIS50","WARM","ATTACKMON","FUR","BONES","FAT","HARDTOSHOOT","BASHES"],
 		"anger_triggers":["PLAYER_CLOSE", "HURT","MEAT","PLAYER_WEAK"],
 		"death_drops": "mon_sygg_death_drops",
