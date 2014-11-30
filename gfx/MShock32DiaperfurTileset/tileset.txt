@@ -20,3 +20,6 @@ TILESET: MShock32DiaperfurTileset/MShock.png
 
 #Guy Fawkes Mask was taken from here
 #http://bubbachrissy.deviantart.com/art/Bubbachrissy-Sprite-Sheet-104316133
+
+#sygg sprite by
+#http://www.furaffinity.net/user/sygg/
