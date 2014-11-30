@@ -19578,6 +19578,12 @@
 					"id": "cookbook_human",
 					"fg": 19,
 					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "mon_sygg",
+					"fg": 20,
+					"bg": 0
 				}
 			]
 		}
