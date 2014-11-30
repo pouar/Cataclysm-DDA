@@ -19016,13 +19016,15 @@
 					"rotates": false,
 					"id": "player_female",
 					"fg": 2,
-					"bg": 0
+					"bg": 0,
+					"//":"sprite is a modified version of this http://www.furaffinity.net/full/14502184/"
 				},
 				{
 					"rotates": false,
 					"id": "player_male",
 					"fg": 1,
-					"bg": 0
+					"bg": 0,
+					"//":"sprite is a modified version of this http://www.furaffinity.net/full/14502184/"
 				},
 				{
 					"rotates": false,
@@ -19088,13 +19090,15 @@
 					"rotates": false,
 					"id": "plushie",
 					"fg": 5,
-					"bg": 0
+					"bg": 0,
+					"//": "taken from  http://piffle-stix.deviantart.com/art/AB-Icon-Sets-Plushies-186803830"
 				},
 				{
 					"rotates": false,
 					"id": "pacifier",
 					"fg": 6,
-					"bg": 0
+					"bg": 0,
+					"//": "taken from http://piffle-stix.deviantart.com/art/AB-Icon-Sets-Pacifiers-186753355"
 				},
 				{
 					"rotates": false,
@@ -19388,13 +19392,15 @@
 					"rotates": false,
 					"id": "mask_guy_fawkes",
 					"fg": 36,
-					"bg": 0
+					"bg": 0,
+					"//": "taken from http://bubbachrissy.deviantart.com/art/Bubbachrissy-Sprite-Sheet-104316133"
 				},
 				{
 					"rotates": false,
 					"id": "mask_guy_fawkes_large",
 					"fg": 36,
-					"bg": 0
+					"bg": 0,
+					"//": "taken from http://bubbachrissy.deviantart.com/art/Bubbachrissy-Sprite-Sheet-104316133"
 				}
 			]
 		},
@@ -19583,7 +19589,8 @@
 					"rotates": false,
 					"id": "mon_sygg",
 					"fg": 20,
-					"bg": 0
+					"bg": 0,
+					"//": "made by from http://www.furaffinity.net/user/sygg/"
 				}
 			]
 		}
