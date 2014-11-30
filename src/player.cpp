@@ -1982,12 +1982,12 @@ int player::peeself(bool ctrl)
 			
 			if(leak==true)
 			{
-				if(has_disease("sleep"))
+				if(has_effect("sleep"))
 				{
 					add_msg(m_bad, _("You wet the bed in your sleep."));
 					return 0;
 				}
-				else if(has_disease("lying_down"))
+				else if(has_effect("lying_down"))
 				{
 					if(has_trait("INCONT"))
 						add_msg(m_info, _("While laying there you pee yourself without noticing."));
@@ -2026,12 +2026,12 @@ int player::peeself(bool ctrl)
 			}
 			else
 			{
-				if(has_disease("sleep"))
+				if(has_effect("sleep"))
 				{
 					add_msg(m_bad, _("You wet the bed in your sleep. Or at least your pants as your bed is still clean"));
 					return 0;
 				}
-				else if(has_disease("lying_down"))
+				else if(has_effect("lying_down"))
 				{
 					if(has_trait("INCONT"))
 						add_msg(m_info, _("While laying there you pee yourself without noticing."));
@@ -2083,12 +2083,12 @@ int player::peeself(bool ctrl)
         {
 			if(leak==true)
 			{
-				if(has_disease("sleep"))
+				if(has_effect("sleep"))
 				{
 					add_msg(m_bad, _("You wet your diaper in your sleep. It doesn't hold up and pee gets all over the bed"));
 					return 0;
 				}
-				else if(has_disease("lying_down"))
+				else if(has_effect("lying_down"))
 				{
 					if(has_trait("INCONT"))
 						add_msg(m_info, _("While laying there you pee yourself without noticing. And it leaks but you don't care."));
@@ -2127,12 +2127,12 @@ int player::peeself(bool ctrl)
 			}
 			else
 			{
-				if(has_disease("sleep"))
+				if(has_effect("sleep"))
 				{
 					add_msg(m_bad, _("You wet your diaper in your sleep."));
 					return 0;
 				}
-				else if(has_disease("lying_down"))
+				else if(has_effect("lying_down"))
 				{
 					if(has_trait("INCONT"))
 						add_msg(m_info, _("While laying there you pee yourself without noticing."));
@@ -4007,7 +4007,7 @@ void player::disp_status(WINDOW *w, WINDOW *w2)
         wprintz(w, c_green,  _("Engorged"));
 
     wmove(w, sideStyle ? 0 : 0, sideStyle ? 11 : 10);
-    if(!has_trait("INCONT") && !has_disease("sleep") && !has_disease("lying_down"))
+    if(!has_trait("INCONT") && !has_effect("sleep") && !has_effect("lying_down"))
     {
             if (bladder >= bladderlast)
                 wprintz(w, c_red,    _(" Potty dance (Last minute)"));

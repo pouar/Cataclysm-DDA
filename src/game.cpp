@@ -1180,7 +1180,7 @@ bool game::do_turn()
     }
     // Check if need to pee
         if (u.bladder >= u.bladderdance) {
-            if (u.bladder >= u.bladdercap || u.has_trait("INCONT") || u.has_disease("sleep") || u.has_disease("lying_down")) {
+            if (u.bladder >= u.bladdercap || u.has_trait("INCONT") || u.has_effect("sleep") || u.has_effect("lying_down")) {
                 u.peeself(false);
             } else if (calendar::turn % 10 == 0) {
                 add_msg(m_warning, _("You're doing a potty dance like a 4 year old"));
