@@ -19557,6 +19557,30 @@
 					"fg": 36,
 					"bg": 0,
 					"//": "taken from http://bubbachrissy.deviantart.com/art/Bubbachrissy-Sprite-Sheet-104316133"
+				},
+				{
+					"rotates": false,
+					"id": "pink_cotton_diaper",
+					"fg": 13,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "thick_pink_cotton_ever_diaper",
+					"fg": 13,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "pink_cotton_ever_diaper",
+					"fg": 13,
+					"bg": 0
+				},
+				{
+					"rotates": false,
+					"id": "thick_pink_cotton_diaper",
+					"fg": 13,
+					"bg": 0
 				}
 			]
 		},
