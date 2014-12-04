@@ -1458,6 +1458,9 @@ bool game::do_turn()
                 if (uquit == QUIT_WATCH) {
                     break;
                 }
+                if( u.activity.type != ACT_NULL ) {
+                    process_activity();
+                }
             }
         } else {
             handle_key_blocking_activity();
@@ -1603,12 +1606,12 @@ void game::process_activity()
     if (int(calendar::turn) % 50 == 0) {
         draw();
     }
-    do {
+    while( u.moves > 0 && u.activity.type != ACT_NULL ) {
         activity_on_turn();
         if (u.activity.moves_left <= 0) { // We finished our activity!
             activity_on_finish();
         }
-    } while( u.moves > 0 && u.activity.type != ACT_NULL );
+    }
 }
 
 void on_turn_activity_pickaxe(player *p);
@@ -1667,10 +1670,6 @@ void game::activity_on_turn()
         u.rooted();
         u.pause();
         break;
-    case ACT_MAKE_ZLAVE:
-        u.activity.moves_left -= u.moves;
-        u.moves = 0;
-        break;
     case ACT_DROP:
         activity_on_turn_drop();
         break;
@@ -1700,8 +1699,13 @@ void game::activity_on_turn()
         break;
     default:
         // Based on speed, not time
-        u.activity.moves_left -= u.moves;
-        u.moves = 0;
+        if( u.moves <= u.activity.moves_left ) {
+            u.activity.moves_left -= u.moves;
+            u.moves = 0;
+        } else {
+            u.moves -= u.activity.moves_left;
+            u.activity.moves_left = 0;
+        }
     }
 }
 
