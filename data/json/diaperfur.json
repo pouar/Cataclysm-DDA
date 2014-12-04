@@ -2010,7 +2010,7 @@
 			"groups": [
 				[ "robots", 60 ],
 				[ "default_zombie_clothes", 40 ],
-				[ "child_items", 75 ]
+				[ "child_items", 75 ],"diaper"
 			]
 		},
 		"luminance":0,
@@ -2045,7 +2045,7 @@
 			"groups": [
 				[ "robots", 60 ],
 				[ "default_zombie_clothes", 40 ],
-				[ "child_items", 75 ]
+				[ "child_items", 75 ],"diaper"
 			]
 		},
 		"luminance":0,
@@ -2080,7 +2080,7 @@
 			"groups": [
 				[ "robots", 60 ],
 				[ "default_zombie_clothes", 40 ],
-				[ "child_items", 75 ]
+				[ "child_items", 75 ],"diaper"
 			]
 		},
 		"luminance":0,
@@ -2115,7 +2115,7 @@
 			"groups": [
 				[ "robots", 60 ],
 				[ "default_zombie_clothes", 40 ],
-				[ "child_items", 75 ]
+				[ "child_items", 75 ],"diaper"
 			]
 		},
 		"luminance":0,
@@ -2199,7 +2199,7 @@
 	},{
 		"type" : "item_group",
 		"subtype": "collection",
-		"id": "mon_sygg_death_drops",
+		"id": "diaper",
 		"entries":
 		[
 			{ "item": "diaper"}
@@ -2232,7 +2232,7 @@
 		"description":"Syggath'ri Nyl'lggoth is a xhicanid which is an alien species. It is a wolf-like creature covered with black fru and has spines growing out of it's back, it reguarly wears diapers but doesn't seem to need or use them.",
 		"flags":["SEES", "HEARS", "KEENNOSE", "SMELLS", "GOODHEARING","WARM","ATTACKMON","FUR","BONES","FAT","HARDTOSHOOT","BASHES","DESTROYS","NO_BREATHE"],
 		"anger_triggers":["PLAYER_CLOSE", "HURT","MEAT","PLAYER_WEAK"],
-		"death_drops": "mon_sygg_death_drops",
+		"death_drops": "diaper",
 		"//":"Monster and species came from here http://www.furaffinity.net/user/sygg/"
 	},
 	{
