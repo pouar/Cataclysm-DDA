@@ -6,8 +6,8 @@
 		}
 	],
 		"tiles-new": [
-		{
-			"file": "gfx/MShock32Tileset/tiles.png",
+    {
+      "file": "gfx/MShock32Tileset/tiles.png",
 			"tiles": [
 				{
 					"id": "10mm",
@@ -8215,18 +8215,6 @@
 				{
 					"id": "small_storage_battery",
 					"fg": 1170,
-					"bg": 504,
-					"rotates": false
-				},
-				{
-					"id": "smg_45",
-					"fg": 1329,
-					"bg": 504,
-					"rotates": false
-				},
-				{
-					"id": "smg_9mm",
-					"fg": 1330,
 					"bg": 504,
 					"rotates": false
 				},
