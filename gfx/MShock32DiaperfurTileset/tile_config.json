@@ -19773,6 +19773,12 @@
 					"fg": 20,
 					"bg": 0,
 					"//": "made by http://www.furaffinity.net/user/sygg/"
+				},
+				{
+					"rotates": false,
+					"id": "red_fedora",
+					"fg": 26,
+					"bg": 0
 				}
 			]
 		}

@@ -735,5 +735,29 @@
 		"flags" : ["WATER_FRIENDLY", "STURDY", "OVERSIZE"],
 		"coverage" : 95,
 		"material_thickness" : 3
+	},
+	{
+		"type" : "ARMOR",
+		"id" : "red_fedora",
+		"name" : "Red Hat Associate Fedora",
+		"weight" : 88,
+		"color" : "red",
+		"covers" : ["HEAD"],
+		"to_hit" : 0,
+		"storage" : 0,
+		"symbol" : "[",
+		"description" : "A red fedora that the employees/associates at Red Hat wear",
+		"price" : 2500,
+		"material" : ["cotton", "null"],
+		"volume" : 2,
+		"cutting" : 0,
+		"warmth" : 5,
+		"phase" : "solid",
+		"environmental_protection" : 2,
+		"encumbrance" : 1,
+		"flags" : ["SUN_GLASSES"],
+		"bashing" : -5,
+		"coverage" : 50,
+		"material_thickness" : 1
 	}
 ]
