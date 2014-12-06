@@ -128,7 +128,7 @@ ifdef RELEASE
   # OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
   # Strip symbols, generates smaller executable.
   OTHERS += $(RELEASE_FLAGS)
-  DEBUG =
+  DEBUG = -g0
 endif
 
 ifdef CLANG
