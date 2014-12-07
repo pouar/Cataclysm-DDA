@@ -19160,429 +19160,359 @@
 					"rotates": false,
 					"id": "player_female",
 					"fg": 2,
-					"bg": 0,
 					"//":"sprite is a modified version of this http://www.furaffinity.net/full/14502184/"
 				},
 				{
 					"rotates": false,
 					"id": "player_male",
 					"fg": 1,
-					"bg": 0,
 					"//":"sprite is a modified version of this http://www.furaffinity.net/full/14502184/"
 				},
 				{
 					"id": "npc_female",
 					"fg": 2,
-					"bg": 0,
 					"rotates": false,
 					"//":"sprite is a modified version of this http://www.furaffinity.net/full/14502184/"
 				},
 				{
 					"id": "npc_male",
 					"fg": 1,
-					"bg": 0,
 					"rotates": false,
 					"//":"sprite is a modified version of this http://www.furaffinity.net/full/14502184/"
 				},
 				{
 					"rotates": false,
 					"id": "thick_diaper",
-					"fg": 3,
-					"bg": 0
+					"fg": 3
 				},
 				{
 					"rotates": false,
 					"id": "diaper",
-					"fg": 3,
-					"bg": 0
+					"fg": 3
 				},
 				{
 					"rotates": false,
 					"id": "crinkle_diaper",
-					"fg": 3,
-					"bg": 0
+					"fg": 3
 				},
 				{
 					"rotates": false,
 					"id": "thick_crinkle_diaper",
-					"fg": 3,
-					"bg": 0
+					"fg": 3
 				},
 				{
 					"rotates": false,
 					"id": "v_pullon",
-					"fg": 3,
-					"bg": 0
+					"fg": 3
 				},
 				{
 					"rotates": false,
 					"id": "pullon",
-					"fg": 4,
-					"bg": 0
+					"fg": 4
 				},
 				{
 					"rotates": false,
 					"id": "pullup",
-					"fg": 4,
-					"bg": 0
+					"fg": 4
 				},
 				{
 					"rotates": false,
 					"id": "us_diaper",
-					"fg": 3,
-					"bg": 0
+					"fg": 3
 				},
 				{
 					"rotates": false,
 					"id": "v_us_pullon",
-					"fg": 3,
-					"bg": 0
+					"fg": 3
 				},
 				{
 					"rotates": false,
 					"id": "us_pullon",
-					"fg": 4,
-					"bg": 0
+					"fg": 4
 				},
 				{
 					"rotates": false,
 					"id": "plushie",
 					"fg": 5,
-					"bg": 0,
 					"//": "taken from  http://piffle-stix.deviantart.com/art/AB-Icon-Sets-Plushies-186803830"
 				},
 				{
 					"rotates": false,
 					"id": "pacifier",
 					"fg": 6,
-					"bg": 0,
 					"//": "taken from http://piffle-stix.deviantart.com/art/AB-Icon-Sets-Pacifiers-186753355"
 				},
 				{
 					"rotates": false,
 					"id": "booster_pad",
-					"fg": 7,
-					"bg": 0
+					"fg": 7
 				},
 				{
 					"rotates": false,
 					"id": "abdl_booties",
-					"fg": 8,
-					"bg": 0
+					"fg": 8
 				},
 				{
 					"rotates": false,
 					"id": "mon_diaperfur_dragon",
-					"fg": 9,
-					"bg": 0
+					"fg": 9
 				},
 				{
 					"rotates": false,
 					"id": "onesie",
-					"fg": 10,
-					"bg": 0
+					"fg": 10
 				},
 				{
 					"rotates": false,
 					"id": "latex_onesie",
-					"fg": 11,
-					"bg": 0
+					"fg": 11
 				},
 				{
 					"rotates": false,
 					"id": "ever_diaper",
-					"fg": 3,
-					"bg": 0
+					"fg": 3
 				},
 				{
 					"rotates": false,
 					"id": "latex_onesie_skirt",
-					"fg": 12,
-					"bg": 0
+					"fg": 12
 				},
 				{
 					"rotates": false,
 					"id": "thick_pink_ever_diaper",
-					"fg": 13,
-					"bg": 0
+					"fg": 13
 				},
 				{
 					"rotates": false,
 					"id": "thick_pink_diaper",
-					"fg": 13,
-					"bg": 0
+					"fg": 13
 				},
 				{
 					"rotates": false,
 					"id": "latex_toddlerdress",
-					"fg": 14,
-					"bg": 0
+					"fg": 14
 				},
 				{
 					"rotates": false,
 					"id": "thick_ever_diaper",
-					"fg": 3,
-					"bg": 0
+					"fg": 3
 				},
 				{
 					"rotates": false,
 					"id": "ever_diaper",
-					"fg": 3,
-					"bg": 0
+					"fg": 3
 				},
 				{
 					"rotates": false,
 					"id": "pink_diaper",
-					"fg": 13,
-					"bg": 0
+					"fg": 13
 				},
 				{
 					"rotates": false,
 					"id": "pink_ever_diaper",
-					"fg": 13,
-					"bg": 0
+					"fg": 13
 				},
 				{
 					"rotates": false,
 					"id": "pink_ever_diaper_pack",
-					"fg": 15,
-					"bg": 0
+					"fg": 15
 				},
 				{
 					"rotates": false,
 					"id": "thick_pink_ever_diaper_pack",
-					"fg": 15,
-					"bg": 0
+					"fg": 15
 				},
 				{
 					"rotates": false,
 					"id": "thick_pink_diaper_pack",
-					"fg": 15,
-					"bg": 0
+					"fg": 15
 				},
 				{
 					"rotates": false,
 					"id": "pink_diaper_pack",
-					"fg": 15,
-					"bg": 0
+					"fg": 15
 				},
 				{
 					"rotates": false,
 					"id": "ever_diaper_pack",
-					"fg": 16,
-					"bg": 0
+					"fg": 16
 				},
 				{
 					"rotates": false,
 					"id": "thick_ever_diaper_pack",
-					"fg": 16,
-					"bg": 0
+					"fg": 16
 				},
 				{
 					"rotates": false,
 					"id": "thick_diaper_pack",
-					"fg": 16,
-					"bg": 0
+					"fg": 16
 				},
 				{
 					"rotates": false,
 					"id": "diaper_pack",
-					"fg": 16,
-					"bg": 0
+					"fg": 16
 				},
 				{
 					"rotates": false,
 					"id": "v_pullon_pack",
-					"fg": 16,
-					"bg": 0
+					"fg": 16
 				},
 				{
 					"rotates": false,
 					"id": "v_us_pullon_pack",
-					"fg": 16,
-					"bg": 0
+					"fg": 16
 				},
 				{
 					"rotates": false,
 					"id": "us_diaper_pack",
-					"fg": 16,
-					"bg": 0
+					"fg": 16
 				},
 				{
 					"rotates": false,
 					"id": "thick_crinkle_diaper_pack",
-					"fg": 16,
-					"bg": 0
+					"fg": 16
 				},
 				{
 					"rotates": false,
 					"id": "crinkle_diaper_pack",
-					"fg": 16,
-					"bg": 0
+					"fg": 16
 				},
 				{
 					"rotates": false,
 					"id": "pullon_pack",
-					"fg": 17,
-					"bg": 0
+					"fg": 17
 				},
 				{
 					"rotates": false,
 					"id": "us_pullon_pack",
-					"fg": 17,
-					"bg": 0
+					"fg": 17
 				},
 				{
 					"rotates": false,
 					"id": "pullup_pack",
-					"fg": 17,
-					"bg": 0
+					"fg": 17
 				},
 				{
 					"rotates": false,
 					"id": "booster_pad_pack",
-					"fg": 18,
-					"bg": 0
+					"fg": 18
 				},
 				{
 					"rotates": false,
 					"id": "adult_footy_pjs",
-					"fg": 19,
-					"bg": 0
+					"fg": 19
 				},
 				{
 					"rotates": false,
 					"id": "mon_animatronic_bear",
-					"fg": 20,
-					"bg": 0
+					"fg": 20
 				},
 				{
 					"rotates": false,
 					"id": "mon_animatronic_fox",
-					"fg": 21,
-					"bg": 0
+					"fg": 21
 				},
 				{
 					"rotates": false,
 					"id": "mon_animatronic_bunny",
-					"fg": 22,
-					"bg": 0
+					"fg": 22
 				},
 				{
 					"rotates": false,
 					"id": "mon_animatronic_chicken",
-					"fg": 23,
-					"bg": 0
+					"fg": 23
 				},
 				{
 					"rotates": false,
 					"id": "broken_animatronic_bear",
-					"fg": 24,
-					"bg": 0
+					"fg": 24
 				},
 				{
 					"rotates": false,
 					"id": "broken_animatronic_fox",
-					"fg": 25,
-					"bg": 0
+					"fg": 25
 				},
 				{
 					"rotates": false,
 					"id": "broken_animatronic_bunny",
-					"fg": 26,
-					"bg": 0
+					"fg": 26
 				},
 				{
 					"rotates": false,
 					"id": "broken_animatronic_chicken",
-					"fg": 27,
-					"bg": 0
+					"fg": 27
 				},
 				{
 					"rotates": false,
 					"id": "mon_diaperfur_animatronic_bear",
-					"fg": 28,
-					"bg": 0
+					"fg": 28
 				},
 				{
 					"rotates": false,
 					"id": "mon_diaperfur_animatronic_fox",
-					"fg": 29,
-					"bg": 0
+					"fg": 29
 				},
 				{
 					"rotates": false,
 					"id": "mon_diaperfur_animatronic_bunny",
-					"fg": 30,
-					"bg": 0
+					"fg": 30
 				},
 				{
 					"rotates": false,
 					"id": "mon_diaperfur_animatronic_chicken",
-					"fg": 31,
-					"bg": 0
+					"fg": 31
 				},
 				{
 					"rotates": false,
 					"id": "broken_diaperfur_animatronic_bear",
-					"fg": 32,
-					"bg": 0
+					"fg": 32
 				},
 				{
 					"rotates": false,
 					"id": "broken_diaperfur_animatronic_fox",
-					"fg": 33,
-					"bg": 0
+					"fg": 33
 				},
 				{
 					"rotates": false,
 					"id": "broken_diaperfur_animatronic_bunny",
-					"fg": 34,
-					"bg": 0
+					"fg": 34
 				},
 				{
 					"rotates": false,
 					"id": "broken_diaperfur_animatronic_chicken",
-					"fg": 35,
-					"bg": 0
+					"fg": 35
 				},
 				{
 					"rotates": false,
 					"id": "mask_guy_fawkes",
 					"fg": 36,
-					"bg": 0,
 					"//": "taken from http://bubbachrissy.deviantart.com/art/Bubbachrissy-Sprite-Sheet-104316133"
 				},
 				{
 					"rotates": false,
 					"id": "mask_guy_fawkes_large",
 					"fg": 36,
-					"bg": 0,
 					"//": "taken from http://bubbachrissy.deviantart.com/art/Bubbachrissy-Sprite-Sheet-104316133"
 				},
 				{
 					"rotates": false,
 					"id": "pink_cotton_diaper",
-					"fg": 13,
-					"bg": 0
+					"fg": 13
 				},
 				{
 					"rotates": false,
 					"id": "thick_pink_cotton_ever_diaper",
-					"fg": 13,
-					"bg": 0
+					"fg": 13
 				},
 				{
 					"rotates": false,
 					"id": "pink_cotton_ever_diaper",
-					"fg": 13,
-					"bg": 0
+					"fg": 13
 				},
 				{
 					"rotates": false,
 					"id": "thick_pink_cotton_diaper",
-					"fg": 13,
-					"bg": 0
+					"fg": 13
 				}
 			]
 		},
@@ -19626,159 +19556,133 @@
 				{
 					"rotates": false,
 					"id": "fd_pee",
-					"fg": 1,
-					"bg": 0
+					"fg": 1
 				},
 				{
 					"rotates": false,
 					"id": "sleeveless_tunic",
-					"fg": 2,
-					"bg": 0
+					"fg": 2
 				},
 				{
 					"rotates": false,
 					"id": "kilt",
-					"fg": 3,
-					"bg": 0
+					"fg": 3
 				},
 				{
 					"rotates": false,
 					"id": "minikilt",
-					"fg": 4,
-					"bg": 0
+					"fg": 4
 				},
 				{
 					"rotates": false,
 					"id": "miniskirt",
-					"fg": 5,
-					"bg": 0
+					"fg": 5
 				},
 				{
 					"rotates": false,
 					"id": "microskirt",
-					"fg": 6,
-					"bg": 0
+					"fg": 6
 				},
 				{
 					"rotates": false,
 					"id": "nanoskirt",
-					"fg": 7,
-					"bg": 0
+					"fg": 7
 				},
 				{
 					"rotates": false,
 					"id": "microkilt",
-					"fg": 8,
-					"bg": 0
+					"fg": 8
 				},
 				{
 					"rotates": false,
 					"id": "nanokilt",
-					"fg": 9,
-					"bg": 0
+					"fg": 9
 				},
 				{
 					"rotates": false,
 					"id": "minidress",
-					"fg": 10,
-					"bg": 0
+					"fg": 10
 				},
 				{
 					"rotates": false,
 					"id": "microdress",
-					"fg": 11,
-					"bg": 0
+					"fg": 11
 				},
 				{
 					"rotates": false,
 					"id": "nanodress",
-					"fg": 12,
-					"bg": 0
+					"fg": 12
 				},
 				{
 					"rotates": false,
 					"id": "minitunic",
-					"fg": 13,
-					"bg": 0
+					"fg": 13
 				},
 				{
 					"rotates": false,
 					"id": "microtunic",
-					"fg": 14,
-					"bg": 0
+					"fg": 14
 				},
 				{
 					"rotates": false,
 					"id": "nanotunic",
-					"fg": 15,
-					"bg": 0
+					"fg": 15
 				},
 				{
 					"rotates": false,
 					"id": "cctshirt",
-					"fg": 16,
-					"bg": 0
+					"fg": 16
 				},
 				{
 					"rotates": false,
 					"id": "linuxtshirt",
-					"fg": 17,
-					"bg": 0
+					"fg": 17
 				},
 				{
 					"rotates": false,
 					"id": "halter_top",
-					"fg": 21,
-					"bg": 0
+					"fg": 21
 				},
 				{
 					"rotates": false,
 					"id": "leotard",
-					"fg": 22,
-					"bg": 0
+					"fg": 22
 				},
 				{
 					"rotates": false,
 					"id": "toddlerdress",
-					"fg": 23,
-					"bg": 0
+					"fg": 23
 				},
 				{
 					"rotates": false,
 					"id": "toddlerdress_short",
-					"fg": 24,
-					"bg": 0
+					"fg": 24
 				},
 				{
 					"rotates": false,
 					"id": "headcheese",
-					"fg": 25,
-					"bg": 0
+					"fg": 25
 				},
 				{
 					"rotates": false,
 					"id": "jerky_human",
-					"fg": 18,
-					"bg": 0
+					"fg": 18
 				},
 				{
 					"rotates": false,
 					"id": "cookbook_human",
-					"fg": 19,
-					"bg": 0
+					"fg": 19
 				},
 				{
 					"rotates": false,
 					"id": "mon_sygg",
 					"fg": 20,
-					"bg": 0,
 					"//": "made by http://www.furaffinity.net/user/sygg/"
 				},
 				{
 					"rotates": false,
 					"id": "red_fedora",
-					"fg": 26,
-					"bg": 0
+					"fg": 26
 				}
 			]
 		}
