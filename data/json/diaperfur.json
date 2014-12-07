@@ -2238,7 +2238,7 @@
 	{
 		"type" : "ARMOR",
 		"id" : "thick_pink_cotton_ever_diaper",
-		"name" : "thick pink cotton ever diaper",
+		"name" : "thick pink cloth ever diaper",
 		"weight" : 4535,
 		"color" : "pink",
 		"covers" : ["LEGS"],
@@ -2263,7 +2263,7 @@
 	{
 		"type" : "ARMOR",
 		"id" : "pink_cotton_ever_diaper",
-		"name" : "pink cotton ever diaper",
+		"name" : "pink cloth ever diaper",
 		"weight" : 452,
 		"color" : "pink",
 		"covers" : ["LEGS"],
@@ -2288,7 +2288,7 @@
 	{
 		"type" : "ARMOR",
 		"id" : "thick_pink_cotton_diaper",
-		"name" : "thick pink cotton diaper",
+		"name" : "thick pink cloth diaper",
 		"weight" : 4535,
 		"color" : "pink",
 		"covers" : ["LEGS"],
@@ -2313,7 +2313,7 @@
 	{
 		"type" : "ARMOR",
 		"id" : "pink_cotton_diaper",
-		"name" : "pink cotton diaper",
+		"name" : "pink cloth diaper",
 		"weight" : 452,
 		"color" : "pink",
 		"covers" : ["LEGS"],
