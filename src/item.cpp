@@ -424,13 +424,13 @@ void item::load_info(std::string data)
 }
 
 
-std::string item::info(bool showtext)
+std::string item::info(bool showtext) const
 {
     std::vector<iteminfo> dummy;
     return info(showtext, &dummy);
 }
 
-std::string item::info(bool showtext, std::vector<iteminfo> *dump, bool debug)
+std::string item::info(bool showtext, std::vector<iteminfo> *dump, bool debug) const
 {
     std::stringstream temp1, temp2;
     std::string space="   ";
@@ -482,7 +482,7 @@ std::string item::info(bool showtext, std::vector<iteminfo> *dump, bool debug)
                 dump->push_back(iteminfo("BASE", _("age: "), "",
                                          (int(calendar::turn) - bday) / (10 * 60), true, "", true, true));
                 int maxrot = 0;
-                item * food = NULL;
+                const item *food = NULL;
                 if( goes_bad() ) {
                     food = this;
                     maxrot = dynamic_cast<it_comest*>(type)->spoils;
@@ -1874,31 +1874,33 @@ int item::volume(bool unit_value, bool precise_value ) const
     return ret;
 }
 
-int item::volume_contained()
+int item::volume_contained() const
 {
     int ret = 0;
-    for( auto &elem : contents )
+    for( auto &elem : contents ) {
         ret += elem.volume();
+    }
     return ret;
 }
 
-int item::attack_time()
+int item::attack_time() const
 {
     int ret = 65 + 4 * volume() + weight() / 60;
     return ret;
 }
 
-int item::damage_bash()
+int item::damage_bash() const
 {
     int total = type->melee_dam;
-    if( is_null() )
+    if( is_null() ) {
         return 0;
-      total -= total * (damage * 0.1);
-      if (total > 0) {
-      return total;
-      } else {
-         return 0;
-        }
+    }
+    total -= total * (damage * 0.1);
+    if (total > 0) {
+        return total;
+    } else {
+        return 0;
+    }
 }
 
 int item::damage_cut() const
@@ -1992,13 +1994,16 @@ bool item::has_technique(matec_id tech)
     return type->techniques.count(tech);
 }
 
-int item::has_gunmod(itype_id mod_type)
+int item::has_gunmod(itype_id mod_type) const
 {
-    if (!is_gun())
+    if( !is_gun() ) {
         return -1;
-    for (size_t i = 0; i < contents.size(); i++)
-        if (contents[i].is_gunmod() && contents[i].typeId() == mod_type)
+    }
+    for( size_t i = 0; i < contents.size(); i++ ) {
+        if( contents[i].is_gunmod() && contents[i].typeId() == mod_type ) {
             return i;
+        }
+    }
     return -1;
 }
 
@@ -2147,7 +2152,7 @@ int item::get_warmth() const
     return static_cast<int>( t->warmth );
 }
 
-int item::brewing_time()
+int item::brewing_time() const
 {
     float season_mult = ( (float)ACTIVE_WORLD_OPTIONS["SEASON_LENGTH"] ) / 14;
     if (typeId() == "flask_yeast")
@@ -2483,7 +2488,7 @@ bool item::conductive() const
     return false;
 }
 
-bool item::destroyed_at_zero_charges()
+bool item::destroyed_at_zero_charges() const
 {
     return (is_ammo() || is_food());
 }
@@ -2781,7 +2786,7 @@ bool item::operator<(const item& other) const
     }
 }
 
-int item::reload_time(player &u)
+int item::reload_time(player &u) const
 {
     int ret = 0;
 
@@ -2886,7 +2891,7 @@ std::string item::skill() const
     return "null";
 }
 
-int item::clip_size()
+int item::clip_size() const
 {
     if(is_gunmod() && has_flag("MODE_AUX"))
         return (dynamic_cast<it_gunmod*>(type))->clip;
@@ -2975,23 +2980,27 @@ int item::aim_speed( int aim_threshold ) const
     return best_aim_speed;
 }
 
-int item::gun_damage(bool with_ammo)
+int item::gun_damage(bool with_ammo) const
 {
-    if (is_gunmod() && mode == "MODE_AUX")
+    if (is_gunmod() && mode == "MODE_AUX") {
         return curammo->damage;
-    if (!is_gun())
+    }
+    if (!is_gun()) {
         return 0;
+    }
     if(mode == "MODE_AUX") {
-        item* gunmod = active_gunmod();
-        if(gunmod != NULL && gunmod->curammo != NULL)
+        const item *gunmod = inspect_active_gunmod();
+        if( gunmod != NULL && gunmod->curammo != NULL ) {
             return gunmod->curammo->damage;
-        else
+        } else {
             return 0;
+        }
     }
     it_gun* gun = dynamic_cast<it_gun*>(type);
     int ret = gun->dmg_bonus;
-    if (with_ammo && curammo != NULL)
+    if( with_ammo && curammo != NULL ) {
         ret += curammo->damage;
+    }
     for( auto &elem : contents ) {
         if( elem.is_gunmod() ) {
             ret += ( dynamic_cast<it_gunmod *>( elem.type ) )->damage;
@@ -3001,7 +3010,7 @@ int item::gun_damage(bool with_ammo)
     return ret;
 }
 
-int item::gun_pierce(bool with_ammo)
+int item::gun_pierce(bool with_ammo) const
 {
     if( is_gunmod() && mode == "MODE_AUX" ) {
         return curammo->pierce;
@@ -3010,7 +3019,7 @@ int item::gun_pierce(bool with_ammo)
         return 0;
     }
     if( mode == "MODE_AUX" ) {
-        item* gunmod = active_gunmod();
+        const item *gunmod = inspect_active_gunmod();
         if( gunmod != NULL && gunmod->curammo != NULL ) {
             return gunmod->curammo->pierce;
         } else {
@@ -3054,7 +3063,7 @@ int item::noise() const
     return ret;
 }
 
-int item::burst_size()
+int item::burst_size() const
 {
     if( !is_gun() ) {
         return 0;
@@ -3076,14 +3085,14 @@ int item::burst_size()
     return ret;
 }
 
-int item::recoil(bool with_ammo)
+int item::recoil(bool with_ammo) const
 {
     if (!is_gun()) {
         return 0;
     }
     // Just use the raw ammo recoil for now.
     if(mode == "MODE_AUX") {
-        item* gunmod = active_gunmod();
+        const item *gunmod = inspect_active_gunmod();
         if( gunmod && gunmod->curammo ) {
             return gunmod->curammo->recoil;
         } else {
@@ -3104,7 +3113,7 @@ int item::recoil(bool with_ammo)
     return ret;
 }
 
-int item::range(player *p)
+int item::range(player *p) const
 {
     if (!is_gun()) {
         return 0;
@@ -3112,7 +3121,7 @@ int item::range(player *p)
     // Just use the raw ammo range for now.
     // we do NOT want to use the parent gun's range.
     if( mode == "MODE_AUX" ) {
-        item *gunmod = active_gunmod();
+        const item *gunmod = inspect_active_gunmod();
         int mod_range = 0;
         if( gunmod ) {
             mod_range += dynamic_cast<it_gunmod *>(gunmod->type)->range;
