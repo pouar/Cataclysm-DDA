@@ -684,10 +684,10 @@
     "type" : "item_group",
     "id" : "bed",
     "items":[
-      ["blanket", 60],
-      ["down_blanket", 25],
-      ["pillow", 60],
-      ["down_pillow", 25]
+      ["blanket", 25],
+      ["down_blanket", 13],
+      ["pillow", 30],
+      ["down_pillow", 15]
     ]
   },{
     "type" : "item_group",
@@ -6110,6 +6110,26 @@
       ["con_milk", 10],
       ["sports_drink", 40],
       ["water_clean", 90]
+    ]
+  },{
+    "type" : "item_group",
+    "id" : "mil_books",
+    "//" : "Primarily combat manuals and such.",
+    "items":[
+      ["manual_melee", 4],
+      ["manual_bashing", 4],
+      ["manual_stabbing", 7],
+      ["manual_knives", 4],
+      ["manual_krav_maga", 5],
+      ["manual_ninjutsu", 5],
+      ["manual_taekwondo", 6],
+      ["manual_eskrima", 2],
+      ["manual_silat", 2],
+      ["manual_rifle", 10],
+      ["manual_smg", 8],
+      ["manual_launcher", 5],
+      ["textbook_firstaid", 4],
+      ["manual_swimming", 4]
     ]
   },{
     "type" : "item_group",
