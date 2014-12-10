@@ -249,7 +249,7 @@ int iuse::royal_jelly(player *p, item *it, bool, point)
     }
     if (p->has_effect("poison") || p->has_effect("foodpoison") ||
         p->has_effect("badpoison") || p->has_effect("paralyzepoison") ||
-        p->has_effect("tetanus") || p->has_effect("stung")) {
+        p->has_effect("tetanus") || p->has_effect("infected") || p->has_effect("stung")) {
         message = _("You feel much better!");
         p->remove_effect("poison");
         p->remove_effect("stung");
@@ -257,6 +257,7 @@ int iuse::royal_jelly(player *p, item *it, bool, point)
         p->remove_effect("foodpoison");
         p->remove_effect("paralyzepoison");
         p->remove_effect("tetanus");
+        p->remove_effect("infected");
     }
     if (p->has_effect("asthma")) {
         message = _("Your breathing clears up!");
@@ -8052,39 +8053,6 @@ int iuse::hotplate(player *p, item *it, bool, point)
         return cauterize_elec(p, it);
     }
     return 0;
-}
-
-int iuse::flask_yeast(player *p, item *it, bool, point)
-{
-    int cult_time = it->brewing_time();
-    if (calendar::turn.get_turn() > (it->bday + cult_time)) {
-        p->add_msg_if_player(_("You open the flask and harvest the culture."));
-        itype_id yeast_id = (it->type->id).substr(6);
-        it->make("flask_glass");
-        it->contents.push_back(item(yeast_id, 0));
-        it->contents[0].charges = 10;
-        return it->type->charges_to_use();
-    } else {
-        p->add_msg_if_player(m_info, _("The yeast isn't done culturing yet."));
-        return 0;
-    }
-}
-
-int iuse::tanning_hide(player *p, item *it, bool, point)
-{
-    if (calendar::turn.get_turn() > (it->bday + 28800)) {
-        p->add_msg_if_player(m_info, _("You carefully unfold the %s and shake it clean."), it->tname().c_str());
-        p->moves -= 150;
-        if (it->type->id == "tanning_hide") {
-        it->make("tanned_hide");
-        } else {
-        it->make("tanned_pelt");
-        }
-        return 0;
-    } else {
-        p->add_msg_if_player(m_info, _("The %s isn't done yet."), it->tname().c_str());
-        return 0;
-    }
 }
 
 int iuse::quiver(player *p, item *it, bool, point)
