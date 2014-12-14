@@ -3585,7 +3585,7 @@ bool game::handle_action()
             u.peeself(true);
             break;
         case ACTION_PEE:
-            pee();
+            u.pee();
             break;
 
         case ACTION_CLOSE:
@@ -7926,87 +7926,6 @@ void game::close(int closex, int closey)
     }
 }
 
-void game::pee()
-{
-    if(!u.has_trait("DEBUG_BLADDER"))
-    {
-        if(u.has_trait("INCONT"))
-        {
-            add_msg(m_critical, _("Message from bladder:You can't tell me what to do!"));
-            return;
-        }
-        for(unsigned int i = 0;i<u.worn.size();i++)
-        {
-            if((u.worn[i].covers(bp_leg_l)) || (u.worn[i].covers(bp_leg_r)))
-            {
-                if(u.worn[i].has_flag("DIAPERLOCKED"))
-                {
-                    if(u.bladder >= u.bladdermict)
-                    {
-                        add_msg(m_critical, _("You struggle to take off youpants but fail. Time to panic."));
-                        return;
-                    }
-                }
-            }
-        }
-        if(u.bladder < u.bladdermict)
-        {
-            add_msg(m_info, _("You don't have to go"));
-            return;
-        }
-    }
-    if(u.weapon.type->id == "e_handcuffs" && u.weapon.charges > 0)
-	{
-		add_msg(m_critical, _("You can't take your pants off with those handcuffs on."));
-		return;
-	}
-    int peex, peey;
-
-    if(u.male)
-    {
-        if (!choose_adjacent(_("Pee where?"), peex, peey)) {
-            return;
-        }
-    }
-    else
-    {
-        peex=u.posx;
-        peey=u.posy;
-    }
-	u.bladder=0;
-	
-	std::string peeterid = m.get_ter(peex,peey);
-	std::string peefurnid = m.get_furn(peex,peey);
-	if(peeterid != "t_water_sh" && peeterid != "t_water_dp" && peeterid != "t_swater_sh" && peeterid != "t_swater_dp" && peeterid != "t_water_pool" && peeterid != "t_sewage" && peeterid != "t_lava" && peefurnid != "f_toilet")
-		m.add_field( peex, peey, fd_pee,3 );
-    if(peeterid == "t_water_pool")
-    {
-        add_msg(m_info, _("You pee in the pool."));
-        return;
-    }
-    else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
-    {
-        add_msg(m_info, _("You pee in the water."));
-        return;
-    }
-    else if(peefurnid == "f_toilet")
-    {
-        if(u.male)
-        add_msg(m_info, _("You use the toilet like a big boy."));
-        else
-        add_msg(m_info, _("You use the toilet like a big girl."));
-        return;
-    }
-    else if(peeterid == "t_sewage")
-    {
-        add_msg(m_info, _("You pee in the already putrid sewage."));
-        return;
-    }
-    else
-    {
-        add_msg(m_info, _("You take a whiz."));
-    }
-}
 void game::smash()
 {
     const int move_cost = int(u.weapon.is_null() ? 80 : u.weapon.attack_time() * 0.8);
@@ -13283,11 +13202,11 @@ bool game::plmove(int dx, int dy)
         if (one_in(20) && u.has_artifact_with(AEP_MOVEMENT_NOISE)) {
             sound(u.posx, u.posy, 40, _("You emit a rattling sound."));
         }
-	for( size_t i = 0; i < u.worn.size(); ++i ) {
-		if (u.worn[i].has_flag("CRINKLE")) {
-		sound(x, y, 40, _("your diaper crinkling."));
-		}
-	}
+    for( size_t i = 0; i < u.worn.size(); ++i ) {
+        if (u.worn[i].has_flag("CRINKLE")) {
+        sound(x, y, 40, _("your diaper crinkling."));
+        }
+    }
         // If we moved out of the nonant, we need update our map data
         if (m.has_flag("SWIMMABLE", x, y) && u.has_effect("onfire")) {
             add_msg(_("The water puts out the flames!"));

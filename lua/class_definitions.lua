@@ -74,6 +74,39 @@ classes = {
             stim = {
                 type = "int",
                 writable = true
+            },
+
+            bladder = {
+                type = "int",
+                writable = true
+            },
+            bladdercap = {
+                type = "int",
+                writable = true
+            },
+            bladdermict = {
+                type = "int",
+                writable = true
+            },
+            bladderdance = {
+                type = "int",
+                writable = true
+            },
+            bladderdesp = {
+                type = "int",
+                writable = true
+            },
+            bladderlast = {
+                type = "int",
+                writable = true
+            },
+            peerate = {
+                type = "int",
+                writable = true
+            },
+            peesleeprate = {
+                type = "int",
+                writable = true
             }
         },
         functions = {
@@ -112,12 +145,24 @@ classes = {
             volume_capacity = {
                 args = {},
                 rval = "int"
+            },
+            pee ={
+                args = {},
+                rval = nil
+            },
+            peeself ={
+                args = {"bool"},
+                rval = "int"
             }
         }
     },
     item = {
         attributes = {
             charges = {
+                type = "int",
+                writable = true
+            },
+            pee = {
                 type = "int",
                 writable = true
             }
@@ -371,14 +416,14 @@ classes = {
                 args = {"string"},
                 rval = "bool"
             },
-	    has_flag = {
-	        args = {"string"},
-		rval = "bool"
-	    },
-	    set_flag = {
-	        args = {"string", "bool"},
-		rval = nil
-	    }
+        has_flag = {
+            args = {"string"},
+        rval = "bool"
+        },
+        set_flag = {
+            args = {"string", "bool"},
+        rval = nil
+        }
         }
     },
     mongroup = {
@@ -508,6 +553,10 @@ classes = {
                 writable = true
             },
             price = {
+                type = "int",
+                writable = true
+            },
+            peecap = {
                 type = "int",
                 writable = true
             }

@@ -1823,28 +1823,28 @@ int player::peeself(bool ctrl)
             {
                 wetdiaper=true;
             }
-			if(worn[i].type->peecap>bladder+worn[i].pee)
-			{
-				worn[i].pee+=bladder;
-				bladder=0;
+            if(worn[i].type->peecap>bladder+worn[i].pee)
+            {
+                worn[i].pee+=bladder;
+                bladder=0;
                 break;
-			}
-			else
-			{
-				bladder-=worn[i].type->peecap-worn[i].pee;
-				worn[i].pee=worn[i].type->peecap;
-				if(worn[i].has_flag("EVERDIAPER"))
-				{
-					bladder=0;
-					break;
-				}
-			}
+            }
+            else
+            {
+                bladder-=worn[i].type->peecap-worn[i].pee;
+                worn[i].pee=worn[i].type->peecap;
+                if(worn[i].has_flag("EVERDIAPER"))
+                {
+                    bladder=0;
+                    break;
+                }
+            }
         }
     }
         if(bladder>0)
-			leak=true;
-		bladder=0;
-		if(leak==true)
+            leak=true;
+        bladder=0;
+        if(leak==true)
         {
             if(!has_trait("DL"))
                 add_morale(MORALE_PEESELF, -20, -20);
@@ -1855,314 +1855,396 @@ int player::peeself(bool ctrl)
     {
         if(wetdiaper==false)
         {
-			if(leak==true)
-			{
-				if(peeterid == "t_water_pool")
-				{
-					add_msg(m_info, _("You pee in the pool. Way to keep it clean."));
-					return 0;
-				}
-				else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
-				{
-					add_msg(m_info, _("You pee in the water."));
-					return 0;
-				}
-				else if(peefurnid == "f_toilet" && wet==true)
-				{
-					if(male)
-					add_msg(m_info, _("You try to use the toilet, but forgot to take your pants off first, peeing yourself."));
-					return 0;
-				}
-				else if(peefurnid == "f_toilet" && wet==false)
-				{
-					if(male)
-					add_msg(m_info, _("You use the toilet like a big boy."));
-					else
-					add_msg(m_info, _("You use the toilet like a big girl."));
-					return 0;
-				}
-				else if(peeterid == "t_sewage")
-				{
-					add_msg(m_info, _("You pee in the already putrid sewage."));
-					return 0;
-				}
-				else if(wet==true)
-				{
-					add_msg(m_info, _("You decide to just pee your pants like a toddler. You might want to invest in some diapers so you don't leave a puddle and a obvious stain on your pants next time."));
-					return 0;
-				}
-				else if(wet==false)
-				{
-					add_msg(m_info, _("You just stand there and let loose. Do we have to put a diaper on you?"));
-					return 0;
-				}
-			}
-			else{
-				if(peeterid == "t_water_pool")
-				{
-					add_msg(m_info, _("You pee in the pool. Way to keep it clean."));
-					return 0;
-				}
-				else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
-				{
-					add_msg(m_info, _("You pee in the water."));
-					return 0;
-				}
-				else if(peefurnid == "f_toilet" && wet==true)
-				{
-					if(male)
-					add_msg(m_info, _("You try to use the toilet, but forgot to take your pants off first, peeing yourself. Somehow your pants held up"));
-					return 0;
-				}
-				else if(peefurnid == "f_toilet" && wet==false)
-				{
-					if(male)
-					add_msg(m_info, _("You use the toilet like a big boy."));
-					else
-					add_msg(m_info, _("You use the toilet like a big girl."));
-					return 0;
-				}
-				else if(peeterid == "t_sewage")
-				{
-					add_msg(m_info, _("You pee in the already putrid sewage."));
-					return 0;
-				}
-				else if(wet==true)
-				{
-					add_msg(m_info, _("You decide to just pee your pants like a toddler. Fortunantly you didn't leave a puddle but only a stain in the inside of your pants"));
-					return 0;
-				}
-				else if(wet==false)
-				{
-					add_msg(m_info, _("You just stand there and let loose. Do we have to put a diaper on you?"));
-					return 0;
-				}
-			}
+            if(leak==true)
+            {
+                if(peeterid == "t_water_pool")
+                {
+                    add_msg(m_info, _("You pee in the pool. Way to keep it clean."));
+                    return 0;
+                }
+                else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+                {
+                    add_msg(m_info, _("You pee in the water."));
+                    return 0;
+                }
+                else if(peefurnid == "f_toilet" && wet==true)
+                {
+                    if(male)
+                    add_msg(m_info, _("You try to use the toilet, but forgot to take your pants off first, peeing yourself."));
+                    return 0;
+                }
+                else if(peefurnid == "f_toilet" && wet==false)
+                {
+                    if(male)
+                    add_msg(m_info, _("You use the toilet like a big boy."));
+                    else
+                    add_msg(m_info, _("You use the toilet like a big girl."));
+                    return 0;
+                }
+                else if(peeterid == "t_sewage")
+                {
+                    add_msg(m_info, _("You pee in the already putrid sewage."));
+                    return 0;
+                }
+                else if(wet==true)
+                {
+                    add_msg(m_info, _("You decide to just pee your pants like a toddler. You might want to invest in some diapers so you don't leave a puddle and a obvious stain on your pants next time."));
+                    return 0;
+                }
+                else if(wet==false)
+                {
+                    add_msg(m_info, _("You just stand there and let loose. Do we have to put a diaper on you?"));
+                    return 0;
+                }
+            }
+            else{
+                if(peeterid == "t_water_pool")
+                {
+                    add_msg(m_info, _("You pee in the pool. Way to keep it clean."));
+                    return 0;
+                }
+                else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+                {
+                    add_msg(m_info, _("You pee in the water."));
+                    return 0;
+                }
+                else if(peefurnid == "f_toilet" && wet==true)
+                {
+                    if(male)
+                    add_msg(m_info, _("You try to use the toilet, but forgot to take your pants off first, peeing yourself. Somehow your pants held up"));
+                    return 0;
+                }
+                else if(peefurnid == "f_toilet" && wet==false)
+                {
+                    if(male)
+                    add_msg(m_info, _("You use the toilet like a big boy."));
+                    else
+                    add_msg(m_info, _("You use the toilet like a big girl."));
+                    return 0;
+                }
+                else if(peeterid == "t_sewage")
+                {
+                    add_msg(m_info, _("You pee in the already putrid sewage."));
+                    return 0;
+                }
+                else if(wet==true)
+                {
+                    add_msg(m_info, _("You decide to just pee your pants like a toddler. Fortunantly you didn't leave a puddle but only a stain in the inside of your pants"));
+                    return 0;
+                }
+                else if(wet==false)
+                {
+                    add_msg(m_info, _("You just stand there and let loose. Do we have to put a diaper on you?"));
+                    return 0;
+                }
+            }
         }
         else
-        {	if(leak==true)
-			{
-				if(peeterid == "t_water_pool" || peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
-				{
-					add_msg(m_info, _("you pee your swim diapers, you can't tell if it leaked or not because of the water"));
-					return 0;
-				}
-				else if(peefurnid == "f_toilet")
-				{
-					add_msg(m_info, _("Aww, you're trying to use the toilet with your diaper still on."));
-					return 0;
-				}
-				else if(peeterid == "t_sewage")
-				{
-					add_msg(m_info, _("you pee your swim diapers, you can't tell if it leaked or not because of the sewage"));
-					return 0;
-				}
-				else
-				{
-					add_msg(m_info, _("You decided to just pee your diaper like a toddler. Unfortunantly it leaks all over the place"));
-					return 0;
-				}
-			}
-			else{
-				if(peefurnid == "f_toilet")
-				{
-					add_msg(m_info, _("Aww, you're trying to use the toilet with your diaper still on."));
-					return 0;
-				}
-				else
-				{
-					add_msg(m_info, _("You decided to just pee your diaper like a toddler."));
-					return 0;
-				}
-			}
+        {
+            if(leak==true)
+            {
+                if(peeterid == "t_water_pool" || peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+                {
+                    add_msg(m_info, _("you pee your swim diapers, you can't tell if it leaked or not because of the water"));
+                    return 0;
+                }
+                else if(peefurnid == "f_toilet")
+                {
+                    add_msg(m_info, _("Aww, you're trying to use the toilet with your diaper still on."));
+                    return 0;
+                }
+                else if(peeterid == "t_sewage")
+                {
+                    add_msg(m_info, _("you pee your swim diapers, you can't tell if it leaked or not because of the sewage"));
+                    return 0;
+                }
+                else
+                {
+                    add_msg(m_info, _("You decided to just pee your diaper like a toddler. Unfortunantly it leaks all over the place"));
+                    return 0;
+                }
+            }
+            else{
+                if(peefurnid == "f_toilet")
+                {
+                    add_msg(m_info, _("Aww, you're trying to use the toilet with your diaper still on."));
+                    return 0;
+                }
+                else
+                {
+                    add_msg(m_info, _("You decided to just pee your diaper like a toddler."));
+                    return 0;
+                }
+            }
         }
     }
     else
     {
         if(wetdiaper==false)
         {
-			
-			if(leak==true)
-			{
-				if(has_effect("sleep"))
-				{
-					add_msg(m_bad, _("You wet the bed in your sleep."));
-					return 0;
-				}
-				else if(has_effect("lying_down"))
-				{
-					if(has_trait("INCONT"))
-						add_msg(m_info, _("While laying there you pee yourself without noticing."));
-					else
-						add_msg(m_info, _("Too lazy to get up you decided to just wet the bed."));
-					return 0;
-				}
-				else if(peeterid == "t_water_pool")
-				{
-					add_msg(m_bad, _("You have an accident in the pool. Since you don't see any pee you assume it didn't leak even though it did."));
-					return 0;
-				}
-				else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
-				{
-					add_msg(m_bad, _("You have an accident in the water. Since you don't see any pee you assume it didn't leak even though it did."));
-					return 0;
-				}
-				else if(peefurnid == "f_toilet")
-				{
-					add_msg(m_bad, _("Good thing you were on a toilet when you had that accident but your pants were still on."));
-					return 0;
-				}
-				else if(peeterid == "t_sewage")
-				{
-					add_msg(m_bad, _("You have an accident in the already putrid sewage. You can't tell the difference between your pee and everyone elses pee so maybe those diapers held up."));
-					return 0;
-				}
-				else
-				{
-					if(has_trait("INCONT"))
-					add_msg(m_bad, _("Everyone starts laughing at you and you can't figure out why, until you look down and get a horrified look on your face as you find out your diaper is leaking like hell."));
-					else
-					add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Everyone starts laughing at you as your diapers leak all over the place."));
-					return 0;
-				}
-			}
-			else
-			{
-				if(has_effect("sleep"))
-				{
-					add_msg(m_bad, _("You wet the bed in your sleep. Or at least your pants as your bed is still clean"));
-					return 0;
-				}
-				else if(has_effect("lying_down"))
-				{
-					if(has_trait("INCONT"))
-						add_msg(m_info, _("While laying there you pee yourself without noticing."));
-					else
-						add_msg(m_info, _("Too lazy to get up you decided to just wet the bed."));
-					return 0;
-				}
-				else if(peeterid == "t_water_pool")
-				{
-					add_msg(m_bad, _("You have an accident in the pool. Way to keep it clean."));
-					return 0;
-				}
-				else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
-				{
-					add_msg(m_bad, _("You have an accident in the water."));
-					return 0;
-				}
-				else if(peefurnid == "f_toilet" && wet==true)
-				{
-					add_msg(m_bad, _("Good thing you were on a toilet when you had that accident but your pants were still on. Amazingly it didn't leak through."));
-					return 0;
-				}
-				else if(peefurnid == "f_toilet" && wet==false)
-				{
-					add_msg(m_bad, _("Good thing you were on a toilet when had that accident."));
-					return 0;
-				}
-				else if(peeterid == "t_sewage")
-				{
-					add_msg(m_bad, _("You have an accident in the already putrid sewage."));
-					return 0;
-				}
-				else if(wet==true)
-				{
-					if(has_trait("INCONT"))
-					add_msg(m_bad, _("You pee yourself without control, but no one noticed as only the inside of your pants got stained"));
-					else
-					add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Amazingly it didn't leak through your pants."));
-					return 0;
-				}
-				else if(wet==false)
-				{
-					add_msg(m_bad, _("You have an accident right where you are. At least you weren't wearing any pants to drench but maybe you should start wearing diapers."));
-					return 0;
-				}
-			}
+            if(leak==true)
+            {
+                if(has_effect("sleep"))
+                {
+                    add_msg(m_bad, _("You wet the bed in your sleep."));
+                    return 0;
+                }
+                else if(has_effect("lying_down"))
+                {
+                    if(has_trait("INCONT"))
+                        add_msg(m_info, _("While laying there you pee yourself without noticing."));
+                    else
+                        add_msg(m_info, _("Too lazy to get up you decided to just wet the bed."));
+                    return 0;
+                }
+                else if(peeterid == "t_water_pool")
+                {
+                    add_msg(m_bad, _("You have an accident in the pool. Since you don't see any pee you assume it didn't leak even though it did."));
+                    return 0;
+                }
+                else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+                {
+                    add_msg(m_bad, _("You have an accident in the water. Since you don't see any pee you assume it didn't leak even though it did."));
+                    return 0;
+                }
+                else if(peefurnid == "f_toilet")
+                {
+                    add_msg(m_bad, _("Good thing you were on a toilet when you had that accident but your pants were still on."));
+                    return 0;
+                }
+                else if(peeterid == "t_sewage")
+                {
+                    add_msg(m_bad, _("You have an accident in the already putrid sewage. You can't tell the difference between your pee and everyone elses pee so maybe those diapers held up."));
+                    return 0;
+                }
+                else
+                {
+                    if(has_trait("INCONT"))
+                    add_msg(m_bad, _("Everyone starts laughing at you and you can't figure out why, until you look down and get a horrified look on your face as you find out your diaper is leaking like hell."));
+                    else
+                    add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Everyone starts laughing at you as your diapers leak all over the place."));
+                    return 0;
+                }
+            }
+            else
+            {
+                if(has_effect("sleep"))
+                {
+                    add_msg(m_bad, _("You wet the bed in your sleep. Or at least your pants as your bed is still clean"));
+                    return 0;
+                }
+                else if(has_effect("lying_down"))
+                {
+                    if(has_trait("INCONT"))
+                        add_msg(m_info, _("While laying there you pee yourself without noticing."));
+                    else
+                        add_msg(m_info, _("Too lazy to get up you decided to just wet the bed."));
+                    return 0;
+                }
+                else if(peeterid == "t_water_pool")
+                {
+                    add_msg(m_bad, _("You have an accident in the pool. Way to keep it clean."));
+                    return 0;
+                }
+                else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+                {
+                    add_msg(m_bad, _("You have an accident in the water."));
+                    return 0;
+                }
+                else if(peefurnid == "f_toilet" && wet==true)
+                {
+                    add_msg(m_bad, _("Good thing you were on a toilet when you had that accident but your pants were still on. Amazingly it didn't leak through."));
+                    return 0;
+                }
+                else if(peefurnid == "f_toilet" && wet==false)
+                {
+                    add_msg(m_bad, _("Good thing you were on a toilet when had that accident."));
+                    return 0;
+                }
+                else if(peeterid == "t_sewage")
+                {
+                    add_msg(m_bad, _("You have an accident in the already putrid sewage."));
+                    return 0;
+                }
+                else if(wet==true)
+                {
+                    if(has_trait("INCONT"))
+                    add_msg(m_bad, _("You pee yourself without control, but no one noticed as only the inside of your pants got stained"));
+                    else
+                    add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Amazingly it didn't leak through your pants."));
+                    return 0;
+                }
+                else if(wet==false)
+                {
+                    add_msg(m_bad, _("You have an accident right where you are. At least you weren't wearing any pants to drench but maybe you should start wearing diapers."));
+                    return 0;
+                }
+            }
         }
         else
         {
-			if(leak==true)
-			{
-				if(has_effect("sleep"))
-				{
-					add_msg(m_bad, _("You wet your diaper in your sleep. It doesn't hold up and pee gets all over the bed"));
-					return 0;
-				}
-				else if(has_effect("lying_down"))
-				{
-					if(has_trait("INCONT"))
-						add_msg(m_info, _("While laying there you pee yourself without noticing. And it leaks but you don't care."));
-					else
-						add_msg(m_info, _("Too lazy to get up you decided to just wet the bed. And it leaks but you don't care"));
-					return 0;
-				}
-				else if(peeterid == "t_water_pool")
-				{
-					add_msg(m_bad, _("You have an accident in the pool. Since you don't see any pee you assume it didn't leak even though it did."));
-					return 0;
-				}
-				else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
-				{
-					add_msg(m_bad, _("You have an accident in the water. Since you don't see any pee you assume it didn't leak even though it did."));
-					return 0;
-				}
-				else if(peefurnid == "f_toilet")
-				{
-					add_msg(m_bad, _("Good thing you were on a toilet when you had that accident but your pants were still on."));
-					return 0;
-				}
-				else if(peeterid == "t_sewage")
-				{
-					add_msg(m_bad, _("You have an accident in the already putrid sewage. You can't tell the difference between your pee and everyone elses pee so maybe those diapers held up."));
-					return 0;
-				}
-				else
-				{
-					if(has_trait("INCONT"))
-					add_msg(m_bad, _("Everyone starts laughing at you and you can't figure out why, until you look down and get a horrified look on your face as you find out your diaper is leaking like hell."));
-					else
-					add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Everyone starts laughing at you as your diapers leak all over the place."));
-					return 0;
-				}
-			}
-			else
-			{
-				if(has_effect("sleep"))
-				{
-					add_msg(m_bad, _("You wet your diaper in your sleep."));
-					return 0;
-				}
-				else if(has_effect("lying_down"))
-				{
-					if(has_trait("INCONT"))
-						add_msg(m_info, _("While laying there you pee yourself without noticing."));
-					else
-						add_msg(m_info, _("Too lazy to get up you decided to just wet your diaper."));
-					return 0;
-				}
-				else if(peefurnid == "f_toilet" && wet==true)
-				{
-					add_msg(m_bad, _("Good thing you were on a toilet when you had that accident but your diaper was still on."));
-					return 0;
-				}
-				else if(peeterid == "t_water_pool" || peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
-				{
-					add_msg(m_bad, _("You have an accident in your swim diapers."));
-					return 0;
-				}
-				else if(has_trait("INCONT"))
-					add_msg(m_bad, _("You pee yourself like a toddler without even noticing. And thanks to that diaper of yours no one else will either."));
-				else
-					add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. At least with those diapers no one will notice."));
-				return 0;
-			}
+            if(leak==true)
+            {
+                if(has_effect("sleep"))
+                {
+                    add_msg(m_bad, _("You wet your diaper in your sleep. It doesn't hold up and pee gets all over the bed"));
+                    return 0;
+                }
+                else if(has_effect("lying_down"))
+                {
+                    if(has_trait("INCONT"))
+                        add_msg(m_info, _("While laying there you pee yourself without noticing. And it leaks but you don't care."));
+                    else
+                        add_msg(m_info, _("Too lazy to get up you decided to just wet the bed. And it leaks but you don't care"));
+                    return 0;
+                }
+                else if(peeterid == "t_water_pool")
+                {
+                    add_msg(m_bad, _("You have an accident in the pool. Since you don't see any pee you assume it didn't leak even though it did."));
+                    return 0;
+                }
+                else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+                {
+                    add_msg(m_bad, _("You have an accident in the water. Since you don't see any pee you assume it didn't leak even though it did."));
+                    return 0;
+                }
+                else if(peefurnid == "f_toilet")
+                {
+                    add_msg(m_bad, _("Good thing you were on a toilet when you had that accident but your pants were still on."));
+                    return 0;
+                }
+                else if(peeterid == "t_sewage")
+                {
+                    add_msg(m_bad, _("You have an accident in the already putrid sewage. You can't tell the difference between your pee and everyone elses pee so maybe those diapers held up."));
+                    return 0;
+                }
+                else
+                {
+                    if(has_trait("INCONT"))
+                    add_msg(m_bad, _("Everyone starts laughing at you and you can't figure out why, until you look down and get a horrified look on your face as you find out your diaper is leaking like hell."));
+                    else
+                    add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Everyone starts laughing at you as your diapers leak all over the place."));
+                    return 0;
+                }
+            }
+            else
+            {
+                if(has_effect("sleep"))
+                {
+                    add_msg(m_bad, _("You wet your diaper in your sleep."));
+                    return 0;
+                }
+                else if(has_effect("lying_down"))
+                {
+                    if(has_trait("INCONT"))
+                        add_msg(m_info, _("While laying there you pee yourself without noticing."));
+                    else
+                        add_msg(m_info, _("Too lazy to get up you decided to just wet your diaper."));
+                    return 0;
+                }
+                else if(peefurnid == "f_toilet" && wet==true)
+                {
+                    add_msg(m_bad, _("Good thing you were on a toilet when you had that accident but your diaper was still on."));
+                    return 0;
+                }
+                else if(peeterid == "t_water_pool" || peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+                {
+                    add_msg(m_bad, _("You have an accident in your swim diapers."));
+                    return 0;
+                }
+                else if(has_trait("INCONT"))
+                    add_msg(m_bad, _("You pee yourself like a toddler without even noticing. And thanks to that diaper of yours no one else will either."));
+                else
+                    add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. At least with those diapers no one will notice."));
+                return 0;
+            }
         }
     }
 
         return 0;
 }
+void player::pee()
+{
+    if(!has_trait("DEBUG_BLADDER"))
+    {
+        if(has_trait("INCONT"))
+        {
+            add_msg(m_critical, _("Message from bladder:You can't tell me what to do!"));
+            return;
+        }
+        for(unsigned int i = 0;i<worn.size();i++)
+        {
+            if((worn[i].covers(bp_leg_l)) || (worn[i].covers(bp_leg_r)))
+            {
+                if(worn[i].has_flag("DIAPERLOCKED"))
+                {
+                    if(bladder >= bladdermict)
+                    {
+                        add_msg(m_critical, _("You struggle to take off youpants but fail. Time to panic."));
+                        return;
+                    }
+                }
+            }
+        }
+        if(bladder < bladdermict)
+        {
+            add_msg(m_info, _("You don't have to go"));
+            return;
+        }
+    }
+    if(weapon.type->id == "e_handcuffs" && weapon.charges > 0)
+    {
+        add_msg(m_critical, _("You can't take your pants off with those handcuffs on."));
+        return;
+    }
+    int peex, peey;
+
+    if(male)
+    {
+        if (!choose_adjacent(_("Pee where?"), peex, peey)) {
+            return;
+        }
+    }
+    else
+    {
+        peex=posx;
+        peey=posy;
+    }
+    bladder=0;
+
+    std::string peeterid = g->m.get_ter(peex,peey);
+    std::string peefurnid = g->m.get_furn(peex,peey);
+    if(peeterid != "t_water_sh" && peeterid != "t_water_dp" && peeterid != "t_swater_sh" && peeterid != "t_swater_dp" && peeterid != "t_water_pool" && peeterid != "t_sewage" && peeterid != "t_lava" && peefurnid != "f_toilet")
+        g->m.add_field( peex, peey, fd_pee,3 );
+    if(peeterid == "t_water_pool")
+    {
+        add_msg(m_info, _("You pee in the pool."));
+        return;
+    }
+    else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+    {
+        add_msg(m_info, _("You pee in the water."));
+        return;
+    }
+    else if(peefurnid == "f_toilet")
+    {
+        if(male)
+        add_msg(m_info, _("You use the toilet like a big boy."));
+        else
+        add_msg(m_info, _("You use the toilet like a big girl."));
+        return;
+    }
+    else if(peeterid == "t_sewage")
+    {
+        add_msg(m_info, _("You pee in the already putrid sewage."));
+        return;
+    }
+    else
+    {
+        add_msg(m_info, _("You take a whiz."));
+    }
+}
+
 int player::swim_speed()
 {
     int ret = 440 + weight_carried() / 60 - 50 * skillLevel("swimming");

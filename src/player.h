@@ -223,6 +223,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         int  run_cost(int base_cost, bool diag = false);
 
         int peeself(bool ctrl);
+        void pee();
         /** Returns the player's speed for swimming across water tiles */
         int  swim_speed();
         /** Maintains body wetness and handles the rate at which the player dries */
