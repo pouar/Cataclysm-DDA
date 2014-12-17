@@ -402,10 +402,10 @@ void inventory_selector::display() const
     std::string msg_str;
     nc_color msg_color;
     if (inCategoryMode) {
-        msg_str = _("Category selection; Press [TAB] to switch the mode.");
+        msg_str = _("Category selection; [TAB] switches mode, arrows select.");
         msg_color = c_white_red;
     } else {
-        msg_str = _("Item selection; Press [TAB] to switch the mode.");
+        msg_str = _("Item selection; [TAB] switches mode, arrows select.");
         msg_color = h_white;
     }
     mvwprintz(w_inv, items_per_page + 4, FULL_SCREEN_WIDTH - utf8_width(msg_str.c_str()),
@@ -456,8 +456,8 @@ inventory_selector::inventory_selector(bool m, bool c, const std::string &t)
     , title(t)
     , current_page_offset_i(0)
     , current_page_offset_w(0)
-    , selected_i(1) // first is the category header
-    , selected_w(1) // ^^
+    , selected_i(0) // first is the category header
+    , selected_w(0) // ^^
     , inCategoryMode(false)
     , multidrop(m)
     , compare(c)
@@ -920,6 +920,14 @@ int game::inv_for_flag(const std::string flag, const std::string title, bool aut
             return reduced_inv[0].second;
         }
     }
+    return display_slice(reduced_inv, title);
+}
+
+int game::inv_for_filter(const std::string title, const item_filter filter )
+{
+    u.inv.restack(&u);
+    u.inv.sort();
+    indexed_invslice reduced_inv = u.inv.slice_filter_by( filter );
     return display_slice(reduced_inv, title);
 }
 

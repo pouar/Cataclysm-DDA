@@ -2301,6 +2301,7 @@ void mattack::frag_tur(monster *z, int index) // This is for the bots, not a sta
         if (!z->has_effect("targeted")) {
             //~Potential grenading detected.
             add_msg(m_warning, _("Those laser dots don't seem very friendly...") );
+            g->u.add_effect("laserlocked", 3); // Effect removed in game.cpp, duration doesn't much matter
             g->sound(z->posx(), z->posy(), 10, _("Targeting."));
             z->add_effect("targeted", 4);
             z->moves -= 150;
@@ -2379,6 +2380,7 @@ void mattack::bmg_tur(monster *z, int index)
             //~There will be a .50BMG shell sent at high speed to your location next turn.
             add_msg(m_warning, _("Why is there a laser dot on your torso..?"));
             g->sound(z->posx(), z->posy(), 10, _("Hostile detected."));
+            g->u.add_effect("laserlocked", 3);
             z->add_effect("targeted", 8);
             z->moves -= 100;
             return;
@@ -2459,6 +2461,7 @@ void mattack::tank_tur(monster *z, int index)
             //~ Sound of a tank turret swiveling into place
             g->sound(z->posx(), z->posy(), 10, _("whirrrrrclick."));
             z->add_effect("targeted", 3);
+            g->u.add_effect("laserlocked", 3);
             z->moves -= 200;
             // Should give some ability to get behind cover,
             // even though it's patently unrealistic.
