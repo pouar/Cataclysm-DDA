@@ -759,5 +759,32 @@
 		"bashing" : -5,
 		"coverage" : 50,
 		"material_thickness" : 1
+	},
+	{
+		"type" : "MONSTER",
+		"id" : "mon_sonicexe",
+		"name": "Sonic.exe",
+		"species":"HORROR",
+		"symbol":"S",
+		"color":"blue",
+		"size":"SMALL",
+		"material":"flesh",
+		"diff":100,
+		"aggression":100,
+		"morale":100,
+		"speed":300,
+		"melee_skill":20,
+		"melee_dice":8,
+		"melee_dice_sides":8,
+		"melee_cut":4,
+		"dodge":20,
+		"armor_bash":20,
+		"armor_cut":20,
+		"luminance":0,
+		"hp":500,
+		"death_function":["MELT"],
+		"special_attacks":[["SHRIEK", 5],["ACID", 3],["SHOCKSTORM", 6],["SMOKECLOUD", 6],["RESURRECT", 1],["GROWPLANTS", 5],["GROW_VINE", 5],["VORTEX", 6],["STARE", 5],["FEAR_PARALYZE", 5],["UPGRADE", 1],["LUNGE", 3],["LEAP", 3]],
+		"description":"It looks like Sonic the Hedgehog, but his eyes are pitch black and bleeding with two glowing red dots.",
+		"flags":["SEES", "HEARS", "SMELLS", "WARM","HARDTOSHOOT","BORES","BLEED", "BASHES", "DESTROYS", "NO_BREATHE", "VIS50"]
 	}
 ]

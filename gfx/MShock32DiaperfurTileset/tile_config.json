@@ -19571,6 +19571,11 @@
 					"rotates": false,
 					"id": "thick_pink_cotton_diaper",
 					"fg": 13
+				},
+				{
+					"rotates": false,
+					"id": "mon_sonicexe",
+					"fg": 0
 				}
 			]
 		},
