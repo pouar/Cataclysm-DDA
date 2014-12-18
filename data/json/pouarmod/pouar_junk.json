@@ -785,7 +785,7 @@
 		"death_function":["MELT"],
 		"special_attacks":[["SHRIEK", 5],["PARROT", 0],["RESURRECT", 1],["STARE", 5],["FEAR_PARALYZE", 5],["UPGRADE", 1],["LUNGE", 3],["LEAP", 3]],
 		"description":"It looks like Sonic the Hedgehog, but his eyes are pitch black and bleeding with two glowing red dots.",
-		"flags":["SEES", "HEARS", "SMELLS", "WARM","HARDTOSHOOT","BLEED", "BASHES", "NO_BREATHE", "VIS50"]
+		"flags":["SEES", "HEARS", "SMELLS", "WARM","HARDTOSHOOT","BLEED", "BASHES", "NO_BREATHE", "VIS50","FLIES"]
 	},
 	{
 		"type" : "speech",
