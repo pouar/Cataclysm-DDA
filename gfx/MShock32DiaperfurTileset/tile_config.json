@@ -19575,7 +19575,8 @@
 				{
 					"rotates": false,
 					"id": "mon_sonicexe",
-					"fg": 0
+					"fg": 0,
+					"//": "modified from http://xxsky64xx.deviantart.com/art/Sonic-exe-SPRITES-429259475"
 				}
 			]
 		},
