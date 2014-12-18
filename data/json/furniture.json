@@ -1997,5 +1997,30 @@
                 { "item": "splinter", "amount": 4, "minamount": 2 }
             ]
         }
+    },{
+        "type": "furniture",
+        "id": "f_standing_tank",
+        "name": "standing tank",
+        "symbol" : "O",
+        "color": "ltgray",
+        "move_cost_mod" : -1,
+        "required_str": -1,
+        "flags": ["BASHABLE", "CONTAINER", "DECONSTRUCT", "LIQUIDCONT", "NOITEM", "SEALED", "TRANSPARENT"],
+        "deconstruct": {
+            "items": [
+                { "item": "metal_tank", "amount": 4 },
+                { "item": "water_faucet", "amount": 1 }
+            ]
+        },
+        "examine_action": "keg",
+        "bash": {
+            "str_min": 10, "str_max": 20,
+            "sound": "metal screeching!",
+            "sound_fail": "clang!",
+            "items": [
+                { "item": "scrap", "amount": 32, "minamount": 8},
+                { "item": "water_faucet", "amount": 1, "minamount": 0 }
+            ]
+        }
     }
 ]
