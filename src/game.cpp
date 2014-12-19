@@ -617,7 +617,7 @@ void game::start_game(std::string worldname)
 
     const start_location &start_loc = *start_location::find( u.start_location );
     start_loc.setup( cur_om, levx, levy, levz );
-    
+
     // Start the overmap with out immediate neighborhood visible
     overmap_buffer.reveal(point(om_global_location().x, om_global_location().y), OPTIONS["DISTANCE_INITIAL_VISIBILITY"], 0);
     // Init the starting map at this location.
@@ -1494,10 +1494,8 @@ bool game::do_turn()
         for( auto &_i : sm->vehicles ) {
             auto veh = _i;
 
-            veh->power_parts(sm_loc);
-            if (sm_loc.z == levz) {
-                veh->idle(m.inbounds(in_reality.x, in_reality.y));
-            }
+            veh->power_parts( sm_loc );
+            veh->idle( sm_loc.z == levz && m.inbounds(in_reality.x, in_reality.y) );
         }
     }
     m.process_fields();
@@ -2133,7 +2131,7 @@ void game::activity_on_finish_hotwire()
         debugmsg("process_activity ACT_HOTWIRE_CAR: vehicle not found");
     }
     u.activity.type = ACT_NULL;
-    
+
 }
 
 void game::activity_on_finish_fish()
@@ -8194,12 +8192,13 @@ void game::handbrake()
         veh->skidding = true;
         add_msg(m_warning, _("You lose control of %s."), veh->name.c_str());
         veh->turn(veh->last_turn > 0 ? 60 : -60);
-    } else if (veh->velocity < 0) {
-        veh->stop();
     } else {
-        veh->velocity = veh->velocity / 2 - 10 * 100;
-        if (veh->velocity < 0) {
+        int braking_power = abs( veh->velocity ) / 2 + 10 * 100;
+        if( abs( veh->velocity ) < braking_power ) {
             veh->stop();
+        } else {
+            int sgn = veh->velocity > 0 ? 1 : -1;
+            veh->velocity = sgn * ( abs( veh->velocity ) - braking_power );
         }
     }
     u.moves = 0;
@@ -11286,7 +11285,7 @@ void game::plfire(bool burst, int default_target_x, int default_target_y)
         // get a list of holsters from worn items
         std::vector<item *> holsters;
         for( auto &worn : u.worn ) {
-            if ((worn.type->can_use("HOLSTER_PISTOL") || worn.type->can_use("HOLSTER_ANKLE")) &&
+            if (((worn.type->can_use("HOLSTER_GUN") && !(worn.has_flag("NO_QUICKDRAW"))) || worn.type->can_use("HOLSTER_ANKLE")) &&
                 (!worn.contents.empty() && worn.contents[0].is_gun())) {
                 holsters.push_back(&worn);
             }
@@ -11312,7 +11311,7 @@ void game::plfire(bool burst, int default_target_x, int default_target_y)
             }
 
             if (choice > -1) {
-                u.wield_contents(holsters[choice], true, _("pistol"), 13);
+                u.wield_contents(holsters[choice], true,  holsters[choice]->skill(), 13);
                 u.add_msg_if_player(_("You pull your %s from its %s and ready it to fire."),
                                     u.weapon.tname().c_str(), holsters[choice]->type_name(1).c_str());
                 if (u.weapon.charges <= 0) {
