@@ -19585,26 +19585,26 @@
 			"tiles": [
 				{
 					"id": "t_chunk_blower",
-					"fg": 2258,
-					"bg": 504,
+					"fg": 2270,
+					"bg": 501,
 					"rotates": false
 				},
 				{
 					"id": "tr_chunkblower",
-					"fg": 2258,
-					"bg": 504,
+					"fg": 2270,
+					"bg": 501,
 					"rotates": false
 				},
 				{
 					"id": "leather_spiked_collar_bell",
 					"fg": 399,
-					"bg": 504,
+					"bg": 501,
 					"rotates": false
 				},
 				{
 					"id": "diuretics",
-					"fg": 604,
-					"bg": 504,
+					"fg": 600,
+					"bg": 501,
 					"rotates": false
 				},
 				{
