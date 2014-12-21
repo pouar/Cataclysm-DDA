@@ -986,6 +986,55 @@
     },
     {
         "type": "profession",
+        "ident": "swat",
+        "name": "SWAT Officer",
+        "description": "As a member of the police force's most elite division, you are more than adequately trained and equipped to survive the brutal onslaught of the apocalypse.  Unfortunately, the breakdown of society has brought you to your current state of affairs; you now fight to simply stay alive.",
+        "points": 5,
+        "skills": [
+            {
+                "level": 3,
+                "name": "gun"
+            },
+            {
+                "level": 3,
+                "name": "pistol"
+            },
+            {
+                "level": 3,
+                "name": "smg"
+            }
+        ],
+        "traits": [
+            "PROF_SWAT"
+        ],
+        "items": {
+            "both": [
+                "socks",
+                "swat_armor",
+                "sholster",
+                "tac_fullhelmet",
+                "boots_combat",
+                "gloves_tactical",
+                "badge_swat",
+                "usp_9mm",
+                "hk_mp5",
+                "shoulder_strap",
+                "9mm",
+                "9mm",
+                "9mmfmj",
+                "flashbang"
+            ],
+            "male": [
+                "boxer_shorts"
+            ],
+            "female": [
+                "sports_bra",
+                "boy_shorts"
+            ]
+        }
+    },
+    {
+        "type": "profession",
         "ident": "salesman",
         "name": "Used Car Salesman",
         "description": "You've been accused of being the sort of person who'd be willing to sell your own mother for a dollar.  It always left you insulted - you've been around the block a time or two, and you'd charge way more than a dollar - and get it, too!",
@@ -1562,7 +1611,7 @@
             "bio_power_storage_mkII"
         ],
         "traits": [
-            "PROF_POLICE"
+            "PROF_CYBERCOP"
         ],
         "skills": [
             {
@@ -1582,7 +1631,7 @@
                 "under_armor",
                 "socks",
                 "boots",
-                "badge_deputy",
+                "badge_cybercop",
                 "holster",
                 "l_mp_9mm",
                 "9mmP",

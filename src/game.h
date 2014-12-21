@@ -219,7 +219,7 @@ class game
         bool cancel_activity_query(const char *message, ...);
         bool cancel_activity_or_ignore_query(const char *reason, ...);
         void moving_vehicle_dismount(int tox, int toy);
-        
+
         vehicle *remoteveh(); // Get remotely controlled vehicle
         void setremoteveh(vehicle *veh); // Set remotely controlled vehicle
 
@@ -654,6 +654,8 @@ class game
         void handle_key_blocking_activity(); // Abort reading etc.
         bool handle_action();
 
+        void item_action_menu(); // Displays item action menu
+
 
         void rcdrive(int dx, int dy); //driving radio car
         /**
@@ -693,7 +695,6 @@ class game
         // Debug functions
         void debug();           // All-encompassing debug screen.  TODO: This.
         void display_scent();   // Displays the scent map
-        void mondebug();        // Debug monster behavior directly
         void groupdebug();      // Get into on monster groups
 
         // ########################## DATA ################################
