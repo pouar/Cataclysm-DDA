@@ -1065,6 +1065,10 @@ void item::deserialize(JsonObject &data)
         // if it's already rotten, no need to do this.
         active = true;
     }
+    if( active && dynamic_cast<it_comest*>(type) && (rotten() || !goes_bad()) ) {
+        // There was a bug that set all comestibles active, this reverses that.
+        active = false;
+    }
 
     if( data.read( "curammo", ammotmp ) ) {
         set_curammo( ammotmp );
@@ -1333,8 +1337,8 @@ void vehicle::deserialize(JsonIn &jsin)
         auto end = parts[cargo_index].items.end();
         for( ; it != end; ++it ) {
             if( it->needs_processing() ) {
-                add_active_item( it, point( parts[cargo_index].mount_dx,
-                                            parts[cargo_index].mount_dy ) );
+                active_items.add( it, point( parts[cargo_index].mount_dx,
+                                             parts[cargo_index].mount_dy ) );
             }
         }
     }
