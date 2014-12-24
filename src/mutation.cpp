@@ -163,6 +163,17 @@ void player::activate_mutation( std::string mut )
         }
         traits[mut].powered = false;
         return;
+    } else if (traits[mut].id == "FIREBREATH"){
+        item tmp_item = weapon;
+        weapon = item("firebreath", 1);
+        const std::string ammo_type("gasoline");
+        weapon.set_curammo( ammo_type );
+        weapon.charges = 100;
+        g->refresh_all();
+        g->plfire(true);
+        weapon = tmp_item;
+        traits[mut].powered = false;
+        return;
     }
 }
 

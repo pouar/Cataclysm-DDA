@@ -834,5 +834,43 @@
 		"speaker" : "mon_sonicexe",
 		"sound" : "\"Ready for Round 2?\"",
 		"volume" : 100
+	},
+	{
+		"type" : "mutation",
+		"id" : "FIREBREATH",
+		"name" : "Fire Breath",
+		"points" : 5,
+		"description" : "You can breath fire",
+        "active"     :    true,
+        "cost"       :    3,
+        "time"       :    0
+	},
+	{
+		"id": "firebreath",
+		"type": "GUN",
+		"symbol": "(",
+		"color": "dark_gray",
+		"name": "Fire Breath",
+		"description": "pseudo-item",
+		"price": 970000,
+		"material": ["null", "null"],
+		"flags": ["NO_BOOM", "FLARE", "NEVER_JAMS", "MODE_BURST","STREAM_BIG","INCENDIARY","NAPALM"],
+		"skill": "launcher",
+		"ammo": "gasoline",
+		"weight": 0,
+		"volume": 0,
+		"bashing": 0,
+		"cutting": 0,
+		"to_hit": -1,
+		"ranged_damage": 50,
+		"range": 12,
+		"dispersion": 90,
+		"sight_dispersion": 90,
+		"aim_speed" : 0,
+		"recoil": 0,
+		"durability": 9,
+		"burst": 100,
+		"clip_size": 2000,
+		"reload": 0
 	}
 ]
