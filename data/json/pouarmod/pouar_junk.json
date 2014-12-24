@@ -855,7 +855,7 @@
 		"description": "pseudo-item",
 		"price": 970000,
 		"material": ["null", "null"],
-		"flags": ["NO_BOOM", "FLARE", "NEVER_JAMS", "MODE_BURST","STREAM_BIG","INCENDIARY","NAPALM"],
+		"flags": ["NO_BOOM", "FLARE", "NEVER_JAMS","STREAM_BIG","INCENDIARY","NAPALM"],
 		"skill": "launcher",
 		"ammo": "gasoline",
 		"weight": 0,
@@ -870,7 +870,6 @@
 		"aim_speed" : 0,
 		"recoil": 0,
 		"durability": 9,
-		"burst": 100,
 		"clip_size": 2000,
 		"reload": 0
 	}

@@ -170,7 +170,7 @@ void player::activate_mutation( std::string mut )
         weapon.set_curammo( ammo_type );
         weapon.charges = 100;
         g->refresh_all();
-        g->plfire(true);
+        g->plfire(false);
         weapon = tmp_item;
         traits[mut].powered = false;
         return;
