@@ -843,7 +843,8 @@
 		"description" : "You can breath fire",
         "active"     :    true,
         "cost"       :    3,
-        "time"       :    0
+        "time"       :    0,
+		"category" : ["MUTCAT_CHIMERA"]
 	},
 	{
 		"id": "firebreath",
