@@ -864,7 +864,7 @@
 		"cutting": 0,
 		"to_hit": -1,
 		"ranged_damage": 50,
-		"range": 12,
+		"range": 100,
 		"dispersion": 90,
 		"sight_dispersion": 90,
 		"aim_speed" : 0,
