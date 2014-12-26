@@ -60,7 +60,8 @@ enum vehicle_controls {
  trigger_alarm,
  toggle_doors,
  cont_turrets,
- manual_fire
+ manual_fire,
+ toggle_camera
 };
 
 // Map stack methods.
@@ -157,6 +158,7 @@ vehicle::vehicle(std::string type_id, int init_veh_fuel, int init_veh_status): t
     recharger_epower = 0;
     tracking_epower = 0;
     alarm_epower = 0;
+    camera_epower = 0;
     cruise_velocity = 0;
     music_id = "";
     skidding = false;
@@ -172,6 +174,7 @@ vehicle::vehicle(std::string type_id, int init_veh_fuel, int init_veh_status): t
     engine_on = false;
     is_locked = false;
     is_alarm_on = false;
+    camera_on = false;
 
     //type can be null if the type_id parameter is omitted
     if(type != "null") {
@@ -861,6 +864,8 @@ void vehicle::use_controls()
     bool has_recharger = false;
     bool can_trigger_alarm = false;
     bool has_door_motor = false;
+    bool has_camera = false;
+    bool has_camera_control = false;
 
     for( size_t p = 0; p < parts.size(); p++ ) {
         if (part_flag(p, "CONE_LIGHT")) {
@@ -899,9 +904,14 @@ void vehicle::use_controls()
             has_recharger = true;
         } else if (part_flag(p, "SECURITY") && !is_alarm_on && parts[p].hp > 0) {
             can_trigger_alarm = true;
-        }
-        else if (part_flag(p, "DOOR_MOTOR")) {
+        } else if (part_flag(p, "DOOR_MOTOR")) {
             has_door_motor = true;
+        } else if( part_flag( p, "CAMERA" ) ) {
+            if( part_flag( p, "CAMERA_CONTROL" ) ) {
+                has_camera_control = true;
+            } else {
+                has_camera = true;
+            }
         }
     }
 
@@ -1016,6 +1026,12 @@ void vehicle::use_controls()
         
         options_choice.push_back(manual_fire);
         options_message.push_back(uimenu_entry(_("Aim a turret manually"), 'w'));
+    }
+    // toggle cameras
+    if( camera_on || ( has_camera && has_camera_control ) ) {
+        options_choice.push_back( toggle_camera );
+        options_message.push_back( uimenu_entry( camera_on ? _("Turn off camera system") :
+                                                             _("Turn on camera system"), 'm' ) );
     }
 
     options_choice.push_back(control_cancel);
@@ -1270,6 +1286,17 @@ void vehicle::use_controls()
         break;
     case manual_fire:
         aim_turrets();
+        break;
+    case toggle_camera:
+        if( camera_on ) {
+            camera_on = false;
+            add_msg( _("Camera system disabled") );
+        } else if( fuel_left(fuel_type_battery, true) ) {
+            camera_on = true;
+            add_msg( _("Camera system enabled") );
+        } else {
+            add_msg( _("Camera system won't turn on") );
+        }
         break;
     case control_cancel:
         break;
@@ -3268,6 +3295,7 @@ void vehicle::power_parts (tripoint sm_loc)//TODO: more categories of powered pa
     if(fridge_on) epower += fridge_epower;
     if(recharger_on) epower += recharger_epower;
     if (is_alarm_on) epower += alarm_epower;
+    if( camera_on ) epower += camera_epower;
 
     // Producers of epower
     epower += solar_epower(sm_loc);
@@ -3375,6 +3403,7 @@ void vehicle::power_parts (tripoint sm_loc)//TODO: more categories of powered pa
         fridge_on = false;
         stereo_on = false;
         recharger_on = false;
+        camera_on = false;
         if(player_in_control(&g->u) || g->u_see(global_x(), global_y())) {
             add_msg("The %s's battery dies!",name.c_str());
         }
@@ -4456,6 +4485,9 @@ void vehicle::gain_moves()
 
     if( turret_mode ) { // handle turrets
         for( size_t p = 0; p < parts.size(); p++ ) {
+            if( !part_flag( p, "TURRET" ) ) {
+                continue;
+            }
             bool success = fire_turret( p );
             // Negative mode means we aimed manually a turret set not to aim automatically
             if( parts[p].mode < 0 ) {
@@ -4543,6 +4575,9 @@ void vehicle::refresh()
         }
         if (vpi.has_flag("SECURITY")){
             speciality.push_back(p);
+        }
+        if( vpi.has_flag( "CAMERA" ) ) {
+            camera_epower += vpi.epower;
         }
         // Build map of point -> all parts in that point
         point pt( parts[p].mount_dx, parts[p].mount_dy );
@@ -4976,8 +5011,8 @@ void vehicle::aim_turrets()
 
     int turret_index = turrets[selected];
 
-    const auto gun = item::find_type( part_info( turret_index ).item )->gun.get();
-    if( !part_flag( turret_index, "TURRET" ) || gun == nullptr ) {
+    const item gun( part_info( turret_index ).item, 0 );
+    if( !part_flag( turret_index, "TURRET" ) || gun.type->gun == nullptr ) {
         debugmsg( "vehicle::aim_turrets tried to pick a non-turret part" );
         return;
     }
@@ -4989,7 +5024,19 @@ void vehicle::aim_turrets()
     target.second.x = cx;
     target.second.y = cy;
 
-    int range = gun->range;
+    it_ammo *ammo;
+    if( get_items( turret_index ).front().charges > 0 ) {
+        ammo = dynamic_cast<it_ammo*>( get_items( turret_index ).front().type );
+    } else if( !gun.is_charger_gun() ) { // Charger guns "use" different ammo than they fire
+        ammo = dynamic_cast<it_ammo*>( item::find_type( part_info( turret_index ).fuel_type ) );
+    } else {
+        ammo = dynamic_cast<it_ammo*>( item::find_type( "charge_shot" ) );
+    }
+    if( !ammo ) {
+        ammo = dynamic_cast<it_ammo*>( item::find_type( "fake_ammo" ) );
+    }
+    const auto &gun_data = *gun.type->gun;
+    int range = gun_data.range + ammo->range;
     int x = cx;
     int y = cy;
     int t;
@@ -5217,12 +5264,32 @@ bool vehicle::fire_turret (int p, bool /* burst */ )
     return true;
 }
 
+// Ammo/weapon tags to area of effect
+// Maybe move to ranged.cpp and let player/NPCs see it?
+int aoe_size( std::set< std::string > tags )
+{
+    if( tags.count( "NAPALM_BIG" ) ||
+        tags.count( "EXPLOSIVE_HUGE" ) ) {
+        return 4;
+    } else if( tags.count( "NAPALM" ) ||
+               tags.count( "EXPLOSIVE_BIG") ) {
+        return 3;
+    } else if( tags.count( "EXPLOSIVE" ) ||
+               tags.count( "FRAG" ) ) {
+        return 2;
+    } else if( tags.count( "ACIDBOMB" ) ||
+               tags.count( "FLAME" ) ) {
+        return 1;
+    }
+    
+    return 0;
+}
+
 bool vehicle::fire_turret_internal (int p, const itype &gun, it_ammo &ammo, long &charges, const std::string &extra_sound)
 {
     int x = global_x() + parts[p].precalc_dx[0];
     int y = global_y() + parts[p].precalc_dy[0];
-    // code copied form mattack::smg, mattack::flamethrower
-    int range = ammo.type == fuel_type_gasoline ? 5 : 12;
+    int range = part_info( p ).range;
     bool burst = abs( parts[p].mode ) > 1;
 
     npc tmp;
@@ -5242,14 +5309,20 @@ bool vehicle::fire_turret_internal (int p, const itype &gun, it_ammo &ammo, long
     tmp.weapon.set_curammo( ammo.id );
     tmp.weapon.charges = charges;
 
+    int area = std::max( aoe_size( tmp.weapon.get_curammo()->ammo_effects ),
+                         aoe_size( tmp.weapon.type->gun->ammo_effects ) );
+    if( area > 0 ) {
+        area += area == 1 ? 1 : 2; // Pad a bit for less friendly fire
+    }
+
     int xtarg;
     int ytarg;
     std::pair< point, point > &target = parts[p].target;
     if( target.first == target.second ) {
         // Manual target not set, find one automatically
         const bool u_see = g->u_see(x, y);
-        int fire_t, boo_hoo;
-        Creature *auto_target = tmp.auto_find_hostile_target(range, boo_hoo, fire_t);
+        int boo_hoo;
+        Creature *auto_target = tmp.auto_find_hostile_target( range, boo_hoo, area );
         if( auto_target == nullptr ) {
             if (u_see && boo_hoo) {
                 add_msg(m_warning, ngettext("%s points in your direction and emits an IFF warning beep.",
@@ -5259,7 +5332,6 @@ bool vehicle::fire_turret_internal (int p, const itype &gun, it_ammo &ammo, long
             }
             return false;
         }
-        
         xtarg = auto_target->xpos();
         ytarg = auto_target->ypos();
     } else {
