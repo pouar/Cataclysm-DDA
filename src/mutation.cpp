@@ -174,6 +174,17 @@ void player::activate_mutation( std::string mut )
         weapon = tmp_item;
         traits[mut].powered = false;
         return;
+    } else if (traits[mut].id == "FIREBOOM"){
+        item tmp_item = weapon;
+        weapon = item("fireboom", 1);
+        const std::string ammo_type("fireboom_ammo");
+        weapon.set_curammo( ammo_type );
+        weapon.charges = 100;
+        g->refresh_all();
+        g->plfire(false);
+        weapon = tmp_item;
+        traits[mut].powered = false;
+        return;
     }
 }
 
