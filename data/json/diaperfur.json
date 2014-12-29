@@ -586,7 +586,7 @@
 		"description" : "Your entire body is covered in red fur with white fur on your chest, belly, and the bottoms of your hands and feet.",
 		"prereqs" : ["DRAGON_SCALES"],
 		"category" : ["MUTCAT_LIZARD"],
-		"cancels" : ["SLEEK_SCALES", "FEATHERS", "CHITIN", "PLANTSKIN", "FUR", "FELINE_FUR", "LUPINE_FUR", "URSINE_FUR", "THICK_SCALES"]
+		"cancels" : ["SLEEK_SCALES", "FEATHERS", "CHITIN", "PLANTSKIN", "FUR", "FELINE_FUR", "LUPINE_FUR", "URSINE_FUR", "THICK_SCALES", "CHITIN_FUR"]
 	},
 	{
 		"type" : "mutation",
@@ -598,7 +598,7 @@
 		"description" : "Your entire body is covered in red scales with yellow scales on your chest, belly, and the bottoms of your hands and feet.",
 		"prereqs" : ["SCALES"],
 		"category" : ["MUTCAT_LIZARD"],
-		"cancels" : ["SLEEK_SCALES", "FEATHERS", "CHITIN", "PLANTSKIN", "FUR", "FELINE_FUR", "LUPINE_FUR", "URSINE_FUR", "THICK_SCALES"],
+		"cancels" : ["SLEEK_SCALES", "FEATHERS", "CHITIN", "PLANTSKIN", "FUR", "FELINE_FUR", "LUPINE_FUR", "URSINE_FUR", "THICK_SCALES", "CHITIN_FUR"],
 		"leads_to" : ["DRAGON_FUR"],
 		"wet_protection" : [
 			{ "part" : "HEAD", "ignored" : 5 },
