@@ -374,10 +374,7 @@ void player::reset_stats()
         if (!(has_trait("CENOBITE"))) {
             mod_str_bonus(-int((pain - pkill) / 15));
             mod_dex_bonus(-int((pain - pkill) / 15));
-            if (pain - pkill > 0) {
-                add_miss_reason(_("Your pain distracts you!"),
-                                int(pain - pkill) / 15);
-            }
+            add_miss_reason(_("Your pain distracts you!"), int(pain - pkill) / 15);
         }
         mod_per_bonus(-int((pain - pkill) / 20));
         if (!(has_trait("INT_SLIME"))) {
@@ -10360,7 +10357,7 @@ bool player::eat(item *eaten, it_comest *comest)
       }
     }
     if (has_trait("VEGETARIAN") && (eaten->made_of("flesh") || eaten->made_of("hflesh") || eaten->made_of("iflesh"))) {
-        add_msg_if_player(m_bad, _("Almost instantly you feel a familiar pain in your stomach."));
+        add_msg_if_player(m_bad, _("Yuck! How can anybody eat this stuff?"));
         add_morale(MORALE_VEGETARIAN, -75, -400, 300, 240);
     }
     if (has_trait("MEATARIAN") && eaten->made_of("veggy")) {

@@ -85,3 +85,6 @@ tools/djb2sum
 # vimdiff backup
 *.orig
 
+# OSX
+Cataclysm.app
+data/osx/AppIcon.icns

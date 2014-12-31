@@ -12901,6 +12901,8 @@ void build_mansion_room(map *m, room_type type, int x1, int y1, int x2, int y2, 
                         m->spawn_item(x1 + 1, y, "tanto");
                     } else if (one_in(6)) {
                         m->spawn_item(x1 + 1, y, "nodachi");
+                    } else if (one_in(4)) {
+                        m->spawn_item(x1 + 1, y, "bokken");
                     }
 
                     m->spawn_item(x2 - 1, y, "helmet_kabuto");
@@ -12916,6 +12918,8 @@ void build_mansion_room(map *m, room_type type, int x1, int y1, int x2, int y2, 
                         m->spawn_item(x1 + 1, y, "tanto");
                     } else if (one_in(6)) {
                         m->spawn_item(x2 - 1, y, "nodachi");
+                    } else if (one_in(4)) {
+                        m->spawn_item(x2 - 1, y, "bokken");
                     }
 
                     if(one_in(2)) {
@@ -12999,6 +13003,7 @@ void build_mansion_room(map *m, room_type type, int x1, int y1, int x2, int y2, 
                     m->place_items("novels",    85, x, y, x + 1, y + 2, false, 0);
                     m->place_items("manuals",   62, x, y, x + 1, y + 2, false, 0);
                     m->place_items("textbooks", 40, x, y, x + 1, y + 2, false, 0);
+                    m->place_items("mansion_books", 35, x, y, x + 1, y + 2, false, 0);
                 }
             }
             for (int x = x2 - 1; x >= cx_low + 2; x -= 3) {
@@ -13007,6 +13012,7 @@ void build_mansion_room(map *m, room_type type, int x1, int y1, int x2, int y2, 
                     m->place_items("novels",    85, x - 1, y, x, y + 2, false, 0);
                     m->place_items("manuals",   62, x - 1, y, x, y + 2, false, 0);
                     m->place_items("textbooks", 40, x - 1, y, x, y + 2, false, 0);
+                    m->place_items("mansion_books", 35, x - 1, y, x, y + 2, false, 0);
                 }
             }
         } else { // horizontally-aligned bookshelves
@@ -13016,6 +13022,7 @@ void build_mansion_room(map *m, room_type type, int x1, int y1, int x2, int y2, 
                     m->place_items("novels",    85, x, y, x + 2, y + 1, false, 0);
                     m->place_items("manuals",   62, x, y, x + 2, y + 1, false, 0);
                     m->place_items("textbooks", 40, x, y, x + 2, y + 1, false, 0);
+                    m->place_items("mansion_books", 35, x, y, x + 2, y + 1, false, 0);
                 }
             }
             for (int y = y2 - 1; y >= cy_low + 2; y -= 3) {
@@ -13024,6 +13031,7 @@ void build_mansion_room(map *m, room_type type, int x1, int y1, int x2, int y2, 
                     m->place_items("novels",    85, x, y - 1, x + 2, y, false, 0);
                     m->place_items("manuals",   62, x, y - 1, x + 2, y, false, 0);
                     m->place_items("textbooks", 40, x, y - 1, x + 2, y, false, 0);
+                    m->place_items("mansion_books", 35, x, y - 1, x + 2, y, false, 0);
                 }
             }
         }
@@ -13082,6 +13090,7 @@ void build_mansion_room(map *m, room_type type, int x1, int y1, int x2, int y2, 
             m->furn_set(x1 + 1, cy_low + 2, f_table);
             m->place_items("coffee_shop", 70, x1 + 1, cy_low - 2, x1 + 1, cy_low - 2, false, 0);
             m->place_items("magazines", 70, x1 + 1, cy_low - 2, x1 + 1, cy_low - 2, false, 0);
+            m->place_items("mansion_books", 30, x1 + 1, cy_low - 2, x1 + 1, cy_low - 2, false, 0);
         } else {
             line_furn(m, f_sofa, cx_low - 1, y1 + 1, cx_low + 1, y1 + 1);
             m->furn_set(cx_low - 2, y1 + 1, f_table);
@@ -13090,6 +13099,7 @@ void build_mansion_room(map *m, room_type type, int x1, int y1, int x2, int y2, 
             m->furn_set(cx_low + 2, y1 + 1, f_table);
             m->place_items("coffee_shop", 70, cx_low + 2, y1 + 1, cx_low + 2, y1 + 1, false, 0);
             m->place_items("magazines", 70, cx_low + 2, y1 + 1, cx_low + 2, y1 + 1, false, 0);
+            m->place_items("mansion_books", 30, cx_low + 2, y1 + 1, cx_low + 2, y1 + 1, false, 0);
         }
         m->furn_set(x1, y1, f_indoor_plant);
         m->furn_set(x2, y1, f_indoor_plant);
@@ -13135,6 +13145,8 @@ void build_mansion_room(map *m, room_type type, int x1, int y1, int x2, int y2, 
 
         square_furn(m, f_table, cx_low, cy_low - 1, cx_low + 1, cy_low + 1);
         m->place_items("novels", 50, cx_low, cy_low - 1, cx_low + 1, cy_low + 1,
+                       false, 0);
+        m->place_items("mansion_books", 40, cx_low, cy_low - 1, cx_low + 1, cy_low + 1,
                        false, 0);
         m->place_items("magazines", 60, cx_low, cy_low - 1, cx_low + 1, cy_low + 1,
                        false, 0);
