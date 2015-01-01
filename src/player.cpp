@@ -6387,7 +6387,7 @@ void player::process_effects() {
             val = it.get_mod("H_MOD", reduced);
             if (val != 0) {
                 mod = 1;
-                if(it.activated(calendar::turn, "H_MOD", reduced, mod)) {
+                if(it.activated(calendar::turn, "H_MOD", val, reduced, mod)) {
                     mod_healthy_mod(bound_mod_to_vals(get_healthy_mod(), val,
                                 it.get_max_val("H_MOD", reduced), it.get_min_val("H_MOD", reduced)));
                 }
@@ -6397,7 +6397,7 @@ void player::process_effects() {
             val = it.get_mod("HEALTH", reduced);
             if (val != 0) {
                 mod = 1;
-                if(it.activated(calendar::turn, "HEALTH", reduced, mod)) {
+                if(it.activated(calendar::turn, "HEALTH", val, reduced, mod)) {
                     mod_healthy(bound_mod_to_vals(get_healthy(), val,
                                 it.get_max_val("HEALTH", reduced), it.get_min_val("HEALTH", reduced)));
                 }
@@ -6407,7 +6407,7 @@ void player::process_effects() {
             val = it.get_mod("STIM", reduced);
             if (val != 0) {
                 mod = 1;
-                if(it.activated(calendar::turn, "STIM", reduced, mod)) {
+                if(it.activated(calendar::turn, "STIM", val, reduced, mod)) {
                     stim += bound_mod_to_vals(stim, val, it.get_max_val("STIM", reduced),
                                                 it.get_min_val("STIM", reduced));
                 }
@@ -6417,7 +6417,7 @@ void player::process_effects() {
             val = it.get_mod("HUNGER", reduced);
             if (val != 0) {
                 mod = 1;
-                if(it.activated(calendar::turn, "HUNGER", reduced, mod)) {
+                if(it.activated(calendar::turn, "HUNGER", val, reduced, mod)) {
                     hunger += bound_mod_to_vals(hunger, val, it.get_max_val("HUNGER", reduced),
                                                 it.get_min_val("HUNGER", reduced));
                 }
@@ -6427,7 +6427,7 @@ void player::process_effects() {
             val = it.get_mod("THIRST", reduced);
             if (val != 0) {
                 mod = 1;
-                if(it.activated(calendar::turn, "THIRST", reduced, mod)) {
+                if(it.activated(calendar::turn, "THIRST", val, reduced, mod)) {
                     thirst += bound_mod_to_vals(thirst, val, it.get_max_val("THIRST", reduced),
                                                 it.get_min_val("THIRST", reduced));
                 }
@@ -6437,7 +6437,7 @@ void player::process_effects() {
             val = it.get_mod("FATIGUE", reduced);
             if (val != 0) {
                 mod = 1;
-                if(it.activated(calendar::turn, "FATIGUE", reduced, mod)) {
+                if(it.activated(calendar::turn, "FATIGUE", val, reduced, mod)) {
                     fatigue += bound_mod_to_vals(fatigue, val, it.get_max_val("FATIGUE", reduced),
                                                 it.get_min_val("FATIGUE", reduced));
                 }
@@ -6447,7 +6447,7 @@ void player::process_effects() {
             val = it.get_mod("RAD", reduced);
             if (val != 0) {
                 mod = 1;
-                if(it.activated(calendar::turn, "RAD", reduced, mod)) {
+                if(it.activated(calendar::turn, "RAD", val, reduced, mod)) {
                     radiation += bound_mod_to_vals(radiation, val, it.get_max_val("RAD", reduced), 0);
                     // Radiation can't go negative
                     if (radiation < 0) {
@@ -6478,7 +6478,7 @@ void player::process_effects() {
                         mod *= 3;
                     }
                 }
-                if(it.activated(calendar::turn, "PAIN", reduced, mod)) {
+                if(it.activated(calendar::turn, "PAIN", val, reduced, mod)) {
                     int pain_inc = bound_mod_to_vals(pain, val, it.get_max_val("PAIN", reduced), 0);
                     mod_pain(pain_inc);
                     if (pain_inc > 0) {
@@ -6502,7 +6502,7 @@ void player::process_effects() {
                         mod *= 3;
                     }
                 }
-                if(it.activated(calendar::turn, "HURT", reduced, mod)) {
+                if(it.activated(calendar::turn, "HURT", val, reduced, mod)) {
                     if (bp == num_bp) {
                         if (val > 5) {
                             add_msg_if_player(_("Your %s HURTS!"), body_part_name_accusative(bp_torso).c_str());
@@ -6525,7 +6525,7 @@ void player::process_effects() {
             val = it.get_mod("SLEEP", reduced);
             if (val != 0) {
                 mod = 1;
-                if(it.activated(calendar::turn, "SLEEP", reduced, mod)) {
+                if(it.activated(calendar::turn, "SLEEP", val, reduced, mod)) {
                     add_msg_if_player(_("You pass out!"));
                     fall_asleep(val);
                 }
@@ -6534,21 +6534,23 @@ void player::process_effects() {
             // Handle painkillers
             val = it.get_mod("PKILL", reduced);
             if (val != 0) {
-                mod = it.get_addict_mod("PKILL", addiction_level(ADD_PKILLER));;
-                if(it.activated(calendar::turn, "PKILL", reduced, mod)) {
+                mod = it.get_addict_mod("PKILL", addiction_level(ADD_PKILLER));
+                if(it.activated(calendar::turn, "PKILL", val, reduced, mod)) {
                     pkill += bound_mod_to_vals(pkill, val, it.get_max_val("PKILL", reduced), 0);
                 }
             }
 
             // Handle coughing
             mod = 1;
-            if (it.activated(calendar::turn, "COUGH", reduced, mod)) {
+            val = 0;
+            if (it.activated(calendar::turn, "COUGH", val, reduced, mod)) {
                 cough(it.get_harmful_cough());
             }
 
             // Handle vomiting
             mod = vomit_mod();
-            if (it.activated(calendar::turn, "VOMIT", reduced, mod)) {
+            val = 0;
+            if (it.activated(calendar::turn, "VOMIT", val, reduced, mod)) {
                 vomit();
             }
         }
@@ -13699,6 +13701,9 @@ int player::getID () const
 
 bool player::uncanny_dodge(bool is_u)
 {
+    (void)is_u;
+    is_u = this == &g->u;
+    bool seen = g->u.sees( this );
     if( this->power_level < 74 || !this->has_active_bionic("bio_uncanny_dodge") ) { return false; }
     point adjacent = adjacent_tile();
     power_level -= 75;
@@ -13706,14 +13711,19 @@ bool player::uncanny_dodge(bool is_u)
     {
         posx = adjacent.x;
         posy = adjacent.y;
-        if (is_u)
-            add_msg(_("Time seems to slow down and you instinctively dodge!"));
-        else
-            add_msg(_("Your target dodges... so fast!"));
+        if( is_u ) {
+            add_msg( _("Time seems to slow down and you instinctively dodge!") );
+        } else if( seen ) {
+            add_msg( _("%s dodges... so fast!"), this->disp_name().c_str() );
+            
+        }
         return true;
     }
-    if (is_u)
-        add_msg(_("You try to dodge but there's no room!"));
+    if( is_u ) {
+        add_msg( _("You try to dodge but there's no room!") );
+    } else if( seen ) {
+        add_msg( _("%s tries to dodge but there's no room!"), this->disp_name().c_str() );
+    }
     return false;
 }
 
