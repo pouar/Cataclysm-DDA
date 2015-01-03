@@ -592,7 +592,7 @@ classes = {
                 cpp_name = "addict",
                 writable = true
             },
-            charges = {
+            def_charges = {
                 type = "int",
                 writable = true
             },
@@ -610,10 +610,6 @@ classes = {
             },
             fun = {
                 type = "int",
-                writable = true
-            },
-            default_container = {
-                type = "string",
                 writable = true
             },
             tool = {
