@@ -129,25 +129,23 @@ static bool item_inscription(player *p, item *cut, std::string verb, std::string
         return false;
     }
 
-    std::map<std::string, std::string>::const_iterator ent = cut->item_vars.find("item_note");
-
-    bool hasnote = (ent != cut->item_vars.end());
+    const bool hasnote = cut->has_var( "item_note" );
     std::string message = "";
     std::string messageprefix = string_format(hasnote ? _("(To delete, input one '.')\n") : "") +
                                 string_format(_("%1$s on the %2$s is: "),
                                         gerund.c_str(), cut->type_name().c_str());
     message = string_input_popup(string_format(_("%s what?"), verb.c_str()), 64,
-                                 (hasnote ? cut->item_vars["item_note"] : message),
+                                 (hasnote ? cut->get_var( "item_note" ) : message),
                                  messageprefix, "inscribe_item", 128);
 
     if (!message.empty()) {
         if (hasnote && message == ".") {
-            cut->item_vars.erase("item_note");
-            cut->item_vars.erase("item_note_type");
-            cut->item_vars.erase("item_note_typez");
+            cut->erase_var( "item_note" );
+            cut->erase_var( "item_note_type" );
+            cut->erase_var( "item_note_typez" );
         } else {
-            cut->item_vars["item_note"] = message;
-            cut->item_vars["item_note_type"] = gerund;
+            cut->set_var( "item_note", message );
+            cut->set_var( "item_note_type", gerund );
         }
     }
     return true;
@@ -6566,7 +6564,7 @@ void make_zlave(player *p)
 
     for( auto &it : items ) {
         if( it.is_corpse() && it.corpse->in_species("ZOMBIE") && it.corpse->mat == "flesh" &&
-            it.corpse->sym == "Z" && it.active && it.item_vars.find("zlave") == it.item_vars.end() ) {
+            it.corpse->sym == "Z" && it.active && !it.has_var( "zlave" ) ) {
             corpses.push_back( &it );
         }
     }
@@ -8347,14 +8345,14 @@ int iuse::unfold_generic(player *p, item *it, bool, point)
         p->add_msg_if_player(m_info, _("There's no room to unfold the %s."), it->tname().c_str());
         return 0;
     }
-    veh->name = it->item_vars["vehicle_name"];
-    if (!veh->restore(it->item_vars["folding_bicycle_parts"])) {
+    veh->name = it->get_var( "vehicle_name" );
+    if (!veh->restore(it->get_var( "folding_bicycle_parts" ))) {
         g->m.destroy_vehicle(veh);
         return 0;
     }
     g->m.update_vehicle_cache(veh, true);
 
-    std::string unfold_msg = it->item_vars["unfold_msg"];
+    std::string unfold_msg = it->get_var( "unfold_msg" );
     if (unfold_msg.size() == 0) {
         unfold_msg = _("You painstakingly unfold the %s and make it ready to ride.");
     } else {
@@ -8362,12 +8360,7 @@ int iuse::unfold_generic(player *p, item *it, bool, point)
     }
     p->add_msg_if_player(unfold_msg.c_str(), veh->name.c_str());
 
-    std::string smoves = it->item_vars["moves"];
-    int moves = 500;
-    if (smoves.size() > 0) {
-        std::istringstream( smoves ) >> moves;
-    }
-    p->moves -= moves;
+    p->moves -= it->get_var( "moves", 500 );
     return 1;
 }
 
@@ -8800,7 +8793,7 @@ void init_memory_card_with_random_stuff(player *, item *it)
             }
 
             const int duckfaces_count = rng(5, 30);
-            it->item_vars["MC_PHOTOS"] = string_format("%d", duckfaces_count);
+            it->set_var( "MC_PHOTOS", duckfaces_count );
         }
         //decrease chance to music and other useful data
         data_chance++;
@@ -8816,7 +8809,7 @@ void init_memory_card_with_random_stuff(player *, item *it)
             }
 
             const int new_songs_count = rng(5, 15);
-            it->item_vars["MC_MUSIC"] = string_format("%d", new_songs_count);
+            it->set_var( "MC_MUSIC", new_songs_count );
         }
         data_chance++;
         if (encrypted && one_in(2)) {
@@ -8824,11 +8817,11 @@ void init_memory_card_with_random_stuff(player *, item *it)
         }
 
         if (one_in(data_chance)) {
-            it->item_vars["MC_RECIPE"] = "SIMPLE";
+            it->set_var( "MC_RECIPE", "SIMPLE" );
         }
 
         if (it->has_flag("MC_SCIENCE_STUFF")) {
-            it->item_vars["MC_RECIPE"] = "SCIENCE";
+            it->set_var( "MC_RECIPE", "SCIENCE" );
         }
     }
 }
@@ -8836,46 +8829,38 @@ void init_memory_card_with_random_stuff(player *, item *it)
 bool einkpc_download_memory_card(player *p, item *eink, item *mc)
 {
     bool something_downloaded = false;
-    if (mc->item_vars["MC_PHOTOS"] != "") {
+    if (mc->get_var( "MC_PHOTOS", 0 ) > 0) {
         something_downloaded = true;
 
-        int new_photos = atoi(mc->item_vars["MC_PHOTOS"].c_str());
-        mc->item_vars["MC_PHOTOS"] = "";
+        int new_photos = mc->get_var( "MC_PHOTOS", 0 );
+        mc->erase_var( "MC_PHOTOS" );
 
         p->add_msg_if_player(m_good, string_format(
                                  ngettext("You transfered %d new photo to the laptop's hdd.",
                                           "You transfered %d new photos to the laptop's hdd.", new_photos)).c_str());
 
-        int old_photos = 0;
-        if (eink->item_vars["EIPC_PHOTOS"] != "") {
-            old_photos = atoi(eink->item_vars["EIPC_PHOTOS"].c_str());
-        }
-
-        eink->item_vars["EIPC_PHOTOS"] = string_format("%d", old_photos + new_photos);
+        const int old_photos = eink->get_var( "EIPC_PHOTOS", 0 );
+        eink->set_var( "EIPC_PHOTOS", old_photos + new_photos);
     }
 
-    if (mc->item_vars["MC_MUSIC"] != "") {
+    if (mc->get_var( "MC_MUSIC", 0 ) > 0) {
         something_downloaded = true;
 
-        int new_songs = atoi(mc->item_vars["MC_MUSIC"].c_str());
-        mc->item_vars["MC_MUSIC"] = "";
+        int new_songs = mc->get_var( "MC_MUSIC", 0 );
+        mc->erase_var( "MC_MUSIC" );
 
         p->add_msg_if_player(m_good, string_format(
                                  ngettext("You transfered %d new song to the laptop's hdd.",
                                           "You transfered %d new songs to the laptop's hdd.", new_songs)).c_str());
 
-        int old_songs = 0;
-        if (eink->item_vars["EIPC_MUSIC"] != "") {
-            old_songs = atoi(eink->item_vars["EIPC_MUSIC"].c_str());
-        }
-
-        eink->item_vars["EIPC_MUSIC"] = string_format("%d", old_songs + new_songs);
+        const int old_songs = eink->get_var( "EIPC_MUSIC", 0 );
+        eink->set_var( "EIPC_MUSIC", old_songs + new_songs);
     }
 
-    if (mc->item_vars["MC_RECIPE"] != "") {
-        const bool science = mc->item_vars["MC_RECIPE"] == "SCIENCE";
+    if (!mc->get_var( "MC_RECIPE" ).empty()) {
+        const bool science = mc->get_var( "MC_RECIPE" ) == "SCIENCE";
 
-        mc->item_vars["MC_RECIPE"] = "";
+        mc->erase_var( "MC_RECIPE" );
 
         std::vector<const recipe *> candidates;
 
@@ -8910,16 +8895,17 @@ bool einkpc_download_memory_card(player *p, item *eink, item *mc)
 
             const item dummy(r->result, 0);
 
-            if (eink->item_vars["EIPC_RECIPES"] == "") {
+            const auto old_recipes = eink->get_var( "EIPC_RECIPES" );
+            if( old_recipes.empty() ) {
                 something_downloaded = true;
-                eink->item_vars["EIPC_RECIPES"] = "," + rident + ",";
+                eink->set_var( "EIPC_RECIPES", "," + rident + "," );
 
                 p->add_msg_if_player(m_good, _("You transfered a recipe for %s to the laptop's hdd."),
                                      dummy.type_name().c_str());
             } else {
-                if (eink->item_vars["EIPC_RECIPES"].find("," + rident + ",") == std::string::npos) {
+                if (old_recipes.find("," + rident + ",") == std::string::npos) {
                     something_downloaded = true;
-                    eink->item_vars["EIPC_RECIPES"] += rident + ",";
+                    eink->set_var( "EIPC_RECIPES", old_recipes + rident + "," );
 
                     p->add_msg_if_player(m_good, _("You transfered a recipe for %s to the laptop's hdd."),
                                          dummy.type_name().c_str());
@@ -8931,14 +8917,16 @@ bool einkpc_download_memory_card(player *p, item *eink, item *mc)
         }
     }
 
-    if (mc->item_vars["MC_MONSTER_PHOTOS"] != "") {
+    const auto monster_photos = mc->get_var( "MC_MONSTER_PHOTOS" );
+    if( !monster_photos.empty() ) {
         something_downloaded = true;
         p->add_msg_if_player(m_good, _("You have updated your monster collection."));
 
-        if (eink->item_vars["EINK_MONSTER_PHOTOS"] == "") {
-            eink->item_vars["EINK_MONSTER_PHOTOS"] = mc->item_vars["MC_MONSTER_PHOTOS"];
+        auto photos = eink->get_var( "EINK_MONSTER_PHOTOS" );
+        if( photos.empty() ) {
+            eink->set_var( "EINK_MONSTER_PHOTOS", monster_photos );
         } else {
-            std::istringstream f(mc->item_vars["MC_MONSTER_PHOTOS"]);
+            std::istringstream f(monster_photos);
             std::string s;
             while (getline(f, s, ',')) {
 
@@ -8951,29 +8939,29 @@ bool einkpc_download_memory_card(player *p, item *eink, item *mc)
                 char *chq = &s[0];
                 const int quality = atoi(chq);
 
-                const size_t eink_strpos = eink->item_vars["EINK_MONSTER_PHOTOS"].find("," + mtype + ",");
+                const size_t eink_strpos = photos.find("," + mtype + ",");
 
                 if (eink_strpos == std::string::npos) {
-                    eink->item_vars["EINK_MONSTER_PHOTOS"] += mtype + "," + string_format("%d", quality) + ",";
+                    photos += mtype + "," + string_format("%d", quality) + ",";
                 } else {
 
                     const size_t strqpos = eink_strpos + mtype.size() + 2;
-                    char *chq = &eink->item_vars["EINK_MONSTER_PHOTOS"][strqpos];
+                    char *chq = &photos[strqpos];
                     const int old_quality = atoi(chq);
 
                     if (quality > old_quality) {
                         chq = &string_format("%d", quality)[0];
-                        eink->item_vars["EINK_MONSTER_PHOTOS"][strqpos] = *chq;
+                        photos[strqpos] = *chq;
                     }
                 }
 
             }
+            eink->set_var( "EINK_MONSTER_PHOTOS", photos );
         }
     }
 
     if (mc->has_flag("MC_TURN_USED")) {
-        mc->item_tags.clear();
-        mc->item_vars.clear();
+        mc->clear();
         mc->make("mobile_memory_card_used");
     }
 
@@ -8991,14 +8979,14 @@ const std::string photo_quality_names[] = { _("awful"), _("bad"), _("not bad"), 
 int iuse::einktabletpc(player *p, item *it, bool t, point pos)
 {
     if (t) {
-        if (it->item_vars["EIPC_MUSIC_ON"] != "") {
+        if( it->get_var( "EIPC_MUSIC_ON" ) != "" ) {
 
             if (calendar::turn % 50 == 0) {
                 it->charges--;
             }
 
             //the more varied music, the better max mood.
-            const int songs = atoi(it->item_vars["EIPC_MUSIC"].c_str());
+            const int songs = it->get_var( "EIPC_MUSIC", 0 );
 
             //if user can hear this music and not already hear music
             if (g->sound(pos.x, pos.y, 8, "") && !p->has_effect("music")) {
@@ -9041,34 +9029,34 @@ int iuse::einktabletpc(player *p, item *it, bool t, point pos)
         amenu.text = _("Choose menu option:");
         amenu.addentry(ei_cancel, true, 'q', _("Cancel"));
 
-        if (it->item_vars["EIPC_PHOTOS"] != "") {
-            const int photos = atoi(it->item_vars["EIPC_PHOTOS"].c_str());
+        const int photos = it->get_var( "EIPC_PHOTOS", 0 );
+        if( photos > 0 ) {
             amenu.addentry(ei_photo, true, 'p', _("Photos [%d]"), photos);
         } else {
             amenu.addentry(ei_photo, false, 'p', _("No photos on laptop"));
         }
 
-        if (it->item_vars["EIPC_MUSIC"] != "") {
+        const int songs = it->get_var( "EIPC_MUSIC", 0 );
+        if( songs > 0 ) {
             if (it->active) {
                 amenu.addentry(ei_music, true, 'm', _("Turn music off"));
             } else {
-                const int songs = atoi(it->item_vars["EIPC_MUSIC"].c_str());
                 amenu.addentry(ei_music, true, 'm', _("Turn music on [%d]"), songs);
             }
         } else {
             amenu.addentry(ei_music, false, 'm', _("No music on laptop"));
         }
 
-        if (it->item_vars["RECIPE"] != "") {
-            const item dummy(it->item_vars["RECIPE"], 0);
+        if (it->get_var( "RECIPE" ) != "") {
+            const item dummy(it->get_var( "RECIPE" ), 0);
             amenu.addentry(0, false, -1, _("Recipe: %s"), dummy.tname().c_str());
         }
 
-        if (it->item_vars["EIPC_RECIPES"] != "") {
+        if (it->get_var( "EIPC_RECIPES" ) != "") {
             amenu.addentry(ei_recipe, true, 'r', _("View recipe on laptop"));
         }
 
-        if (it->item_vars["EINK_MONSTER_PHOTOS"] != "") {
+        if (it->get_var( "EINK_MONSTER_PHOTOS" ) != "") {
             amenu.addentry(ei_monsters, true, 'y', _("Your collection of monsters"));
         } else {
             amenu.addentry(ei_monsters, false, 'y', _("Collection of monsters is empty"));
@@ -9092,13 +9080,13 @@ int iuse::einktabletpc(player *p, item *it, bool t, point pos)
 
         if (ei_photo == choice) {
 
-            const int photos = atoi(it->item_vars["EIPC_PHOTOS"].c_str());
+            const int photos = it->get_var( "EIPC_PHOTOS", 0 );
             const int viewed = std::min(photos, int(rng(10, 30)));
             const int count = photos - viewed;
             if (count == 0) {
-                it->item_vars["EIPC_PHOTOS"] = "";
+                it->erase_var( "EIPC_PHOTOS" );
             } else {
-                it->item_vars["EIPC_PHOTOS"] = string_format("%d", count);
+                it->set_var( "EIPC_PHOTOS", count );
             }
 
             p->moves -= rng(3, 7) * 100;
@@ -9146,12 +9134,12 @@ int iuse::einktabletpc(player *p, item *it, bool t, point pos)
 
             if (it->active) {
                 it->active = false;
-                it->item_vars["EIPC_MUSIC_ON"] = "";
+                it->erase_var( "EIPC_MUSIC_ON" );
 
                 p->add_msg_if_player(m_info, _("You turned off music on your %s."), it->tname().c_str());
             } else {
                 it->active = true;
-                it->item_vars["EIPC_MUSIC_ON"] = "1";
+                it->set_var( "EIPC_MUSIC_ON", "1" );
 
                 p->add_msg_if_player(m_info, _("You turned on music on your %s."), it->tname().c_str());
 
@@ -9170,7 +9158,7 @@ int iuse::einktabletpc(player *p, item *it, bool t, point pos)
             rmenu.addentry(0, true, 'q', _("Cancel"));
 
             std::vector<std::string> candidate_recipes;
-            std::istringstream f(it->item_vars["EIPC_RECIPES"]);
+            std::istringstream f(it->get_var( "EIPC_RECIPES" ));
             std::string s;
             int k = 1;
             while (getline(f, s, ',')) {
@@ -9194,9 +9182,10 @@ int iuse::einktabletpc(player *p, item *it, bool t, point pos)
                 return it->type->charges_to_use();
             } else {
                 it->item_tags.insert("HAS_RECIPE");
-                it->item_vars["RECIPE"] = candidate_recipes[rchoice - 1];
+                const auto rec_id = candidate_recipes[rchoice - 1];
+                it->set_var( "RECIPE", rec_id );
 
-                auto recipe = find_recipe( it->item_vars["RECIPE"] );
+                auto recipe = find_recipe( rec_id );
                 if( recipe ) {
                     p->add_msg_if_player(m_info,
                         _("You open up a recipe for %s."),
@@ -9217,7 +9206,7 @@ int iuse::einktabletpc(player *p, item *it, bool t, point pos)
 
             std::vector<std::string> monster_photos;
 
-            std::istringstream f(it->item_vars["EINK_MONSTER_PHOTOS"]);
+            std::istringstream f(it->get_var( "EINK_MONSTER_PHOTOS" ));
             std::string s;
             int k = 1;
             while (getline(f, s, ',')) {
@@ -9317,8 +9306,7 @@ int iuse::einktabletpc(player *p, item *it, bool t, point pos)
                     p->add_msg_if_player(m_neutral, _("You failed to decrypt the %s."), mc->tname().c_str());
                 } else {
                     p->add_msg_if_player(m_bad, _("You tripped the firmware protection, and the card deleted its data!"));
-                    mc->item_tags.clear();
-                    mc->item_vars.clear();
+                    mc->clear();
                     mc->make("mobile_memory_card_used");
                 }
             }
@@ -9337,7 +9325,7 @@ int iuse::camera(player *p, item *it, bool, point)
     amenu.selected = 0;
     amenu.text = _("What to do with camera?");
     amenu.addentry(c_shot, true, 'p', _("Take a photo"));
-    if (it->item_vars["CAMERA_MONSTER_PHOTOS"] != "") {
+    if (it->get_var( "CAMERA_MONSTER_PHOTOS" ) != "") {
         amenu.addentry(c_photos, true, 'l', _("List photos"));
         amenu.addentry(c_upload, true, 'u', _("Upload photos to memory card"));
     } else {
@@ -9433,24 +9421,25 @@ int iuse::camera(player *p, item *it, bool, point)
 
                     const std::string mtype = z.type->id;
 
-                    if (it->item_vars["CAMERA_MONSTER_PHOTOS"] == "") {
-                        it->item_vars["CAMERA_MONSTER_PHOTOS"] = "," + mtype + "," + string_format("%d",
+                    auto monster_photos = it->get_var( "CAMERA_MONSTER_PHOTOS" );
+                    if (monster_photos == "") {
+                        monster_photos = "," + mtype + "," + string_format("%d",
                                 photo_quality) + ",";
                     } else {
 
-                        const size_t strpos = it->item_vars["CAMERA_MONSTER_PHOTOS"].find("," + mtype + ",");
+                        const size_t strpos = monster_photos.find("," + mtype + ",");
 
                         if (strpos == std::string::npos) {
-                            it->item_vars["CAMERA_MONSTER_PHOTOS"] += mtype + "," + string_format("%d", photo_quality) + ",";
+                            monster_photos += mtype + "," + string_format("%d", photo_quality) + ",";
                         } else {
 
                             const size_t strqpos = strpos + mtype.size() + 2;
-                            char *chq = &it->item_vars["CAMERA_MONSTER_PHOTOS"][strqpos];
+                            char *chq = &monster_photos[strqpos];
                             const int old_quality = atoi(chq);
 
                             if (photo_quality > old_quality) {
                                 chq = &string_format("%d", photo_quality)[0];
-                                it->item_vars["CAMERA_MONSTER_PHOTOS"][strqpos] = *chq;
+                                monster_photos[strqpos] = *chq;
 
                                 p->add_msg_if_player(_("This photo is better than the previous one."));
 
@@ -9458,6 +9447,7 @@ int iuse::camera(player *p, item *it, bool, point)
 
                         }
                     }
+                    it->set_var( "CAMERA_MONSTER_PHOTOS", monster_photos );
 
                     return it->type->charges_to_use();
 
@@ -9499,7 +9489,7 @@ int iuse::camera(player *p, item *it, bool, point)
 
         std::vector<std::string> monster_photos;
 
-        std::istringstream f(it->item_vars["CAMERA_MONSTER_PHOTOS"]);
+        std::istringstream f(it->get_var( "CAMERA_MONSTER_PHOTOS" ));
         std::string s;
         int k = 1;
         while (getline(f, s, ',')) {
@@ -9571,11 +9561,10 @@ int iuse::camera(player *p, item *it, bool, point)
         }
 
         mc->make("mobile_memory_card");
-        mc->item_tags.clear();
-        mc->item_vars.clear();
+        mc->clear();
         mc->item_tags.insert("MC_HAS_DATA");
 
-        mc->item_vars["MC_MONSTER_PHOTOS"] = it->item_vars["CAMERA_MONSTER_PHOTOS"];
+        mc->set_var( "MC_MONSTER_PHOTOS", it->get_var( "CAMERA_MONSTER_PHOTOS" ) );
         p->add_msg_if_player(m_info, _("You upload monster photos to memory card."));
 
         return it->type->charges_to_use();
@@ -9626,8 +9615,8 @@ int iuse::ehandcuffs(player *p, item *it, bool t, point pos)
             g->sound(pos.x, pos.y, 10, _("a police siren, whoop WHOOP."));
         }
 
-        const int x = atoi(it->item_vars["HANDCUFFS_X"].c_str());
-        const int y = atoi(it->item_vars["HANDCUFFS_Y"].c_str());
+        const int x = it->get_var( "HANDCUFFS_X", 0 );
+        const int y = it->get_var( "HANDCUFFS_Y", 0 );
 
         if ((it->charges > it->type->maximum_charges() - 1000) && (x != pos.x || y != pos.y)) {
 
@@ -9657,8 +9646,8 @@ int iuse::ehandcuffs(player *p, item *it, bool t, point pos)
                 it->charges = 1;
             }
 
-            it->item_vars["HANDCUFFS_X"] = string_format("%d", pos.x);
-            it->item_vars["HANDCUFFS_Y"] = string_format("%d", pos.y);
+            it->set_var( "HANDCUFFS_X", pos.x );
+            it->set_var( "HANDCUFFS_Y", pos.y );
 
             return it->type->charges_to_use();
 
@@ -10125,13 +10114,12 @@ int iuse::multicooker(player *p, item *it, bool t, point pos)
             return 0;
         }
 
-        int cooktime = atoi(it->item_vars["COOKTIME"].c_str());
+        int cooktime = it->get_var( "COOKTIME", 0 );
         cooktime -= 100;
 
         if (cooktime >= 300 && cooktime < 400) {
             //Smart or good cook or careful
             if (p->int_cur + p->skillLevel("cooking") + p->skillLevel("survival") > 16) {
-                item dummy(it->item_vars["DISH"], 0);
                 add_msg(m_info, _("The multi-cooker should be finishing shortly..."));
             }
         }
@@ -10139,7 +10127,7 @@ int iuse::multicooker(player *p, item *it, bool t, point pos)
         if (cooktime <= 0) {
             it->active = false;
 
-            item meal(it->item_vars["DISH"], calendar::turn);
+            item meal(it->get_var( "DISH" ), calendar::turn);
             meal.active = true;
 
             if (meal.has_flag("EATEN_HOT")) {
@@ -10148,14 +10136,15 @@ int iuse::multicooker(player *p, item *it, bool t, point pos)
             }
 
             it->put_in(meal);
-            it->item_vars["DISH"] = "";
+            it->erase_var( "DISH" );
+            it->erase_var( "COOKTIME" );
 
             //~ sound of a multi-cooker finishing its cycle!
             g->sound(pos.x, pos.y, 8, _("ding!"));
 
             return 0;
         } else {
-            it->item_vars["COOKTIME"] = string_format("%d", cooktime);
+            it->set_var( "COOKTIME", cooktime );
             return 0;
         }
 
@@ -10203,10 +10192,11 @@ int iuse::multicooker(player *p, item *it, bool t, point pos)
                 menu.addentry(mc_start, true, 's', _("Start cooking"));
 
                 if (p->skillLevel("electronics") > 3 && p->skillLevel("fabrication") > 3) {
-                    if (it->item_vars["MULTI_COOK_UPGRADE"] == "") {
+                    const auto upgr = it->get_var( "MULTI_COOK_UPGRADE" );
+                    if (upgr == "" ) {
                         menu.addentry(mc_upgrade, true, 'u', _("Upgrade multi-cooker"));
                     } else {
-                        if (it->item_vars["MULTI_COOK_UPGRADE"] == "UPGRADE") {
+                        if (upgr == "UPGRADE") {
                             menu.addentry(mc_upgrade, false, 'u', _("Multi-cooker already upgraded"));
                         } else {
                             menu.addentry(mc_upgrade, false, 'u', _("Multi-cooker unable to upgrade"));
@@ -10228,7 +10218,8 @@ int iuse::multicooker(player *p, item *it, bool t, point pos)
         if (mc_stop == choice) {
             if (query_yn(_("Really stop cooking?"))) {
                 it->active = false;
-                it->item_vars["DISH"] = "";
+                it->erase_var( "DISH" );
+                it->erase_var( "COOKTIME" );
             }
             return 0;
         }
@@ -10298,7 +10289,7 @@ int iuse::multicooker(player *p, item *it, bool t, point pos)
             } else {
                 const recipe *meal = dishes[choice - 1];
                 int mealtime;
-                if (it->item_vars["MULTI_COOK_UPGRADE"] == "UPGRADE") {
+                if (it->get_var( "MULTI_COOK_UPGRADE" ) == "UPGRADE") {
                     mealtime = meal->time;
                 } else {
                     mealtime = meal->time * 2 ;
@@ -10320,8 +10311,8 @@ int iuse::multicooker(player *p, item *it, bool t, point pos)
                     p->consume_items(it);
                 }
 
-                it->item_vars["DISH"] = meal->result;
-                it->item_vars["COOKTIME"] = string_format("%d", mealtime);
+                it->set_var( "DISH", meal->result );
+                it->set_var( "COOKTIME", mealtime );
 
                 p->add_msg_if_player(m_good ,
                                      _("The screen flashes blue symbols and scales as the multi-cooker begins to shake."));
@@ -10373,7 +10364,7 @@ int iuse::multicooker(player *p, item *it, bool t, point pos)
                 p->add_msg_if_player(m_good,
                                      _("You've successfully upgraded the multi-cooker, master tinkerer!  Now it cooks faster!"));
 
-                it->item_vars["MULTI_COOK_UPGRADE"] = "UPGRADE";
+                it->set_var( "MULTI_COOK_UPGRADE", "UPGRADE" );
 
                 return 0;
 
@@ -10385,7 +10376,7 @@ int iuse::multicooker(player *p, item *it, bool t, point pos)
                 } else {
                     p->add_msg_if_player(m_bad,
                                          _("Your tinkering nearly breaks the multi-cooker!  Fortunately, it still works, but best to stop messing with it."));
-                    it->item_vars["MULTI_COOK_UPGRADE"] = "DAMAGED";
+                    it->set_var( "MULTI_COOK_UPGRADE", "DAMAGED" );
                 }
 
                 return 0;
@@ -10401,11 +10392,7 @@ int iuse::multicooker(player *p, item *it, bool t, point pos)
 
 int iuse::cable_attach(player *p, item *it, bool, point)
 {
-    if(it->item_vars.count("state") < 1) {
-        it->item_vars["state"] = "attach_first";
-    }
-
-    std::string initial_state = it->item_vars["state"];
+    std::string initial_state = it->get_var( "state", "attach_first" );
 
     if(initial_state == "attach_first") {
         int posx, posy;
@@ -10419,10 +10406,10 @@ int iuse::cable_attach(player *p, item *it, bool, point)
         } else {
             point abspos = g->m.getabs(posx, posy);
             it->active = true;
-            it->item_vars["state"] = "pay_out_cable";
-            it->item_vars["source_x"] = string_format("%d", abspos.x);
-            it->item_vars["source_y"] = string_format("%d", abspos.y);
-            it->item_vars["source_z"] = string_format("%d", g->levz);
+            it->set_var( "state", "pay_out_cable" );
+            it->set_var( "source_x", abspos.x );
+            it->set_var( "source_y", abspos.y );
+            it->set_var( "source_z", g->levz );
             it->process( p, p->pos(), false );
         }
         p->moves -= 15;
@@ -10454,8 +10441,8 @@ int iuse::cable_attach(player *p, item *it, bool, point)
             p->add_msg_if_player(_("There's no vehicle there."));
             return 0;
         } else {
-            point source_global(atoi(it->item_vars["source_x"].c_str()),
-                                atoi(it->item_vars["source_y"].c_str()));
+            point source_global(it->get_var( "source_x", 0 ),
+                                it->get_var( "source_y", 0 ));
             point source_local = g->m.getlocal(source_global);
             auto source_veh = g->m.veh_at(source_local.x, source_local.y);
 

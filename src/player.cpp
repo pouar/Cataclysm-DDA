@@ -13473,8 +13473,7 @@ int player::has_recipe( const recipe *r, const inventory &crafting_inv ) const
             }
         } else {
             if (candidate.has_flag("HAS_RECIPE")){
-                item dummy = candidate;
-                if (dummy.item_vars["RECIPE"] == r->ident){
+                if (candidate.get_var("RECIPE") == r->ident){
                     if (difficulty == -1) difficulty = r->difficulty;
                 }
             }
@@ -14298,6 +14297,11 @@ void player::blossoms()
                 g->m.add_field( i, j, fd_fungal_haze, rng(1, 2));
         }
     }
+}
+
+float player::power_rating() const
+{
+    return weapon.is_gun() ? 4 : 2;
 }
 
 std::vector<const item *> player::all_items_with_flag( const std::string flag ) const
