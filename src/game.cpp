@@ -3963,7 +3963,7 @@ bool game::handle_action()
                 add_msg(m_info, _("Ignoring enemy!"));
                 for( auto &elem : new_seen_mon ) {
                     monster &critter = critter_tracker.find( elem );
-                    critter.ignoring = rl_dist(point(u.posx, u.posy), critter.pos());
+                    critter.ignoring = rl_dist( u.pos(), critter.pos() );
                 }
                 safe_mode = SAFE_MODE_ON;
             }
@@ -4166,7 +4166,7 @@ void game::update_scent()
             sum_3_scent_y[y][x] = 0;
             squares_used_y[y][x] = 0;
             for (int i = y - 1; i <= y + 1; ++i) {
-                if (not blocks_scent[x][i]) {
+                if (! blocks_scent[x][i]) {
                     if (reduces_scent[x][i]) {
                         // only 20% of scent can diffuse on REDUCE_SCENT squares
                         sum_3_scent_y[y][x] += 2 * grscent[x][i];
@@ -4181,7 +4181,7 @@ void game::update_scent()
     }
     for (int x = scentmap_minx; x <= scentmap_maxx; ++x) {
         for (int y = scentmap_miny; y <= scentmap_maxy; ++y) {
-            if (not blocks_scent[x][y]) {
+            if (! blocks_scent[x][y]) {
                 // to how many neighboring squares do we diffuse out? (include our own square
                 // since we also include our own square when diffusing in)
                 int squares_used = squares_used_y[y][x - 1]
@@ -4189,7 +4189,7 @@ void game::update_scent()
                                    + squares_used_y[y][x + 1];
 
                 int this_diffusivity;
-                if (not reduces_scent[x][y]) {
+                if (! reduces_scent[x][y]) {
                     this_diffusivity = diffusivity;
                 } else {
                     this_diffusivity = diffusivity / 5; //less air movement for REDUCE_SCENT square
@@ -5697,8 +5697,12 @@ void game::draw_critter(const Creature &critter, const point &center)
         mvwputch( w_terrain, my, mx, c_red, '?' );
     }
 }
-
 void game::draw_ter(int posx, int posy)
+{
+    draw_ter(posx, posy, false);
+}
+
+void game::draw_ter(int posx, int posy, bool looking)
 {
     // posx/posy default to -999
     if (posx == -999) {
@@ -5753,7 +5757,7 @@ void game::draw_ter(int posx, int posy)
                  POSX + (final_destination.x - (u.posx + u.view_offset_x)), c_white, 'X');
     }
 
-    if (u.controlling_vehicle) {
+    if (u.controlling_vehicle && !looking) {
         draw_veh_dir_indicator();
     }
     if(uquit == QUIT_WATCH) {
@@ -5773,6 +5777,7 @@ void game::draw_ter(int posx, int posy)
 
 void game::draw_veh_dir_indicator(void)
 {
+    // don't draw indicator if doing look_around()
     if (OPTIONS["VEHICLE_DIR_INDICATOR"]) {
         vehicle *veh = m.veh_at(u.posx, u.posy);
         if (!veh) {
@@ -6245,7 +6250,7 @@ std::vector<monster*> game::get_fishable(int distance)
         monster &critter = critter_tracker.find(i);
 
         if (critter.has_flag(MF_FISHABLE)) {
-            int mondist = rl_dist(u.posx, u.posy, critter.posx(), critter.posy());
+            int mondist = rl_dist( u.pos(), critter.pos() );
             if (mondist <= distance) {
             unique_fish.push_back (&critter);
             }
@@ -6307,7 +6312,7 @@ int game::mon_info(WINDOW *w)
                     dangerous[index] = true;
                 }
 
-                int mondist = rl_dist(u.posx, u.posy, critter.posx(), critter.posy());
+                int mondist = rl_dist( u.pos(), critter.pos() );
                 if (mondist <= iProxyDist) {
                     bool passmon = false;
                     if (critter.ignoring > 0) {
@@ -6329,9 +6334,8 @@ int game::mon_info(WINDOW *w)
                 unique_mons[index].push_back(critter.type->id);
             }
         } else if( p != nullptr ) {
-            const auto npcp = p->pos();
             if (p->attitude == NPCATT_KILL)
-                if (rl_dist(u.posx, u.posy, npcp.x, npcp.y) <= iProxyDist) {
+                if (rl_dist( u.pos(), p->pos() ) <= iProxyDist) {
                     newseen++;
                 }
 
@@ -6598,7 +6602,7 @@ void game::monmove()
 
         if (!critter->is_dead()) {
             if (u.has_active_bionic("bio_alarm") && u.power_level >= 25 &&
-                rl_dist(u.posx, u.posy, critter->posx(), critter->posy()) <= 5) {
+                rl_dist( u.pos(), critter->pos() ) <= 5) {
                 u.power_level -= 25;
                 add_msg(m_warning, _("Your motion alarm goes off!"));
                 cancel_activity_query(_("Your motion alarm goes off!"));
@@ -9679,7 +9683,7 @@ point game::look_around(WINDOW *w_info, const point pairCoordsFirst)
                     ly = MAPSIZE * SEEY;
                 }
 
-                draw_ter(lx, ly);
+                draw_ter(lx, ly, true);
             }
         }
     } while (action != "QUIT" && action != "CONFIRM");
@@ -11171,8 +11175,7 @@ bool compare_by_dist_attitude::operator()(Creature *a, Creature *b) const
     if( aa != ab ) {
         return aa < ab;
     }
-    return rl_dist( a->xpos(), a->ypos(), u.xpos(), u.ypos() ) <
-           rl_dist( b->xpos(), b->ypos(), u.xpos(), u.ypos() );
+    return rl_dist( a->pos(), u.pos() ) < rl_dist( b->pos(), u.pos() );
 }
 
 std::vector<point> game::pl_target_ui(int &x, int &y, int range, item *relevant, target_mode mode,
@@ -12406,7 +12409,7 @@ void game::chat()
 
     for( auto &elem : active_npc ) {
         if( u_see( ( elem )->posx, ( elem )->posy ) &&
-            rl_dist( u.posx, u.posy, ( elem )->posx, ( elem )->posy ) <= 24 ) {
+            rl_dist( u.pos(), elem->pos() ) <= 24 ) {
             available.push_back( elem );
         }
     }
@@ -12879,8 +12882,8 @@ bool game::plmove(int dx, int dy)
 
                             if( one_in(2) ) {
                                 grabbed_vehicle->handle_trap(
-                                    gx + grabbed_vehicle->parts[p].precalc_dx[0] + dxVeh,
-                                    gy + grabbed_vehicle->parts[p].precalc_dy[0] + dyVeh, p );
+                                    gx + grabbed_vehicle->parts[p].precalc[0].x + dxVeh,
+                                    gy + grabbed_vehicle->parts[p].precalc[0].y + dyVeh, p );
                             }
                         }
                         m.displace_vehicle(gx, gy, dxVeh, dyVeh);
@@ -13060,7 +13063,7 @@ bool game::plmove(int dx, int dy)
         }
         if (veh1) {
             vehicle_part *part = &(veh1->parts[vpart1]);
-            std::string label = veh1->get_label(part->mount_dx, part->mount_dy);
+            std::string label = veh1->get_label(part->mount.x, part->mount.y);
             if (label != "") {
                 add_msg(m_info, _("Label here: %s"), label.c_str());
             }
