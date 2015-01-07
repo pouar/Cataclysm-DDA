@@ -8633,7 +8633,8 @@ int iuse::robotcontrol(player *p, item *it, bool, point)
         return 0;
 
     }
-    if (p->has_trait("ILLITERATE")) {
+    if( p->has_trait("ILLITERATE") ) {
+        // bio_remote makes interaction with wifi-enabled computers intuitive
         p->add_msg_if_player(_("You cannot read a computer screen."));
         return 0;
     }
