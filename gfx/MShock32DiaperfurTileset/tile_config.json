@@ -19702,14 +19702,14 @@
 					"rotates": false
 				},
 				{
-					"rotates": false,
 					"id": "miniskirt",
-					"fg": 417
+					"fg": 417,
+					"rotates": false
 				},
 				{
-					"rotates": false,
 					"id": "microskirt",
-					"fg": 417
+					"fg": 417,
+					"rotates": false
 				}
 			]
 		},
