@@ -954,7 +954,7 @@
 		"material": ["steel", "plastic"],
 		"ammo_effects": ["PLASMA", "BFG", "NEVER_MISFIRES"],
 		"flags": ["NO_AMMO", "NO_UNLOAD", "NEVER_JAMS"],
-		"ups_charges": 40,
+		"ups_charges": 2500,
 		"skill": "rifle",
 		"ammo": "UPS",
 		"weight": 2680,
@@ -969,7 +969,7 @@
 		"aim_speed" : 0,
 		"recoil": 0,
 		"durability": 6,
-		"clip_size": 40,
+		"clip_size": 2500,
 		"reload": 600,
 		"valid_mod_locations": [[ "grip", 1 ],[ "sights", 1 ],[ "stock", 1 ]]
 	}
