@@ -53,6 +53,7 @@ public:
     int flu_vaccine         (player*, item*, bool, point);
     int poison              (player*, item*, bool, point);
     int fun_hallu           (player*, item*, bool, point);
+    int meditate            (player*, item*, bool, point);
     int thorazine           (player*, item*, bool, point);
     int prozac              (player*, item*, bool, point);
     int sleep               (player*, item*, bool, point);

@@ -630,7 +630,6 @@ void game::start_game(std::string worldname)
     start_loc.place_player( u );
 
     u.moves = 0;
-    u.reset_bonuses();
     u.process_turn(); // process_turn adds the initial move points
     nextspawn = int(calendar::turn);
     temperature = 65; // Springtime-appropriate?
@@ -1510,7 +1509,6 @@ bool game::do_turn()
     m.build_map_cache();
     monmove();
     update_stair_monsters();
-    u.reset_bonuses();
     u.process_turn();
     u.process_active_items();
 
@@ -6588,7 +6586,6 @@ void game::monmove()
         }
 
         if (!critter->is_dead()) {
-            critter->reset_bonuses();
             critter->process_turn();
         }
 
@@ -6638,7 +6635,6 @@ void game::monmove()
         if( ( elem )->hp_cur[hp_head] <= 0 || ( elem )->hp_cur[hp_torso] <= 0 ) {
             ( elem )->die( nullptr );
         } else {
-            ( elem )->reset_bonuses();
             ( elem )->process_turn();
             while( !( elem )->is_dead() && ( elem )->moves > 0 && turns < 10 ) {
                 int moves = ( elem )->moves;
@@ -8759,6 +8755,11 @@ bool pet_menu(monster *z)
             }
         }
 
+        if (max_weight <= 0) {
+            add_msg(_("%s is overburdened. You can't transfer your %s"),
+                    pet_name.c_str(), it->tname(1).c_str());
+            return true;
+        }
         if (max_cap <= 0) {
             add_msg(_("There's no room in your %s's %s for that, it's too bulky!"),
                     pet_name.c_str(), it->tname(1).c_str() );
