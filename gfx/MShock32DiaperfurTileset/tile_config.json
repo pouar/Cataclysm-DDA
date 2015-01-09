@@ -19827,6 +19827,11 @@
 					"id": "red_fedora",
 					"fg": 26
 				}
+                {
+                    "rotates": false,
+                    "id": "bfg9000",
+                    "fg": 0
+                }
 			]
 		}
 	]
