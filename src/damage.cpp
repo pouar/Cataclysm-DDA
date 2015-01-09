@@ -218,8 +218,18 @@ void ammo_effects(int x, int y, const std::set<std::string> &effects)
     {
         for( auto &c : g->u.get_visible_creatures( 99999 ) )
         {
-            const auto m = dynamic_cast<monster*>( c );
-            m->die_by_bfg9000(&g->u);
+            if(!c->is_npc())
+            {
+                const auto m = dynamic_cast<monster*>( c );
+                if(!m->friendly)
+                    m->die_by_bfg9000(&g->u);
+            }
+            else
+            {
+                const auto m = dynamic_cast<npc*>( c );
+                if(m->attitude==NPCATT_KILL||m->attitude==NPCATT_FLEE||m->attitude==NPCATT_MUG)
+                    m->die_by_bfg9000(&g->u);
+            }
         }
     }
     if (effects.count("PLASMA")) {

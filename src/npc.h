@@ -740,6 +740,8 @@ public:
  unsigned flags : NF_MAX;
  // Dummy point that indicates that the goal is invalid.
  static const tripoint no_goal_point;
+ 
+ void die_by_bfg9000( Creature *source );
 
     protected:
         void store(JsonOut &jsout) const;

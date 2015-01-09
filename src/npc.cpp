@@ -2290,3 +2290,12 @@ void npc::add_msg_player_or_npc(game_message_type type, const char *, const char
 
 
 const tripoint npc::no_goal_point(INT_MIN, INT_MIN, INT_MIN);
+
+
+void npc::die_by_bfg9000(Creature* source)
+{
+    for (int i = 0; i < num_hp_parts; i++) {
+        hp_cur[i] = -(hp_max[i]*2);
+    }
+    die( source );
+}
