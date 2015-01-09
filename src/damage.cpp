@@ -214,7 +214,14 @@ void ammo_effects(int x, int y, const std::set<std::string> &effects)
             }
         }
     }
-
+    if(effects.count("BFG"))
+    {
+        for( auto &c : g->u.get_visible_creatures( 99999 ) )
+        {
+            const auto m = dynamic_cast<monster*>( c );
+            m->die_by_bfg9000(&g->u);
+        }
+    }
     if (effects.count("PLASMA")) {
         for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {

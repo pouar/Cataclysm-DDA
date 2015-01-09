@@ -7785,7 +7785,8 @@
       ["survnote", 1],
       ["rm11b_sniper_rifle", 1],
       ["remotevehcontrol", 8],
-      ["tool_rdx_charge", 1]
+      ["tool_rdx_charge", 1],
+      ["bfg9000", 1]
     ]
   },{
     "type" : "item_group",

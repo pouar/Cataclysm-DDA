@@ -219,6 +219,8 @@ class monster : public Creature, public JsonSerializer, public JsonDeserializer
         // Let the monster die and let its body explode into gibs
         void die_in_explosion( Creature *source );
 
+        void die_by_bfg9000( Creature *source );
+
         /** Processes monster-specific effects effects before calling Creature::process_effects(). */
         virtual void process_effects();
         /** Processes effects which may prevent the monster from moving (bear traps, crushed, etc.).

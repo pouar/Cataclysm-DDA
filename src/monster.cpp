@@ -995,6 +995,11 @@ void monster::die_in_explosion(Creature* source)
     hp = -9999; // huge to trigger explosion and prevent corpse item
     die( source );
 }
+void monster::die_by_bfg9000(Creature* source)
+{
+    hp = -(type->hp)*2;
+    die( source );
+}
 
 bool monster::move_effects()
 {
