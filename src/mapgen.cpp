@@ -9222,7 +9222,6 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
             place_items("bed", 60, 20, 21, 17, 18, true, 0);
             furn_set(13, 9, "f_sign");
             set_signage(13, 9, "Forgive my humble abode. Rotting bodies clogging the commode. Please pardon the stench and the trunk of a man lying on the workbench. Out by the shed are buzzing hives made of human heads. The gestation of larvae tells us the time of death.");
-            
             if (one_in(2)) {
                 add_spawn("mon_zombie", rng(1, 6), 4, 14);
             } else {
@@ -9268,8 +9267,6 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
             place_items("bigtools", 50, 1, 11, 6, 18, true, 0);
             place_items("homeguns", 20, 1, 11, 6, 18, true, 0);
             place_items("bed", 60, 20, 21, 17, 18, true, 0);
-            furn_set(13, 9, "f_sign");
-            set_signage(13, 9, "Forgive my humble abode. Rotting bodies clogging the commode. Please pardon the stench and the trunk of a man lying on the workbench. Out by the shed are buzzing hives made of human heads. The gestation of larvae tells us the time of death.");
             for (int i = 0; i <= 23; i++) {
                 for (int j = 0; j <= 23; j++) {
                     if (this->furn(i, j) == f_dresser) {
@@ -9298,7 +9295,7 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
                             add_trap(i, j, tr_tripwire);
                         }
                         if (one_in(15)) {
-                            add_trap(i, j, tr_pit);
+                            ter_set(i, j, t_pit);
                         }
                     }
                 }
@@ -9363,6 +9360,19 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
             place_items("mechanics", 40, 8, 4, 15, 19, true, 0);
             place_items("home_hw", 50, 4, 19, 7, 19, true, 0);
             place_items("tools", 50, 4, 19, 7, 19, true, 0);
+            for (int x = 4; x <= 6; x++) {
+                for (int y = 4; y <= 6; y++) {
+                    spawn_item(x, y, "straw_pile", rng(0, 8));
+                }
+            }
+            for (int y = 9; y <= 14; y++) {
+                if (one_in(2)) {
+                    spawn_item(4, y, "straw_pile", rng(5, 15));
+                }
+                if (one_in(2)) {
+                    spawn_item(19, y, "straw_pile", rng(5, 15));
+                }
+            }
             if (one_in(3)) {
                 add_spawn("mon_zombie", rng(3, 6), 12, 12);
             } else {
@@ -9398,7 +9408,7 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
                 if(t_east == "body_farm_field") {
                     square(this, t_dirt, 20, 20, 23, 23);
                 }
-                if(t_west == "farm_field") {
+                if(t_west == "body_farm_field") {
                     square(this, t_dirt, 0, 20, 3, 23);
                 }
             }
@@ -9440,7 +9450,6 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
             place_items("corpse", 70, xStart, 19, xEnd, 19, true, turn);
         }
 
-    }
      else if (terrain_type == "farm") {
 
         if (!one_in(10)) {
