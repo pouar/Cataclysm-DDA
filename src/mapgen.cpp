@@ -9449,6 +9449,7 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
             place_items("corpse", 70, xStart, 17, xEnd, 17, true, turn);
             place_items("corpse", 70, xStart, 19, xEnd, 19, true, turn);
         }
+	}
 
      else if (terrain_type == "farm") {
 

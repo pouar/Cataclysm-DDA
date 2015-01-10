@@ -6528,7 +6528,7 @@ int iuse::diaperfur_whistle(player *p, item *it, bool, point)
     p->add_msg_if_player(_("You blow your diaperfur whistle."));
     for (size_t i = 0; i < g->num_zombies(); i++) {
         if ((g->zombie(i).friendly != 0 && g->zombie(i).type->id == "mon_diaperfur_dragon") || (g->zombie(i).friendly != 0 && g->zombie(i).type->id == "mon_diaperfur_fox") || (g->zombie(i).friendly != 0 && g->zombie(i).type->id == "mon_diaperfur_cat")) {
-            bool u_see = g->u_see(&(g->zombie(i)));
+            bool u_see = g->u.sees(g->zombie(i));
             if (g->zombie(i).has_effect("docile")) {
                 if (u_see) {
                     p->add_msg_if_player(_("Your %s looks ready to attack."), g->zombie(i).name().c_str());
