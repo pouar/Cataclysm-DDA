@@ -669,6 +669,7 @@
 		"dodge":4,
 		"armor_bash":1,
 		"armor_cut":0,
+		"vision_day":40,
 		"item_chance":0,
 		"luminance":0,
 		"hp":60,
@@ -676,7 +677,7 @@
 		"death_function":["NORMAL","GUILT"],
 		"special_attack":["NONE"],
 		"description":"A pink humanoid kitty. She is wearing a purple leotard dress and her ultra thick pink diaper is clearly visible. She does a potty dance anytime she needs to use the bathroom but never makes it.",
-		"flags":["SEES", "HEARS", "GOODHEARING", "SMELLS", "ANIMAL", "WARM", "FUR", "HIT_AND_RUN", "VIS40", "BONES", "FAT","STUMBLES","GUILT","SWIMS","KEENNOSE","HUMAN"],
+		"flags":["SEES", "HEARS", "GOODHEARING", "SMELLS", "ANIMAL", "WARM", "FUR", "HIT_AND_RUN", "BONES", "FAT","STUMBLES","GUILT","SWIMS","KEENNOSE","HUMAN"],
 		"anger_triggers":[],
 		"fear_triggers":["PLAYER_WEAK","HURT","FIRE"],
 		"placate_triggers" : [],
@@ -712,6 +713,7 @@
 		"dodge":4,
 		"armor_bash":1,
 		"armor_cut":0,
+		"vision_day":40,
 		"item_chance":0,
 		"luminance":0,
 		"hp":60,
@@ -719,7 +721,7 @@
 		"death_function":["NORMAL","GUILT"],
 		"special_attack":["NONE"],
 		"description":"A sexy diaperfur vixen. She is wearing a red bikini and a thick adult diaper. She can't undo the tapes of her diaper so she does a potty dance while panicking until she pees herself.",
-		"flags":["SEES", "HEARS", "GOODHEARING", "SMELLS", "ANIMAL", "WARM", "FUR", "HIT_AND_RUN", "VIS40", "BONES", "FAT","STUMBLES","GUILT","SWIMS","KEENNOSE","HUMAN"],
+		"flags":["SEES", "HEARS", "GOODHEARING", "SMELLS", "ANIMAL", "WARM", "FUR", "HIT_AND_RUN", "BONES", "FAT","STUMBLES","GUILT","SWIMS","KEENNOSE","HUMAN"],
 		"anger_triggers":[],
 		"fear_triggers":["PLAYER_WEAK","HURT","FIRE"],
 		"placate_triggers" : [],
@@ -755,6 +757,7 @@
 		"dodge":4,
 		"armor_bash":2,
 		"armor_cut":4,
+		"vision_day":40,
 		"item_chance":0,
 		"luminance":0,
 		"hp":60,
@@ -762,7 +765,7 @@
 		"death_function":["NORMAL","GUILT"],
 		"special_attack":["NONE"],
 		"description":"A sexy red-violet diaperfur dragon. She is wearing a pink lacy halter top and a thick adult diaper. She was never potty trained so she just pees herself like a toddler.",
-		"flags":["SEES", "HEARS", "GOODHEARING", "SMELLS", "ANIMAL", "WARM", "HIT_AND_RUN", "VIS40", "BONES", "FAT","STUMBLES","GUILT","SWIMS","FLIES","KEENNOSE","HUMAN"],
+		"flags":["SEES", "HEARS", "GOODHEARING", "SMELLS", "ANIMAL", "WARM", "HIT_AND_RUN", "BONES", "FAT","STUMBLES","GUILT","SWIMS","FLIES","KEENNOSE","HUMAN"],
 		"anger_triggers":[],
 		"fear_triggers":["PLAYER_WEAK","HURT","FIRE"],
 		"placate_triggers" : [],
@@ -798,6 +801,7 @@
 		"dodge":10,
 		"armor_bash":4,
 		"armor_cut":8,
+		"vision_day":40,
 		"item_chance":0,
 		"luminance":0,
 		"hp":500,
@@ -805,7 +809,7 @@
 		"death_function":["NORMAL"],
 		"special_attack":[["FLAMETHROWER",10],["BITE",5]],
 		"description":"A giant red dragon wearing a diaper. unlike the diaperfur dragoness, this one isn't a sissy.",
-		"flags":["SEES", "HEARS", "GOODHEARING", "SMELLS", "ANIMAL", "WARM", "VIS40", "BONES", "FAT","STUMBLES","SWIMS","FLIES","KEENNOSE","BASHES","DESTROYS","BLEED","ATTACKMON"],
+		"flags":["SEES", "HEARS", "GOODHEARING", "SMELLS", "ANIMAL", "WARM", "BONES", "FAT","STUMBLES","SWIMS","FLIES","KEENNOSE","BASHES","DESTROYS","BLEED","ATTACKMON"],
 		"anger_triggers":["PLAYER_CLOSE","HURT","MEAT"],
 		"fear_triggers":[],
 		"placate_triggers" : [],
@@ -2005,6 +2009,7 @@
 		"dodge":8,
 		"armor_bash":12,
 		"armor_cut":8,
+		"vision_day":50,
 		"item_chance":80,
 		"death_drops": {
 			"groups": [
@@ -2019,7 +2024,7 @@
 		"death_function":"BROKEN",
 		"special_attack":["NONE"],
 		"description":"A bipedal animatronic fox wearing a diaper. It's nearly twice your size.  Its teeth and claws look quite sharp.  Though it is a robot, it stinks like death.",
-		"flags":["SEES", "GRABS", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE", "VIS50"]
+		"flags":["SEES", "GRABS", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE"]
 	},{
 		"type" : "MONSTER",
 		"id" : "mon_diaperfur_animatronic_bunny",
@@ -2040,6 +2045,7 @@
 		"dodge":8,
 		"armor_bash":12,
 		"armor_cut":8,
+		"vision_day":50,
 		"item_chance":80,
 		"death_drops": {
 			"groups": [
@@ -2054,7 +2060,7 @@
 		"death_function":"BROKEN",
 		"special_attack":["NONE"],
 		"description":"A bipedal animatronic bunny wearing a diaper. It's nearly twice your size.  Its eyes are lit, but they still look deep and soulless.  Though it is a robot, it stinks like death.",
-		"flags":["SEES", "GRABS", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE", "VIS50"]
+		"flags":["SEES", "GRABS", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE"]
 	},{
 		"type" : "MONSTER",
 		"id" : "mon_diaperfur_animatronic_chicken",
@@ -2075,6 +2081,7 @@
 		"dodge":8,
 		"armor_bash":12,
 		"armor_cut":8,
+		"vision_day":50,
 		"item_chance":80,
 		"death_drops": {
 			"groups": [
@@ -2089,7 +2096,7 @@
 		"death_function":"BROKEN",
 		"special_attack":["NONE"],
 		"description":"A bipedal animatronic chicken wearing a diaper. It's nearly twice your size.  It's wearing a bib that reads 'Let's Eat!'.  Though it is a robot, it stinks like death.",
-		"flags":["SEES", "GRABS", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE", "VIS50"]
+		"flags":["SEES", "GRABS", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE"]
 	},{
 		"type" : "MONSTER",
 		"id" : "mon_diaperfur_animatronic_bear",
@@ -2110,6 +2117,7 @@
 		"dodge":8,
 		"armor_bash":12,
 		"armor_cut":8,
+		"vision_day":50,
 		"item_chance":80,
 		"death_drops": {
 			"groups": [
@@ -2124,7 +2132,7 @@
 		"death_function":"BROKEN",
 		"special_attack":["NONE"],
 		"description":"A bipedal animatronic bear wearing a diaper. It's nearly twice your size.  It's holding a microphone.  Though it is a robot, it stinks like death.",
-		"flags":["SEES", "GRABS", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE", "VIS50"]
+		"flags":["SEES", "GRABS", "HEARS", "BASHES", "ATTACKMON", "ELECTRONIC", "NO_BREATHE"]
 	},
 	{
 		"id": "broken_diaperfur_animatronic_fox",

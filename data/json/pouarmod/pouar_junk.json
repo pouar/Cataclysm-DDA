@@ -526,6 +526,7 @@
 		"dodge":3,
 		"armor_bash":0,
 		"armor_cut":0,
+		"vision_day":40,
 		"death_drops": {
 			"subtype": "collection",
 			"groups": [
@@ -541,7 +542,7 @@
 		"hp":60,
 		"death_function":"NORMAL",
 		"description":"A throbbing, misshapen slug of a \"human being\". Mucus crusts on your pink skin, shined by sebaceous sebum. Fucking ugly and disgusting. The missing link between feces and humanity.",
-		"flags":["SEES", "HEARS", "WARM", "BASHES", "HUMAN", "VIS40", "BONES"]
+		"flags":["SEES", "HEARS", "WARM", "BASHES", "HUMAN", "BONES"]
 	},
 	{
 		"type" : "overmap_terrain",
@@ -780,12 +781,13 @@
 		"dodge":20,
 		"armor_bash":20,
 		"armor_cut":20,
+		"vision_day":50,
 		"luminance":0,
 		"hp":500,
 		"death_function":["MELT"],
 		"special_attacks":[["SHRIEK", 5],["PARROT", 0],["RESURRECT", 1],["STARE", 5],["FEAR_PARALYZE", 5],["UPGRADE", 1],["LUNGE", 3],["LEAP", 3]],
 		"description":"It looks like Sonic the Hedgehog, but his eyes are pitch black and bleeding with two glowing red dots.",
-		"flags":["SEES", "HEARS", "SMELLS", "WARM","HARDTOSHOOT","BLEED", "BASHES", "NO_BREATHE", "VIS50","FLIES"]
+		"flags":["SEES", "HEARS", "SMELLS", "WARM","HARDTOSHOOT","BLEED", "BASHES", "NO_BREATHE","FLIES"]
 	},
 	{
 		"type" : "speech",
