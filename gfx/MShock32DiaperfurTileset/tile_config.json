@@ -19836,6 +19836,11 @@
 					"rotates": false,
 					"id": "bfg9000",
 					"fg": 0
+				},
+				{
+					"rotates": false,
+					"id": "mon_barney",
+					"fg": 4
 				}
 			]
 		}
