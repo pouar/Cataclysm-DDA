@@ -4137,18 +4137,6 @@ void player::disp_status(WINDOW *w, WINDOW *w2)
     else if (hunger < -60)
         wprintz(w, c_green,  _("Engorged"));
 
-    wmove(w, sideStyle ? 0 : 0, sideStyle ? 11 : 10);
-    if(!has_trait("INCONT") && !has_effect("sleep") && !has_effect("lying_down"))
-    {
-            if (bladder >= bladderlast)
-                wprintz(w, c_red,    _(" Potty dance (Last minute)"));
-            else if (bladder >= bladderdesp)
-                wprintz(w, c_ltred , _(" Potty dance (Desperate)"));
-            else if (bladder >= bladderdance)
-                wprintz(w, c_yellow, _(" Potty dance (Slight)"));
-            else if (bladder >= bladdermict)
-                wprintz(w, c_yellow, _(" Need to pee"));
-    }
     /// Find hottest/coldest bodypart
     // Calculate the most extreme body tempearatures
     int current_bp_extreme = 0, conv_bp_extreme = 0;

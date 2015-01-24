@@ -5609,6 +5609,18 @@ void game::draw_sidebar()
         wprintz( w_location, c_white, " %s", print_temperature( get_temperature() ).c_str());
     }
 
+    wmove(w_location, 0, 33);
+    if(!u.has_trait("INCONT") && !u.has_effect("sleep") && !u.has_effect("lying_down"))
+    {
+            if (u.bladder >= u.bladderlast)
+                wprintz(w_location, c_red,    _("Last minute"));
+            else if (u.bladder >= u.bladderdesp)
+                wprintz(w_location, c_ltred , _("Desperate"));
+            else if (u.bladder >= u.bladderdance)
+                wprintz(w_location, c_yellow, _("Fidgeting"));
+            else if (u.bladder >= u.bladdermict)
+                wprintz(w_location, c_yellow, _("Need to pee"));
+    }
     wrefresh(w_location);
 
     //Safemode coloring
