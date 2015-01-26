@@ -1853,8 +1853,8 @@ int player::peeself(bool ctrl)
     bool wetdiaper = false;
     bool leak = false;
     bool wet = false;
-    std::string peeterid = g->m.get_ter(posx,posy);
-    std::string peefurnid = g->m.get_furn(posx,posy);
+    std::string peeterid = g->m.get_ter(posx(),posy());
+    std::string peefurnid = g->m.get_furn(posx(),posy());
     bool inwater = false;
     if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp" || peeterid == "t_water_pool" || peeterid == "t_sewage" || peeterid == "t_lava")
         inwater = true;
@@ -1894,7 +1894,7 @@ int player::peeself(bool ctrl)
             if(!has_trait("DL"))
                 add_morale(MORALE_PEESELF, -20, -20);
             if(inwater==false && peefurnid != "f_toilet")
-                g->m.add_field(posx, posy, fd_pee, 3);
+                g->m.add_field(posx(), posy(), fd_pee, 3);
         }
     if(ctrl == true)
     {
@@ -2252,8 +2252,8 @@ void player::pee()
     }
     else
     {
-        peex=posx;
-        peey=posy;
+        peex=posx();
+        peey=posy();
     }
     bladder=0;
 
