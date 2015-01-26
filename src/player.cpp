@@ -2025,7 +2025,7 @@ int player::peeself(bool ctrl)
     }
     else
     {
-        if(wetdiaper==false)
+        if(wetdiaper==true)
         {
             if(leak==true)
             {
