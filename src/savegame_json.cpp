@@ -116,21 +116,10 @@ void player::load(JsonObject &data)
     JsonArray parray;
     int tmpid = 0;
 
-    // todo/maybe:
-    // std::map<std::string, int*> strmap_common_variables;
-    // void player::init_strmap_common_variables() {
-    //     strmap_common_variables["posx"]=&posx; // + all this below and in save_common_variables
-    // }
-    // load:
-    // for(std::map<std::string, int*>::iterator it...
-    //     data.read(it->first,it->second);
-    // save:
-    // for(...
-    //     json.member( it->first, it->second );
-    if(!data.read("posx", posx) ) { // uh-oh.
+    if(!data.read("posx", position.x) ) { // uh-oh.
         debugmsg("BAD PLAYER/NPC JSON: no 'posx'?");
     }
-    data.read("posy", posy);
+    data.read("posy", position.y);
     data.read("hunger", hunger);
     data.read("bladder", bladder);
     data.read("bladdercap", bladdercap);
@@ -227,8 +216,8 @@ void player::store(JsonOut &json) const
 
     // assumes already in player object
     // positional data
-    json.member( "posx", posx );
-    json.member( "posy", posy );
+    json.member( "posx", position.x );
+    json.member( "posy", position.y );
 
     // om-noms or lack thereof
     json.member( "hunger", hunger );
@@ -893,8 +882,8 @@ void monster::load(JsonObject &data)
     }
     type = GetMType(sidtmp);
 
-    data.read("posx", _posx);
-    data.read("posy", _posy);
+    data.read("posx", position.x);
+    data.read("posy", position.y);
     data.read("wandx", wandx);
     data.read("wandy", wandy);
     data.read("wandf", wandf);
@@ -959,8 +948,8 @@ void monster::store(JsonOut &json) const
 {
     Creature::store( json );
     json.member( "typeid", type->id );
-    json.member("posx", _posx);
-    json.member("posy", _posy);
+    json.member("posx", position.x);
+    json.member("posy", position.y);
     json.member("wandx", wandx);
     json.member("wandy", wandy);
     json.member("wandf", wandf);
