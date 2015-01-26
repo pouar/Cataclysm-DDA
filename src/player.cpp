@@ -1974,7 +1974,7 @@ int player::peeself(bool ctrl)
                 }
                 else if(wet==true)
                 {
-                    add_msg(m_info, _("You decide to just pee your pants like a toddler. Fortunantly you didn't leave a puddle but only a stain in the inside of your pants"));
+                    add_msg(m_info, _("You decide to just pee your pants like a toddler. Fortunantly you didn't leave a puddle but only a stain in the inside of your pants."));
                     return 0;
                 }
                 else if(wet==false)
@@ -2025,7 +2025,7 @@ int player::peeself(bool ctrl)
     }
     else
     {
-        if(wetdiaper==true)
+        if(wetdiaper==false)
         {
             if(leak==true)
             {
@@ -2044,12 +2044,12 @@ int player::peeself(bool ctrl)
                 }
                 else if(peeterid == "t_water_pool")
                 {
-                    add_msg(m_bad, _("You have an accident in the pool. Since you don't see any pee you assume it didn't leak even though it did."));
+                    add_msg(m_bad, _("You have an accident in the pool. Way to keep it clean."));
                     return 0;
                 }
                 else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
                 {
-                    add_msg(m_bad, _("You have an accident in the water. Since you don't see any pee you assume it didn't leak even though it did."));
+                    add_msg(m_bad, _("You have an accident in the water."));
                     return 0;
                 }
                 else if(peefurnid == "f_toilet")
@@ -2065,9 +2065,9 @@ int player::peeself(bool ctrl)
                 else
                 {
                     if(has_trait("INCONT"))
-                    add_msg(m_bad, _("Everyone starts laughing at you and you can't figure out why, until you look down and get a horrified look on your face as you find out your diaper is leaking like hell."));
+                    add_msg(m_bad, _("Everyone starts laughing at you and you can't figure out why, until you look down and get a horrified look on your face as you find out you peed yourself like a toddler."));
                     else
-                    add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Everyone starts laughing at you as your diapers leak all over the place."));
+                    add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Everyone starts laughing at you."));
                     return 0;
                 }
             }
