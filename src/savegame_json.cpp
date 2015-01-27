@@ -103,15 +103,73 @@ void SkillLevel::deserialize(JsonIn &jsin)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-///// player.h, player + npc
+///// Character.h, player + npc
 /*
- * Gather variables for saving. These variables are common to both the player and NPCs (which is a kind of player).
- * Do not overload; NPC or player specific stuff should go to player::json_save or npc::json_save.
+ * Gather variables for saving. These variables are common to both the player and NPCs.
+ */
+void Character::load(JsonObject &data)
+{
+    Creature::load( data );
+
+    JsonArray parray;
+    
+    data.read("underwater", underwater);
+    
+    data.read("traits", my_traits);
+
+    data.read( "mutations", my_mutations );
+    data.read( "mutation_keys", trait_keys );
+    
+    data.read( "my_bionics", my_bionics );
+
+    worn.clear();
+    data.read( "worn", worn );
+
+    if( !data.read( "hp_cur", hp_cur ) ) {
+        debugmsg("Error, incompatible hp_cur in save file '%s'", parray.str().c_str());
+    }
+
+    if( !data.read( "hp_max", hp_max ) ) {
+        debugmsg("Error, incompatible hp_max in save file '%s'", parray.str().c_str());
+    }
+
+    inv.clear();
+    if ( data.has_member( "inv" ) ) {
+        JsonIn *invin = data.get_raw( "inv" );
+        inv.json_load_items( *invin );
+    }
+
+    weapon = item( "null", 0 );
+    data.read( "weapon", weapon );
+}
+
+void Character::store(JsonOut &json) const
+{
+    Creature::store( json );
+    
+    // breathing
+    json.member( "underwater", underwater );
+
+    // traits: permanent 'mutations' more or less
+    json.member( "traits", my_traits );
+
+    // mutations; just like traits but can be removed.
+    json.member( "mutations", my_mutations );
+    json.member( "mutation_keys", trait_keys );
+
+    // "Fracking Toasters" - Saul Tigh, toaster
+    json.member( "my_bionics", my_bionics );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///// player.h, player (+ npc for now, should eventually only be the player)
+/*
+ * Gather variables for saving.
  */
 
 void player::load(JsonObject &data)
 {
-    Creature::load( data );
+    Character::load( data );
 
     JsonArray parray;
     int tmpid = 0;
@@ -135,7 +193,6 @@ void player::load(JsonObject &data)
     data.read("pkill", pkill);
     data.read("radiation", radiation);
     data.read("scent", scent);
-    data.read("underwater", underwater);
     data.read("oxygen", oxygen);
     data.read("male", male);
     data.read("cash", cash);
@@ -145,14 +202,6 @@ void player::load(JsonObject &data)
         setID( tmpid );
     }
 
-    if( !data.read( "hp_cur", hp_cur ) ) {
-        debugmsg("Error, incompatible hp_cur in save file '%s'", parray.str().c_str());
-    }
-
-    if( !data.read( "hp_max", hp_max ) ) {
-        debugmsg("Error, incompatible hp_max in save file '%s'", parray.str().c_str());
-    }
-
     data.read("power_level", power_level);
     data.read("max_power_level", max_power_level);
     // Bionic power scale has been changed, savegame version 21 has the new scale
@@ -160,7 +209,6 @@ void player::load(JsonObject &data)
         power_level *= 25;
         max_power_level *= 25;
     }
-    data.read("traits", my_traits);
 
     if (data.has_object("skills")) {
         JsonObject pmap = data.get_object("skills");
@@ -183,7 +231,6 @@ void player::load(JsonObject &data)
     }
 
     data.read( "addictions", addictions );
-    data.read( "my_bionics", my_bionics );
 
     JsonArray traps = data.get_array("known_traps");
     known_traps.clear();
@@ -193,26 +240,14 @@ void player::load(JsonObject &data)
         const std::string t = pmap.get_string("trap");
         known_traps.insert(trap_map::value_type(p, t));
     }
-
-    inv.clear();
-    if ( data.has_member( "inv" ) ) {
-        JsonIn *invin = data.get_raw( "inv" );
-        inv.json_load_items( *invin );
-    }
-
-    worn.clear();
-    data.read( "worn", worn );
-
-    weapon = item( "null", 0 );
-    data.read( "weapon", weapon );
 }
 
 /*
- * Variables common to player and npc
+ * Variables common to player (and npc's, should eventually just be players)
  */
 void player::store(JsonOut &json) const
 {
-    Creature::store( json );
+    Character::store( json );
 
     // assumes already in player object
     // positional data
@@ -241,7 +276,6 @@ void player::store(JsonOut &json) const
     json.member( "body_wetness", body_wetness );
 
     // breathing
-    json.member( "underwater", underwater );
     json.member( "oxygen", oxygen );
 
     // gender
@@ -260,9 +294,6 @@ void player::store(JsonOut &json) const
     // npc; unimplemented
     json.member( "power_level", power_level );
     json.member( "max_power_level", max_power_level );
-
-    // traits: permanent 'mutations' more or less
-    json.member( "traits", my_traits );
 
     // skills
     json.member( "skills" );
@@ -284,9 +315,6 @@ void player::store(JsonOut &json) const
 
     // "Looks like I picked the wrong week to quit smoking." - Steve McCroskey
     json.member( "addictions", addictions );
-
-    // "Fracking Toasters" - Saul Tigh, toaster
-    json.member( "my_bionics", my_bionics );
 
     json.member( "known_traps" );
     json.start_array();
@@ -353,10 +381,6 @@ void player::serialize(JsonOut &json) const
     // crafting etc
     json.member( "activity", activity );
     json.member( "backlog", backlog );
-
-    // mutations; just like traits but can be removed.
-    json.member( "mutations", my_mutations );
-    json.member( "mutation_keys", trait_keys );
 
     // "The cold wakes you up."
     json.member( "temp_cur", temp_cur );
@@ -461,9 +485,6 @@ void player::deserialize(JsonIn &jsin)
     data.read( "focus_pool", focus_pool);
     data.read( "style_selected", style_selected );
     data.read( "keep_hands_free", keep_hands_free );
-
-    data.read( "mutations", my_mutations );
-    data.read( "mutation_keys", trait_keys );
 
     set_highest_cat_level();
     drench_mut_calc();
@@ -922,13 +943,13 @@ void monster::load(JsonObject &data)
     } else {
         data.read("ammo", ammo);
     }
-    std::string fac;
-    if( data.read( "faction", fac ) ) {
-        faction = GetMFact(fac);
+    std::string fac = data.get_string( "faction", "" );
+    const monfaction *monfac = GetMFact( fac );
+    if( monfac->id == 0 ) {
+        // Legacy saves
+        faction = type->default_faction;
     } else {
-        // Handle faction-less monsters (legacy)
-        fac = type->species.begin() == type->species.end() ? "" : *( type->species.begin() );
-        faction = GetMFact(fac);
+        faction = monfac;
     }
 }
 
@@ -966,6 +987,7 @@ void monster::store(JsonOut &json) const
     json.member("stairscount", staircount);
     json.member("plans", plans);
     json.member("ammo", ammo);
+    json.member( "underwater", underwater );
 
     json.member( "inv", inv );
 }
@@ -1671,6 +1693,8 @@ void Creature::load( JsonObject &jsin )
 
     jsin.read( "grab_resist", grab_resist );
     jsin.read( "throw_resist", throw_resist );
+
+    jsin.read( "underwater", underwater );
 
     fake = false; // see Creature::load
 }
