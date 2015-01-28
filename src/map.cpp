@@ -9,12 +9,14 @@
 #include "mapbuffer.h"
 #include "translations.h"
 #include "monstergenerator.h"
-#include <cmath>
-#include <stdlib.h>
-#include <fstream>
+#include "sounds.h"
 #include "debug.h"
 #include "messages.h"
 #include "mapsharing.h"
+
+#include <cmath>
+#include <stdlib.h>
+#include <fstream>
 
 extern bool is_valid_in_w_terrain(int,int);
 
@@ -1873,7 +1875,7 @@ std::pair<bool, bool> map::bash(const int x, const int y, const int str,
         }
         // TODO: what if silent is true?
         if (has_flag("ALARMED", x, y) && !g->event_queued(EVENT_WANTED)) {
-            g->sound(x, y, 40, _("an alarm go off!"));
+            sounds::sound(x, y, 40, _("an alarm go off!"));
             // if the player is nearby blame him/her
             if( rl_dist( g->u.posx(), g->u.posy(), x, y ) <= 3 ) {
                 g->u.add_memorial_log(pgettext("memorial_male", "Set off an alarm."),
@@ -2082,7 +2084,7 @@ std::pair<bool, bool> map::bash(const int x, const int y, const int str,
         smashed_something = true;
     }
     if( !sound.empty() && !silent) {
-        g->sound( x, y, sound_volume, sound);
+        sounds::sound( x, y, sound_volume, sound);
     }
     return std::pair<bool, bool> (smashed_something, success);
 }
@@ -2210,7 +2212,7 @@ void map::shoot(const int x, const int y, int &dam,
 
     if (has_flag("ALARMED", x, y) && !g->event_queued(EVENT_WANTED))
     {
-        g->sound(x, y, 30, _("An alarm sounds!"));
+        sounds::sound(x, y, 30, _("An alarm sounds!"));
         g->add_event(EVENT_WANTED, int(calendar::turn) + 300, 0, g->get_abs_levx(), g->get_abs_levy());
     }
 
@@ -2229,7 +2231,7 @@ void map::shoot(const int x, const int y, int &dam,
         if (hit_items || one_in(8)) { // 1 in 8 chance of hitting the door
             dam -= rng(20, 40);
             if (dam > 0) {
-                g->sound(x, y, 10, _("crash!"));
+                sounds::sound(x, y, 10, _("crash!"));
                 ter_set(x, y, t_dirt);
             }
         }
@@ -2242,7 +2244,7 @@ void map::shoot(const int x, const int y, int &dam,
                0 == terrain.id.compare("t_door_locked_alarm") ) {
         dam -= rng(15, 30);
         if (dam > 0) {
-            g->sound(x, y, 10, _("smash!"));
+            sounds::sound(x, y, 10, _("smash!"));
             ter_set(x, y, t_door_b);
         }
     } else if( 0 == terrain.id.compare("t_door_boarded") ||
@@ -2251,7 +2253,7 @@ void map::shoot(const int x, const int y, int &dam,
                0 == terrain.id.compare("t_rdoor_boarded_damaged") ) {
         dam -= rng(15, 35);
         if (dam > 0) {
-            g->sound(x, y, 10, _("crash!"));
+            sounds::sound(x, y, 10, _("crash!"));
             ter_set(x, y, t_door_b);
         }
     } else if( 0 == terrain.id.compare("t_window_domestic_taped") ||
@@ -2264,7 +2266,7 @@ void map::shoot(const int x, const int y, int &dam,
         } else {
             dam -= rng(1,3);
             if (dam > 0) {
-                g->sound(x, y, 16, _("glass breaking!"));
+                sounds::sound(x, y, 16, _("glass breaking!"));
                 ter_set(x, y, t_window_frame);
                 spawn_item(x, y, "sheet", 1);
                 spawn_item(x, y, "stick");
@@ -2277,7 +2279,7 @@ void map::shoot(const int x, const int y, int &dam,
         } else {
             dam -= rng(1,3);
             if (dam > 0) {
-                g->sound(x, y, 16, _("glass breaking!"));
+                sounds::sound(x, y, 16, _("glass breaking!"));
                 ter_set(x, y, t_window_frame);
                 spawn_item(x, y, "sheet", 1);
                 spawn_item(x, y, "stick");
@@ -2294,7 +2296,7 @@ void map::shoot(const int x, const int y, int &dam,
         } else {
             dam -= rng(1,3);
             if (dam > 0) {
-                g->sound(x, y, 16, _("glass breaking!"));
+                sounds::sound(x, y, 16, _("glass breaking!"));
                 ter_set(x, y, t_window_frame);
             }
         }
@@ -2305,14 +2307,14 @@ void map::shoot(const int x, const int y, int &dam,
         } else {
             dam -= rng(1,3);
             if (dam > 0) {
-                g->sound(x, y, 16, _("glass breaking!"));
+                sounds::sound(x, y, 16, _("glass breaking!"));
                 ter_set(x, y, t_window_frame);
             }
         }
     } else if( 0 == terrain.id.compare("t_window_boarded") ) {
         dam -= rng(10, 30);
         if (dam > 0) {
-            g->sound(x, y, 16, _("glass breaking!"));
+            sounds::sound(x, y, 16, _("glass breaking!"));
             ter_set(x, y, t_window_frame);
         }
     } else if( 0 == terrain.id.compare("t_wall_glass_h") ||
@@ -2324,7 +2326,7 @@ void map::shoot(const int x, const int y, int &dam,
         } else {
             dam -= rng(1,8);
             if (dam > 0) {
-                g->sound(x, y, 20, _("glass breaking!"));
+                sounds::sound(x, y, 20, _("glass breaking!"));
                 ter_set(x, y, t_floor);
             }
         }
@@ -2342,14 +2344,14 @@ void map::shoot(const int x, const int y, int &dam,
             } else if (dam >= 40) {
                 //high powered bullets penetrate the glass, but only extremely strong
                 // ones (80 before reduction) actually destroy the glass itself.
-                g->sound(x, y, 20, _("glass breaking!"));
+                sounds::sound(x, y, 20, _("glass breaking!"));
                 ter_set(x, y, t_floor);
             }
         }
     } else if( 0 == terrain.id.compare("t_paper") ) {
         dam -= rng(4, 16);
         if (dam > 0) {
-            g->sound(x, y, 8, _("rrrrip!"));
+            sounds::sound(x, y, 8, _("rrrrip!"));
             ter_set(x, y, t_dirt);
         }
         if (ammo_effects.count("INCENDIARY")) {
@@ -2368,7 +2370,7 @@ void map::shoot(const int x, const int y, int &dam,
                             }
                         }
                     }
-                    g->sound(x, y, 10, _("smash!"));
+                    sounds::sound(x, y, 10, _("smash!"));
                 }
                 ter_set(x, y, t_gas_pump_smashed);
             }
@@ -2376,7 +2378,7 @@ void map::shoot(const int x, const int y, int &dam,
         }
     } else if( 0 == terrain.id.compare("t_vat") ) {
         if (dam >= 10) {
-            g->sound(x, y, 20, _("ke-rash!"));
+            sounds::sound(x, y, 20, _("ke-rash!"));
             ter_set(x, y, t_floor);
         } else {
             dam = 0;
@@ -3516,7 +3518,7 @@ static bool trigger_radio_item( item_stack &items, std::list<item>::iterator &n,
 {
     bool trigger_item = false;
     if( n->has_flag("RADIO_ACTIVATION") && n->has_flag(signal) ) {
-        g->sound(pos.x, pos.y, 6, "beep.");
+        sounds::sound(pos.x, pos.y, 6, "beep.");
         if( n->has_flag("BOMB") ) {
             // Set charges to 0 to ensure it detonates.
             n->charges = 0;
