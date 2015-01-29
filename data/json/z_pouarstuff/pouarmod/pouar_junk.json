@@ -55,7 +55,8 @@
 		"id" : "EYEOFSAURON",
 		"name" : "Eye of Sauron",
 		"description" : "I see all",
-		"points" : 99
+		"points" : 99,
+        "active" : true
 	},
 	{
 		"type":"GENERIC",

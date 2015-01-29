@@ -242,7 +242,7 @@ void Character::recalc_sight_limits()
     // Set sight_boost and sight_boost_cap, based on night vision.
     // (A player will never have more than one night vision trait.)
     sight_boost_cap = 12;
-    if (has_trait("EYEOFSAURON")) {
+    if (has_active_mutation("EYEOFSAURON")) {
         sight_boost = 1000000000;
         sight_boost_cap = 1000000000;
     }

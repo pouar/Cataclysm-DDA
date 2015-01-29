@@ -4792,7 +4792,7 @@ int player::overmap_sight_range(int light_level)
 #define MAX_CLAIRVOYANCE 40
 int player::clairvoyance() const
 {
-    if(has_trait("EYEOFSAURON"))
+    if(has_active_mutation("EYEOFSAURON"))
         return 1000000000;
     if (has_artifact_with(AEP_SUPER_CLAIRVOYANCE)) {
         return MAX_CLAIRVOYANCE;
