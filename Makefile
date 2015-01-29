@@ -108,6 +108,7 @@ W32ODIR = objwin
 W32ODIRTILES = objwin/tiles
 DDIR = .deps
 
+MAKEFLAGS+=-j$(shell nproc)
 OS  = $(shell uname -s)
 ifdef CCACHE
   CXX = ccache $(CROSS)g++
@@ -122,8 +123,8 @@ ifdef RELEASE
   ifeq ($(NATIVE), osx)
     CXXFLAGS += -O3
   else
-    CXXFLAGS += -O2 -march=native -flto
-    LDFLAGS += -s -flto
+    CXXFLAGS += -O2 -march=native -flto=$(shell nproc)
+    LDFLAGS += -s -flto=$(shell nproc)
   endif
   # OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
   # Strip symbols, generates smaller executable.
