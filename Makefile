@@ -123,7 +123,7 @@ ifdef RELEASE
   ifeq ($(NATIVE), osx)
     CXXFLAGS += -O3
   else
-    CXXFLAGS += -Os -march=native -flto=$(shell nproc)
+    CXXFLAGS += -O2 -march=native -flto=$(shell nproc)
     LDFLAGS += -s -flto=$(shell nproc)
   endif
   # OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
