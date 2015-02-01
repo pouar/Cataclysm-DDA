@@ -1868,7 +1868,7 @@ void mattack::jackson(monster *z, int index)
     // Did we convert anybody?
     if (converted) {
         if (g->u.sees( *z )) {
-            add_msg(m_warning, _("The %s lets out a high-pitched cry!"), z->name().c_str());
+            add_msg(m_warning, _("The %s lets out a high-pitched scream!"), z->name().c_str());
         }
     }
     // This is telepathy, doesn't take any moves.
@@ -1879,24 +1879,24 @@ void mattack::jackson(monster *z, int index)
 void mattack::dance(monster *z, int index)
 {
     if (g->u.sees( *z )) {
-        switch (rng(1,10)) {
+        switch (rng(1,12)) {
             case 1:
-                add_msg(m_neutral, _("The %s swings its arms from side to side!"), z->name().c_str());
+                add_msg(m_neutral, _("The %s headbangs!"), z->name().c_str());
                 break;
             case 2:
-                add_msg(m_neutral, _("The %s does some fancy footwork!"), z->name().c_str());
+                add_msg(m_neutral, _("The %s screams!"), z->name().c_str());
                 break;
             case 3:
-                add_msg(m_neutral, _("The %s shrugs its shoulders!"), z->name().c_str());
+                add_msg(m_neutral, _("The %s crowdsurfs!"), z->name().c_str());
                 break;
             case 4:
-                add_msg(m_neutral, _("The %s spins in place!"), z->name().c_str());
+                add_msg(m_neutral, _("The %s raises horns in the air!"), z->name().c_str());
                 break;
             case 5:
-                add_msg(m_neutral, _("The %s crouches on the ground!"), z->name().c_str());
+                add_msg(m_neutral, _("The %s makes some fucking noise!"), z->name().c_str());
                 break;
             case 6:
-                add_msg(m_neutral, _("The %s looks left and right!"), z->name().c_str());
+                add_msg(m_neutral, _("The %s chants \"CANNIBAL CORPSE\"!"), z->name().c_str());
                 break;
             case 7:
                 add_msg(m_neutral, _("The %s jumps back and forth!"), z->name().c_str());
@@ -1905,10 +1905,16 @@ void mattack::dance(monster *z, int index)
                 add_msg(m_neutral, _("The %s raises its arms in the air!"), z->name().c_str());
                 break;
             case 9:
-                add_msg(m_neutral, _("The %s swings its hips!"), z->name().c_str());
+                add_msg(m_neutral, _("The %s goes crazy!"), z->name().c_str());
                 break;
             case 10:
-                add_msg(m_neutral, _("The %s claps!"), z->name().c_str());
+                add_msg(m_neutral, _("The %s sings along!"), z->name().c_str());
+                break;
+            case 11:
+                add_msg(m_neutral, _("The %s flips people off!"), z->name().c_str());
+                break;
+            case 12:
+                add_msg(m_neutral, _("The %s shouts profanity!"), z->name().c_str());
                 break;
         }
     }
