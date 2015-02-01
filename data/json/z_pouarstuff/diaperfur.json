@@ -1388,7 +1388,7 @@
 		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT","EVERDIAPER","SUPER_FANCY"],
 		"coverage" : 20,
 		"material_thickness" : 26,
-		"peecap": 5600
+		"peecap": 8400
 	},
 	{
 		"type" : "ARMOR",
@@ -1413,7 +1413,7 @@
 		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT","SUPER_FANCY"],
 		"coverage" : 20,
 		"material_thickness" : 26,
-		"peecap": 5600
+		"peecap": 8400
 	},
 	{
 		"type" : "ARMOR",
