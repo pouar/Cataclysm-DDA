@@ -9547,6 +9547,7 @@ int game::list_monsters(const int iLastState)
     ctxt.register_action("QUIT");
     ctxt.register_action("look");
     ctxt.register_action("fire");
+    ctxt.register_action("SEARCH", _("View description in popup"));
     ctxt.register_action("HELP_KEYBINDINGS");
 
     do {
@@ -9645,6 +9646,20 @@ int game::list_monsters(const int iLastState)
 
                 //print monster info
                 cCurMon->print_info(w_monster_info, 1, 11, 1);
+                if (action == "SEARCH")
+                {
+                    if(!cCurMon->is_npc())
+                    {
+                        monster* m = (monster*)( cCurMon );
+                        m->popup_desc();
+                    }
+                    else
+                    {
+                        npc* m = (npc*)( cCurMon );
+                        m->popup_desc();
+                    }
+                }
+                
 
                 mvwprintz(w_monsters, getmaxy(w_monsters) - 1, 1, c_ltgreen, "%s", ctxt.press_x( "look" ).c_str());
                 wprintz(w_monsters, c_ltgray, " %s", _("to look around"));
@@ -9655,11 +9670,21 @@ int game::list_monsters(const int iLastState)
                 }
 
                 //Only redraw trail/terrain if x/y position changed
-                if (iActiveX != iLastActiveX || iActiveY != iLastActiveY) {
-                    iLastActiveX = iActiveX;
-                    iLastActiveY = iActiveY;
-                    centerlistview(iActiveX, iActiveY);
-                    draw_trail_to_square(iActiveX, iActiveY, false);
+                if (action == "SEARCH")
+                {
+                        iLastActiveX = iActiveX;
+                        iLastActiveY = iActiveY;
+                        centerlistview(iActiveX, iActiveY);
+                        draw_trail_to_square(iActiveX, iActiveY, false);
+                }
+                else
+                {
+                    if (iActiveX != iLastActiveX || iActiveY != iLastActiveY) {
+                        iLastActiveX = iActiveX;
+                        iLastActiveY = iActiveY;
+                        centerlistview(iActiveX, iActiveY);
+                        draw_trail_to_square(iActiveX, iActiveY, false);
+                    }
                 }
                 //Draw Scrollbar
                 draw_scrollbar(w_monsters_border, iActive, iMaxRows, iMonsterNum, 1);

@@ -287,7 +287,10 @@ int monster::print_info(WINDOW* w, int vStart, int vLines, int column) const
 
     return vStart;
 }
-
+void monster::popup_desc() const
+{
+    popup(type->description.c_str());
+}
 const std::string &monster::symbol() const
 {
     return type->sym;

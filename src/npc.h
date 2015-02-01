@@ -514,6 +514,7 @@ public:
 // Display
     virtual nc_color basic_symbol_color() const;
  int print_info(WINDOW* w, int vStart, int vLines, int column) const;
+ void popup_desc() const;
  std::string short_description() const;
  std::string opinion_text() const;
 

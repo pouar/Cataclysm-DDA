@@ -1909,6 +1909,10 @@ int npc::print_info(WINDOW* w, int line, int vLines, int column) const
     return line;
 }
 
+void npc::popup_desc() const
+{
+    popup(short_description().c_str());
+}
 std::string npc::short_description() const
 {
     std::stringstream ret;
