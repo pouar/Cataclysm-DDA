@@ -9666,6 +9666,7 @@ int game::list_monsters(const int iLastState)
 
                 //print monster info
                 cCurMon->print_info(w_monster_info, 1, 11, 1);
+                //Why do they make the description boxes so fucking small?!
                 if (action == "SEARCH")
                 {
                     if(!cCurMon->is_npc())
@@ -9679,7 +9680,7 @@ int game::list_monsters(const int iLastState)
                         m->popup_desc();
                     }
                 }
-                
+
 
                 mvwprintz(w_monsters, getmaxy(w_monsters) - 1, 1, c_ltgreen, "%s", ctxt.press_x( "look" ).c_str());
                 wprintz(w_monsters, c_ltgray, " %s", _("to look around"));
