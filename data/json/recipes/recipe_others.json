@@ -365,7 +365,7 @@
     {"id":"HAMMER","level":1,"amount":1}
   ], "components": [
     [
-      [ "scrap", 6 ]
+      [ "scrap", 1 ]
     ],
     [
       [ "rag", 1 ]
@@ -373,9 +373,9 @@
     [
       [ "bottle_glass", 1 ],
       [ "flask_glass", 1],
-      [ "jar_glass", 1 ]
-    ],
-    [
+      [ "jar_glass", 1 ],
+      [ "clay_teapot", 1 ],
+      [ "jug_clay", 1 ],
       [ "can_food", 1 ],
       [ "can_drink", 1 ],
       [ "canister_empty", 1 ]
@@ -6196,6 +6196,47 @@
     ],
     [
       [ "clay_lump", 20 ]
+    ],
+    [
+      [ "leather", 3 ],
+      [ "fur", 3 ]
+    ],
+    [
+      [ "string_6", 2 ]
+    ],
+    [
+      [ "tallow", 1 ],
+      [ "cooking_oil", 1 ],
+      [ "wax", 1 ],
+      [ "lamp_oil", 400 ]
+    ]
+  ]
+},{
+  "type" : "recipe",
+  "result": "clay_hydria",
+  "category": "CC_OTHER",
+  "subcategory": "CSC_OTHER_CONTAINERS",
+  "skill_used": "fabrication",
+  "skills_required": [ "survival", 1 ],
+  "difficulty": 2,
+  "time": 45000,
+  "reversible": false,
+  "autolearn": true,
+  "tools": [
+    [
+      [ "char_kiln", -1 ]
+    ],
+    [
+      [ "fire", -1 ]
+    ]
+  ],
+  "components": [
+    [
+      [ "water", 2 ],
+      [ "water_clean", 2 ]
+    ],
+    [
+      [ "clay_lump", 10 ]
     ],
     [
       [ "leather", 3 ],
