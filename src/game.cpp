@@ -2395,6 +2395,9 @@ input_context get_default_mode_input_context()
     ctxt.register_action("ignore_enemy");
     ctxt.register_action("save");
     ctxt.register_action("quicksave");
+#ifndef RELEASE
+    ctxt.register_action("quickload");
+#endif
     ctxt.register_action("quit");
     ctxt.register_action("player_data");
     ctxt.register_action("map");
@@ -3407,6 +3410,14 @@ bool game::handle_action()
 
         case ACTION_QUICKSAVE:
             quicksave();
+            return false;
+
+        case ACTION_QUICKLOAD:
+            MAPBUFFER.reset();
+            overmap_buffer.clear();
+            setup();
+            MAPBUFFER.load( world_generator->active_world->world_name );
+            load( world_generator->active_world->world_name, base64_encode(u.name) );
             return false;
 
         case ACTION_PL_INFO:
@@ -12897,8 +12908,7 @@ void game::update_stair_monsters()
                             u.moves -= 100;
                             if (resiststhrow && (u.is_throw_immune())) {
                                 //we have a judoka who isn't getting pushed but counterattacking now.
-                                mattack defend;
-                                defend.thrown_by_judo(&critter, -1);
+                                mattack::thrown_by_judo(&critter, -1);
                                 return;
                             }
                             std::string msg = "";

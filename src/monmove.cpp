@@ -10,6 +10,7 @@
 #include "cursesdef.h"
 #include "sounds.h"
 #include "monattack.h"
+#include "monstergenerator.h"
 
 #include <stdlib.h>
 //Used for e^(x) functions
@@ -317,8 +318,7 @@ void monster::move()
         }
 
         if( sp_timeout[i] == 0 && !has_effect("pacified") && !is_hallucination() ) {
-            mattack ma;
-            (ma.*type->sp_attack[i])(this, i);
+            type->sp_attack[i](this, i);
         }
     }
     if (moves < 0) {
