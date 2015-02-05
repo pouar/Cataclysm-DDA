@@ -461,9 +461,9 @@ std::vector<std::string> clothing_flags_description(item *worn_item)
             else if(worn_item->pee>=worn_item->type->peecap*.75)
 			{
 				if(worn_item->has_flag("EVERDIAPER"))
-					description_stack.push_back(_("it is visibly soaked and yellow from urine."));
+					description_stack.push_back(_("it is visibly soaked and yellow with urine."));
 				else
-					description_stack.push_back(_("it is visibly soaked and yellow from urine, you might want to change before it leaks."));
+					description_stack.push_back(_("it is visibly soaked and yellow with urine, you might want to change before it leaks."));
 			}
             else if(worn_item->pee>=worn_item->type->peecap*.25)
                 description_stack.push_back(_("It has been used. but it can hold more."));

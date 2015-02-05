@@ -1176,9 +1176,9 @@ std::string item::info(bool showtext, std::vector<iteminfo> *dump, bool debug) c
                 else if(pee>type->peecap*.75)
 				{
 					if(has_flag("EVERDIAPER"))
-						dump->push_back(iteminfo("DESCRIPTION", _("it is visibly soaked and yellow from urine.")));
+						dump->push_back(iteminfo("DESCRIPTION", _("it is visibly soaked and yellow with urine.")));
 					else
-						dump->push_back(iteminfo("DESCRIPTION", _("it is visibly soaked and yellow from urine but hasn't leaked yet.")));
+						dump->push_back(iteminfo("DESCRIPTION", _("it is visibly soaked and yellow with urine but hasn't leaked yet.")));
 				}
                 else if(pee>type->peecap*.25)
                     dump->push_back(iteminfo("DESCRIPTION", _("It is soaked in urine, but it can hold more.")));
