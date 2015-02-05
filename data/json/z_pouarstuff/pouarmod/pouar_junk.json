@@ -1081,6 +1081,6 @@
 		"death_function":"NORMAL",
 		"special_attacks":[["DANCE", 2]],
 		"description":"Undead feast, as they tear upon your weak flesh. Terror builds, at the thought of being dead. Prophecy of the wisemen of old. Now comes true, as the corpses break the soil. Ancient spell breaks the sleep of the dead. The dead awake, what the populace is fearing. Panic strikes as the nations run in fear. Oceans boil with blood of human victims. Suicide, the only way to avoid being eaten by the undead. Grave yards coming alive with zombies, hungry for living flesh. Psychotic, transmutated corpses, upsuring the population. Sickening disaster of epidemic proportions, devouring us.",
-		"flags":["WARM", "BASHES", "DESTROYS", "BORES", "LEATHER", "NO_BREATHE", "REGENERATES_50", "BONES", "POISON", "FAT"]
+		"flags":["WARM", "BASHES", "DESTROYS", "LEATHER", "NO_BREATHE", "REGENERATES_50", "BONES", "POISON", "FAT"]
 	}
 ]
