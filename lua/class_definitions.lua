@@ -314,10 +314,6 @@ classes = {
     monster = {
         parent = "Creature",
         attributes = {
-            hp = {
-                type = "int",
-                writable = true
-            },
             moves = {
                 type = "int",
                 writable = true
@@ -339,6 +335,14 @@ classes = {
             make_friendly = {
                 args = {},
                 rval = nil
+            },
+            get_hp = {
+                args = {},
+                rval = "int"
+            },
+            get_hp = {
+                args = {},
+                rval = "int"
             },
             posx = {
                 args = {},
