@@ -805,6 +805,7 @@
       ["glasses_eye", 90],
       ["contacts", 15],
       ["sunglasses", 90],
+      ["fitover_sunglasses", 60],
       ["fancy_sunglasses", 5],
       ["glasses_reading", 90],
       ["glasses_bifocal", 90],
@@ -1718,6 +1719,7 @@
       ["marshmallow", 20],
       ["biscuit", 12],
       ["hardtack", 2],
+      ["pastaextruder", 5],
       ["seasoning_salt", 25],
       ["seasoning_italian", 25]
     ]
@@ -2278,6 +2280,8 @@
       ["helmet_bike", 35],
       ["helmet_ball", 45],
       ["headgear", 40],
+      ["sunglasses", 20],
+      ["fitover_sunglasses", 10],
       ["mask_hockey", 25],
       ["hockey_stick", 35],
       ["jersey", 20],
@@ -3801,6 +3805,7 @@
       ["glasses_bal", 10],
       ["gloves_medical", 10],
       ["sunglasses", 10],
+      ["fitover_sunglasses", 5],
       ["glasses_safety", 5],
       ["wristwatch", 10],
       ["gold_watch", 2],
@@ -4073,6 +4078,7 @@
       ["wetsuit_hood", 30],
       ["fancy_sunglasses", 1],
       ["rebreather", 1],
+      ["fitover_sunglasses", 5],
       ["sunglasses", 10]
     ]
   },{
@@ -4223,6 +4229,7 @@
       ["glasses_eye", 30],
       ["contacts", 15],
       ["sunglasses", 30],
+      ["fitover_sunglasses", 20],
       ["fancy_sunglasses", 5],
       ["glasses_reading", 30],
       ["glasses_bifocal", 30],
@@ -4336,6 +4343,7 @@
       ["glasses_eye", 90],
       ["contacts", 15],
       ["sunglasses", 90],
+      ["fitover_sunglasses", 60],
       ["fancy_sunglasses", 5],
       ["glasses_reading", 90],
       ["glasses_bifocal", 90],
@@ -4411,6 +4419,7 @@
       ["glasses_eye", 90],
       ["contacts", 15],
       ["sunglasses", 90],
+      ["fitover_sunglasses", 60],
       ["fancy_sunglasses", 5],
       ["glasses_reading", 90],
       ["glasses_bifocal", 90],
@@ -4570,6 +4579,7 @@
     "items":[
       ["glasses_eye", 90],
       ["sunglasses", 90],
+      ["fitover_sunglasses", 60],
       ["fancy_sunglasses", 10],
       ["glasses_reading", 90],
       ["glasses_bifocal", 90],
@@ -4800,6 +4810,7 @@
       ["television", 10],
       ["microwave", 5],
       ["multi_cooker", 1],
+      ["pastaextruder", 8],
       ["knuckle_brass", 15],
       ["gold", 10],
       ["silver", 20],
@@ -5748,6 +5759,7 @@
       ["glasses_eye", 90],
       ["sunglasses", 20],
       ["fancy_sunglasses", 5],
+      ["fitover_sunglasses", 10],
       ["glasses_reading", 90],
       ["glasses_bifocal", 90],
       ["towel", 40],
@@ -7156,6 +7168,7 @@
       ["grapnel", 2],
       ["toolbox", 1],
       ["pur_tablets", 10],
+      ["pastaextruder", 10],
       ["remotevehcontrol", 8]
     ]
   },{
@@ -7708,6 +7721,7 @@
       ["glasses_eye", 90],
       ["contacts", 30],
       ["sunglasses", 90],
+      ["fitover_sunglasses", 60],
       ["fancy_sunglasses", 5],
       ["glasses_safety", 40],
       ["file", 10],
@@ -8665,6 +8679,7 @@
       ["mask_wsurvivor", 4],
       ["mask_fsurvivor", 2],
       ["sunglasses", 12],
+      ["fitover_sunglasses", 8],
       ["glasses_bal", 18],
       ["glasses_safety", 24],
       ["goggles_ski", 14],
