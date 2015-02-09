@@ -19667,18 +19667,6 @@
 			"file": "gfx/MShock32Tileset/tiles.png",
 			"tiles": [
 				{
-					"id": "t_chunk_blower",
-					"fg": 2286,
-					"bg": 499,
-					"rotates": false
-				},
-				{
-					"id": "tr_chunkblower",
-					"fg": 2286,
-					"bg": 499,
-					"rotates": false
-				},
-				{
 					"id": "leather_spiked_collar_bell",
 					"fg": 393,
 					"bg": 499,
@@ -19841,6 +19829,18 @@
 					"rotates": false,
 					"id": "mon_barney",
 					"fg": 4
+				},
+				{
+					"id": "t_chunk_blower",
+					"fg": 5,
+					"bg": 6,
+					"rotates": false
+				},
+				{
+					"id": "tr_chunkblower",
+					"fg": 5,
+					"bg": 6,
+					"rotates": false
 				}
 			]
 		}
