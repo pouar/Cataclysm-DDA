@@ -198,8 +198,9 @@ void Item_factory::init()
     iuse_function_list["CATFOOD"] = &iuse::catfood;
 
     // TOOLS
-    iuse_function_list["SEW"] = &iuse::sew;
     iuse_function_list["DIAPERLOCK"] = &iuse::diaperlock;
+    iuse_function_list["SEW"] = &iuse::sew;
+    iuse_function_list["SEW_ADVANCED"] = &iuse::sew_advanced;
     iuse_function_list["EXTRA_BATTERY"] = &iuse::extra_battery;
     iuse_function_list["RECHARGEABLE_BATTERY"] = &iuse::rechargeable_battery;
     iuse_function_list["EXTINGUISHER"] = &iuse::extinguisher;
@@ -882,7 +883,7 @@ void Item_factory::load_basic_info(JsonObject &jo, itype *new_item_template)
     if (jo.has_member("name_plural")) {
         new_item_template->name_plural = jo.get_string("name_plural").c_str();
     } else {
-        // default behaviour: Assume the regular plural form (appending an “s”)
+        // default behaviour: Assume the regular plural form (appending an ???s???)
         new_item_template->name_plural = (jo.get_string("name") + "s").c_str();
     }
     new_item_template->sym = jo.get_string("symbol")[0];

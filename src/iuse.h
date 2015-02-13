@@ -78,8 +78,9 @@ public:
     int catfood             (player*, item*, bool, point);
 
 // TOOLS
-    int sew                 (player *, item *, bool, point);
     int diaperlock          (player *, item *, bool, point);
+    int sew                 (player *, item *, bool, point);
+    int sew_advanced        (player *, item *, bool, point);
     int extra_battery       (player *, item *, bool, point);
     int rechargeable_battery(player *, item *, bool, point);
     int scissors            (player *, item *, bool, point);
