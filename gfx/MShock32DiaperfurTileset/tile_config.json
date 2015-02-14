@@ -19841,6 +19841,31 @@
 					"fg": 5,
 					"bg": 6,
 					"rotates": false
+				},
+				{
+					"id": "mon_doom_former_human",
+					"fg": 27,
+					"rotates": false
+				},
+				{
+					"id": "mon_doom_cacodemon",
+					"fg": 8,
+					"rotates": false
+				},
+				{
+					"id": "mon_doom_imp",
+					"fg": 28,
+					"rotates": false
+				},
+				{
+					"id": "mon_doom_lost_soul",
+					"fg": 21,
+					"rotates": false
+				},
+				{
+					"id": "mon_doom_demon",
+					"fg": 9,
+					"rotates": false
 				}
 			]
 		}

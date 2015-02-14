@@ -13292,17 +13292,20 @@ void map::add_extra(map_extra type)
                     add_spawn("mon_zombie_soldier", 1, x, y);
                 } else if (one_in(25)) {
                     add_spawn("mon_zombie_bio_op", 1, x, y);
+                } else if (one_in(25)) {
+                    add_spawn("mon_doom_former_human", 1, x, y);
                 } else {
                     place_items("map_extra_military", 100, x, y, x, y, true, 0);
                 }
             }
 
         }
-        std::string netherspawns[4] = {"mon_gelatin", "mon_mi_go",
+        std::string netherspawns[6] = {"mon_gelatin", "mon_mi_go",
+                                        "mon_doom_imp","mon_doom_demon",
                                          "mon_kreck", "mon_gracke"};
-        int num_monsters = rng(0, 3);
+        int num_monsters = rng(0, 4);
         for (int i = 0; i < num_monsters; i++) {
-            std::string type = netherspawns[( rng(0, 3) )];
+            std::string type = netherspawns[( rng(0, 5) )];
             int mx = rng(1, SEEX * 2 - 2), my = rng(1, SEEY * 2 - 2);
             add_spawn(type, 1, mx, my);
         }
@@ -13330,11 +13333,12 @@ void map::add_extra(map_extra type)
                 }
             }
         }
-        std::string spawncreatures[4] = {"mon_gelatin", "mon_mi_go",
+        std::string spawncreatures[8] = {"mon_gelatin", "mon_mi_go",
+                                         "mon_doom_imp", "mon_doom_cacodemon", "mon_doom_demon", "mon_doom_lost_soul", "mon_doom_former_human",
                                          "mon_kreck", "mon_gracke"};
-        int num_monsters = rng(0, 3);
+        int num_monsters = rng(0, 7);
         for (int i = 0; i < num_monsters; i++) {
-            std::string type = spawncreatures[( rng(0, 3) )];
+            std::string type = spawncreatures[( rng(0, 7) )];
             int mx = rng(1, SEEX * 2 - 2), my = rng(1, SEEY * 2 - 2);
             add_spawn(type, 1, mx, my);
         }
@@ -13589,6 +13593,7 @@ void map::add_extra(map_extra type)
 
     case mx_portal: {
         std::string spawncreatures[5] = {"mon_gelatin", "mon_flaming_eye",
+                                         "mon_doom_imp", "mon_doom_cacodemon", "mon_doom_demon", "mon_doom_lost_soul", "mon_doom_former_human",
                                          "mon_kreck", "mon_gracke", "mon_blank"};
         int x = rng(1, SEEX * 2 - 2), y = rng(1, SEEY * 2 - 2);
         for (int i = x - 1; i <= x + 1; i++) {
@@ -13654,7 +13659,7 @@ void map::add_extra(map_extra type)
     break;
 
     case mx_portal_in: {
-        std::string monids[5] = {"mon_gelatin", "mon_flaming_eye", "mon_kreck", "mon_gracke", "mon_blank"};
+        std::string monids[5] = {"mon_gelatin", "mon_flaming_eye", "mon_kreck", "mon_gracke", "mon_blank","mon_doom_imp", "mon_doom_cacodemon", "mon_doom_demon", "mon_doom_lost_soul", "mon_doom_former_human",};
         int x = rng(5, SEEX * 2 - 6), y = rng(5, SEEY * 2 - 6);
         add_field(x, y, fd_fatigue, 3);
         for (int i = x - 5; i <= x + 5; i++) {

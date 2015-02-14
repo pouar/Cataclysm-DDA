@@ -934,7 +934,12 @@
       { "monster" : "mon_gozu", "freq" : 25, "cost_multiplier" : 0 },
       { "monster" : "mon_shoggoth", "freq" : 5, "cost_multiplier" : 0 },
       { "monster" : "mon_sygg", "freq" :  8, "cost_multiplier" : 2},
-      { "monster" : "mon_sonicexe", "freq" :  8, "cost_multiplier" : 2}
+      { "monster" : "mon_sonicexe", "freq" :  8, "cost_multiplier" : 2},
+      { "monster" : "mon_doom_lost_soul", "freq" :  100, "cost_multiplier" : 2},
+      { "monster" : "mon_doom_demon", "freq" :  100, "cost_multiplier" : 2},
+      { "monster" : "mon_doom_imp", "freq" :  100, "cost_multiplier" : 2},
+      { "monster" : "mon_doom_cacodemon", "freq" :  100, "cost_multiplier" : 2},
+      { "monster" : "mon_doom_former_human", "freq" :  100, "cost_multiplier" : 2}
     ]
   },{
     "type":"monstergroup",
@@ -1161,7 +1166,9 @@
     "name" : "GROUP_MAYBE_MIL", "_comment" : "50% chance military zombie",
     "default" : "mon_null",
     "monsters" : [
-      { "monster" : "mon_zombie_soldier", "freq" : 50, "cost_multiplier" : 0 }
+      { "monster" : "mon_zombie_soldier", "freq" : 50, "cost_multiplier" : 0 },
+      { "monster" : "mon_doom_former_human", "freq" : 20, "cost_multiplier" : 0 },
+      { "monster" : "mon_doom_imp", "freq" : 10, "cost_multiplier" : 0 }
     ]
   },{
     "type":"monstergroup",
