@@ -63,7 +63,7 @@
 		"death_function":["NORMAL"],
 		"special_attacks":[["FLAMETHROWER", 5]],
 		"description":"They float in the air, belch ball-lightning, and boast one Hell of a big mouth. You're toast if you get too close to these monstrosities.",
-		"flags":["SEES", "HEARS", "SMELLS", "WARM", "NO_BREATHE", "REVIVES", "POISON", "FLIES"]
+		"flags":["SEES", "HEARS", "SMELLS", "WARM", "NO_BREATHE", "REVIVES", "POISON", "FLIES", "NOHEAD"]
 	},
 	{
 		"type" : "MONSTER",
