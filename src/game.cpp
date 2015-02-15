@@ -535,6 +535,7 @@ void game::setup()
     last_target_was_npc = false;
     new_game = true;
     uquit = QUIT_NO;   // We haven't quit the game
+    bVMonsterLookFire = true;
 
     weather = WEATHER_CLEAR; // Start with some nice weather...
     // Weather shift in 30
@@ -3707,9 +3708,9 @@ void game::death_screen()
 
 void game::move_save_to_graveyard()
 {
-    auto const &save_dir      = world_generator->active_world->world_path;
-    auto const &graveyard_dir = FILENAMES["graveyarddir"];
-    auto const &prefix        = base64_encode(u.name) + ".";
+    const std::string &save_dir      = world_generator->active_world->world_path;
+    const std::string &graveyard_dir = FILENAMES["graveyarddir"];
+    const std::string &prefix        = base64_encode(u.name) + ".";
 
     if (!assure_dir_exist(graveyard_dir)) {
         debugmsg("could not create graveyard path '%s'", graveyard_dir.c_str());
@@ -3721,7 +3722,7 @@ void game::move_save_to_graveyard()
     }
 
     for (auto const &src_path : save_files) {
-        auto const dst_path = graveyard_dir +
+        const std::string dst_path = graveyard_dir +
             src_path.substr(src_path.rfind('/'), std::string::npos);
 
         if (rename_file(src_path, dst_path)) {
@@ -4082,7 +4083,7 @@ std::vector<std::string> game::list_active_characters()
  */
 void game::write_memorial_file(std::string sLastWords)
 {
-    auto const &memorial_dir = FILENAMES["memorialdir"];
+    const std::string &memorial_dir = FILENAMES["memorialdir"];
     if (!assure_dir_exist(memorial_dir)) {
         dbg(D_ERROR) << "game:write_memorial_file: Unable to make memorial directory.";
         debugmsg("Could not make '%s' directory", memorial_dir.c_str());
@@ -4118,7 +4119,7 @@ void game::write_memorial_file(std::string sLastWords)
 
     memorial_file_path << ".txt";
 
-    auto const path_string = memorial_file_path.str();
+    const std::string path_string = memorial_file_path.str();
     std::ofstream memorial_file {path_string};
     if (!memorial_file) {
         dbg(D_ERROR) << "game:write_memorial_file: Unable to open " << path_string;
@@ -8647,6 +8648,8 @@ void game::zones_manager()
 
 point game::look_around(WINDOW *w_info, const point pairCoordsFirst)
 {
+    bVMonsterLookFire = false;
+
     temp_exit_fullscreen();
 
     bool bSelectZone = (pairCoordsFirst.x != -1 && pairCoordsFirst.y != -1);
@@ -8818,6 +8821,7 @@ point game::look_around(WINDOW *w_info, const point pairCoordsFirst)
 
             if (action == "LIST_ITEMS" && !bSelectZone) {
                 list_items_monsters();
+                draw_ter(lx, ly, true);
 
             } else if (action == "TOGGLE_FAST_SCROLL") {
                 fast_scroll = !fast_scroll;
@@ -8864,6 +8868,7 @@ point game::look_around(WINDOW *w_info, const point pairCoordsFirst)
         delwin(w_info);
     }
     reenter_fullscreen();
+    bVMonsterLookFire = true;
 
     if (action == "CONFIRM") {
         if (bSelectZone) {
@@ -9757,9 +9762,11 @@ int game::list_monsters(const int iLastState)
     ctxt.register_action("NEXT_TAB");
     ctxt.register_action("PREV_TAB");
     ctxt.register_action("QUIT");
-    ctxt.register_action("look");
-    ctxt.register_action("fire");
-    ctxt.register_action("SEARCH", _("View description in popup"));
+    if ( bVMonsterLookFire ) {
+        ctxt.register_action("look");
+        ctxt.register_action("fire");
+        ctxt.register_action("SEARCH", _("View description in popup"));
+    }
     ctxt.register_action("HELP_KEYBINDINGS");
 
     do {
@@ -9874,12 +9881,15 @@ int game::list_monsters(const int iLastState)
                 }
 
 
-                mvwprintz(w_monsters, getmaxy(w_monsters) - 1, 1, c_ltgreen, "%s", ctxt.press_x( "look" ).c_str());
-                wprintz(w_monsters, c_ltgray, " %s", _("to look around"));
-                if (rl_dist( u.pos(), cCurMon->pos() ) <= iWeaponRange) {
-                    wprintz(w_monsters, c_ltgray, "%s", " ");
-                    wprintz(w_monsters, c_ltgreen, "%s", ctxt.press_x( "fire" ).c_str());
-                    wprintz(w_monsters, c_ltgray, " %s", _("to shoot"));
+                if (bVMonsterLookFire) {
+                    mvwprintz(w_monsters, getmaxy(w_monsters) - 1, 1, c_ltgreen, "%s", ctxt.press_x( "look" ).c_str());
+                    wprintz(w_monsters, c_ltgray, " %s", _("to look around"));
+
+                    if (rl_dist( u.pos(), cCurMon->pos() ) <= iWeaponRange) {
+                        wprintz(w_monsters, c_ltgray, "%s", " ");
+                        wprintz(w_monsters, c_ltgreen, "%s", ctxt.press_x( "fire" ).c_str());
+                        wprintz(w_monsters, c_ltgray, " %s", _("to shoot"));
+                    }
                 }
 
                 //Only redraw trail/terrain if x/y position changed
@@ -12443,20 +12453,21 @@ void game::fling_creature(Creature *c, const int &dir, float flvel, bool control
             }
             float velocity_difference = previous_velocity - flvel;
             dam1 = rng( velocity_difference, velocity_difference * 2.0 ) / 3;
-            if( thru ) {
-                c->add_msg_player_or_npc( _("You are slammed through the %s for %d damage!"),
-                                          _("The <npcname> is slammed through the %s!"),
-                                          dname.c_str(), dam1 );
-            } else {
-                c->add_msg_player_or_npc( _("You are slammed against the %s for %d damage!"),
-                                          _("The <npcname> is slammed against the %s!"),
-                                          dname.c_str(), dam1 );
-            }
+            int damage_taken = 0;
             if( p != nullptr ) {
-                p->hitall(dam1, 40, critter);
+                damage_taken = p->hitall(dam1, 40, critter);
             } else {
                 zz->apply_damage( critter, bp_torso, dam1 );
                 zz->check_dead_state();
+            }
+            if( thru ) {
+                c->add_msg_player_or_npc( _("You are slammed through the %s for %d damage!"),
+                                          _("The <npcname> is slammed through the %s!"),
+                                          dname.c_str(), damage_taken );
+            } else {
+                c->add_msg_player_or_npc( _("You are slammed against the %s for %d damage!"),
+                                          _("The <npcname> is slammed against the %s!"),
+                                          dname.c_str(), damage_taken );
             }
         }
         if( thru ) {
@@ -12490,6 +12501,7 @@ void game::fling_creature(Creature *c, const int &dir, float flvel, bool control
         if (controlled) {
             dam1 = std::max(dam1 / 2 - 5, 0);
         }
+        int damage_taken = 0;
         if( p != nullptr ) {
             int dex_reduce = p->dex_cur < 4 ? 4 : p->dex_cur;
             dam1 = dam1 * 8 / dex_reduce;
@@ -12497,16 +12509,16 @@ void game::fling_creature(Creature *c, const int &dir, float flvel, bool control
                 dam1 /= 2;
             }
             if (dam1 > 0) {
-                p->hitall(dam1, 40, nullptr);
+                damage_taken = p->hitall(dam1, 40, nullptr);
             }
         } else {
             zz->apply_damage( nullptr, bp_torso, dam1 );
             zz->check_dead_state();
         }
-        if (is_u) {
-            if (dam1 > 0) {
-                add_msg(m_bad, _("You fall on the ground for %d damage."), dam1);
-            } else if (!controlled) {
+        if( is_u ) {
+            if( damage_taken > 0 ) {
+                add_msg(m_bad, _("You fall on the ground for %d damage."), damage_taken);
+            } else if( !controlled ) {
                 add_msg(_("You land on the ground."));
             }
         }
