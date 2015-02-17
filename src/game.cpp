@@ -338,7 +338,7 @@ void game::init_ui()
         VIEW_OFFSET_X = 0;
     }
     if (TERRAIN_WINDOW_HEIGHT > max_view_size) {
-        VIEW_OFFSET_Y = (TERRAIN_WINDOW_HEIGHT - max_view_size) / 2;
+        VIEW_OFFSET_Y = 0;
         TERRAIN_WINDOW_TERM_HEIGHT = max_view_size * TERRAIN_WINDOW_TERM_HEIGHT / TERRAIN_WINDOW_HEIGHT;
         TERRAIN_WINDOW_HEIGHT = max_view_size;
     } else {
