@@ -19866,6 +19866,11 @@
 					"id": "mon_doom_demon",
 					"fg": 9,
 					"rotates": false
+				},
+				{
+					"id": "mon_rainbowdash",
+					"fg": 29,
+					"rotates": false
 				}
 			]
 		}

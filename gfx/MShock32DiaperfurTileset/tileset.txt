@@ -26,3 +26,6 @@ TILESET: MShock32DiaperfurTileset/MShock.png
 
 #Sonic.exe sprite modified from
 #http://xxsky64xx.deviantart.com/art/Sonic-exe-SPRITES-429259475
+
+#diapered rainbow dash came from here
+#http://www.furaffinity.net/view/15358249/
