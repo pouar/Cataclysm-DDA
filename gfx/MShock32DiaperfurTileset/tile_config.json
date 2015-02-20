@@ -19545,46 +19545,6 @@
 				},
 				{
 					"rotates": false,
-					"id": "mon_animatronic_bear",
-					"fg": 20
-				},
-				{
-					"rotates": false,
-					"id": "mon_animatronic_fox",
-					"fg": 21
-				},
-				{
-					"rotates": false,
-					"id": "mon_animatronic_bunny",
-					"fg": 22
-				},
-				{
-					"rotates": false,
-					"id": "mon_animatronic_chicken",
-					"fg": 23
-				},
-				{
-					"rotates": false,
-					"id": "broken_animatronic_bear",
-					"fg": 24
-				},
-				{
-					"rotates": false,
-					"id": "broken_animatronic_fox",
-					"fg": 25
-				},
-				{
-					"rotates": false,
-					"id": "broken_animatronic_bunny",
-					"fg": 26
-				},
-				{
-					"rotates": false,
-					"id": "broken_animatronic_chicken",
-					"fg": 27
-				},
-				{
-					"rotates": false,
 					"id": "mon_diaperfur_animatronic_bear",
 					"fg": 28
 				},
