@@ -10922,7 +10922,7 @@
         "symbol" : "[",
         "description" : "A short, breezy cotton kilt.  Easy to move in. Let's you enjoy the benifits of a skirt without cross-dressing.",
         "price" : 6500,
-        "material" : ["wool", "null"],
+        "material" : ["cotton", "null"],
         "volume" : 6,
         "cutting" : 0,
         "warmth" : 20,
