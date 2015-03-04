@@ -358,7 +358,13 @@ bool item::stacks_with( const item &rhs ) const
         if( bday != rhs.bday ) {
             return false;
         }
-        if( rot != rhs.rot ) {
+        // Because spoiling items are only processed every processing_speed()-th turn
+        // the rotting value becomes slightly different for items that have
+        // been created at the same time and place and with the same initial rot.
+        if( std::abs( rot - rhs.rot ) > processing_speed() ) {
+            return false;
+        } else if( rotten() != rhs.rotten() ) {
+            // just to be save that rotten and unrotten food is *never* stacked.
             return false;
         }
     }
@@ -3248,13 +3254,12 @@ int item::gun_dispersion( bool with_ammo ) const
             dispersion_sum += elem.type->gunmod->dispersion;
         }
     }
+    dispersion_sum = std::max(dispersion_sum, 0);
     if( with_ammo && has_curammo() ) {
         dispersion_sum += get_curammo()->ammo->dispersion;
     }
     dispersion_sum += damage * 60;
-    if( dispersion_sum < 0 ) {
-        dispersion_sum = 0;
-    }
+    dispersion_sum = std::max(dispersion_sum, 0);
     return dispersion_sum;
 }
 
@@ -3410,7 +3415,7 @@ int item::gun_recoil( bool with_ammo ) const
             ret += elem.type->gunmod->recoil;
         }
     }
-    ret += damage;
+    ret += 15 * damage;
     return ret;
 }
 
