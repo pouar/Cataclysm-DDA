@@ -446,7 +446,7 @@ void player::activate_mutation( const std::string &mut )
         }
         tdata.powered = false;
         return;
-    } else if (traits[mut].id == "FIREBREATH"){
+    } else if (mut == "FIREBREATH"){
         item tmp_item = weapon;
         weapon = item("firebreath", 1);
         const std::string ammo_type("gasoline");
@@ -455,9 +455,9 @@ void player::activate_mutation( const std::string &mut )
         g->refresh_all();
         g->plfire(false);
         weapon = tmp_item;
-        traits[mut].powered = false;
+        tdata.powered = false;
         return;
-    } else if (traits[mut].id == "FIREBOOM"){
+    } else if (mut == "FIREBOOM"){
         item tmp_item = weapon;
         weapon = item("fireboom", 1);
         const std::string ammo_type("fireboom_ammo");
@@ -466,7 +466,7 @@ void player::activate_mutation( const std::string &mut )
         g->refresh_all();
         g->plfire(false);
         weapon = tmp_item;
-        traits[mut].powered = false;
+        tdata.powered = false;
         return;
     }
 }
