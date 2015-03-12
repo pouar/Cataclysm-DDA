@@ -153,7 +153,7 @@ ifdef ZLEVELS
   DEFINES += -DZLEVELS
 endif
 
-OTHERS += --std=c++11
+OTHERS += --std=gnu++14
 
 CXXFLAGS += $(WARNINGS) $(DEBUG) $(PROFILE) $(OTHERS) -MMD
 
