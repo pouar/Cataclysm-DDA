@@ -149,6 +149,7 @@ player::player() : Character()
 {
  position.x = 0;
  position.y = 0;
+ zpos = 0;
  id = -1; // -1 is invalid
  view_offset_x = 0;
  view_offset_y = 0;
@@ -4466,6 +4467,9 @@ void player::add_bionic( bionic_id b )
         }
     }
     my_bionics.push_back( bionic( b, newinv ) );
+    if ( b == "bio_tools") {
+        activate_bionic(my_bionics.size() -1);
+    }
     recalc_sight_limits();
 }
 
@@ -8967,7 +8971,7 @@ bool player::has_fire(const int quantity) const
         return true;
     } else if (has_charges("candle_lit", 1)) {
         return true;
-    } else if (has_bionic("bio_tools")) {
+    } else if (has_active_bionic("bio_tools")) {
         return true;
     } else if (has_bionic("bio_lighter")) {
         return true;
@@ -9009,7 +9013,7 @@ void player::use_fire(const int quantity)
 //then held lit torch or candle, bio tool/lighter/laser
 //tries to use 1 charge of lighters, matches, flame throwers
 // (home made, military), hotplate, welder in that order.
-// bio_lighter, bio_laser, bio_tools, has_bionic("bio_tools"
+// bio_lighter, bio_laser, bio_tools, has_active_bionic("bio_tools"
 
     if (g->m.has_nearby_fire(posx(), posy())) {
         return;
@@ -9031,7 +9035,7 @@ void player::use_fire(const int quantity)
         return;
     } else if (has_charges("zweifire_on", quantity)) {
         return;
-    } else if (has_bionic("bio_tools")) {
+    } else if (has_active_bionic("bio_tools")) {
         return;
     } else if (has_bionic("bio_lighter")) {
         return;
@@ -9242,14 +9246,14 @@ bool player::has_amount(const itype_id &it, int quantity) const
 {
     if (it == "toolset")
     {
-        return has_bionic("bio_tools");
+        return has_active_bionic("bio_tools");
     }
     return (amount_of(it) >= quantity);
 }
 
 int player::amount_of(const itype_id &it) const
 {
-    if (it == "toolset" && has_bionic("bio_tools")) {
+    if (it == "toolset" && has_active_bionic("bio_tools")) {
         return 1;
     }
     if (it == "apparatus") {
@@ -9279,7 +9283,7 @@ bool player::has_charges(const itype_id &it, long quantity) const
 long player::charges_of(const itype_id &it) const
 {
     if (it == "toolset") {
-        if (has_bionic("bio_tools")) {
+        if (has_active_bionic("bio_tools")) {
             return power_level;
         } else {
             return 0;
@@ -11255,7 +11259,8 @@ bool player::invoke_item( item* used )
     }
         
     if( used->type->use_methods.size() < 2 ) {
-        return used->type->invoke( this, used, pos() );
+        const long charges_used = used->type->invoke( this, used, pos() );
+        return consume_charges( used, charges_used );
     }
 
     uimenu umenu;
