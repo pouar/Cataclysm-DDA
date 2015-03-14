@@ -373,7 +373,7 @@ endif
 
 # Global settings for Windows targets (at end)
 ifeq ($(TARGETSYSTEM),WINDOWS)
-    LDFLAGS += -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion
+    LDFLAGS += -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion  -luuid -lcomctl32 -lwebp -lharfbuzz -lglib-2.0 -lws2_32 -lintl -lole32
 endif
 
 ifeq ($(LOCALIZE),1)
