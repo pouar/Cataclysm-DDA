@@ -125,8 +125,13 @@ ifdef RELEASE
   ifeq ($(NATIVE), osx)
     CXXFLAGS += -O3
   else
-    CXXFLAGS += -O2 -march=native -flto=$(shell nproc)
-    LDFLAGS += -s -flto=$(shell nproc)
+    ifndef CROSS
+        CXXFLAGS +=  -flto=$(shell nproc) -march=native -O2
+        LDFLAGS += -flto=$(shell nproc)
+    else
+        CXXFLAGS += -Os
+    endif
+    LDFLAGS += -s
   endif
   # OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
   # Strip symbols, generates smaller executable.
