@@ -802,12 +802,13 @@ void iexamine::washer(player *p, map *m, int examx, int examy)
                     if(p->worn[i].has_flag("WETDIAPER"))
                         p->worn[i].item_tags.erase("WETDIAPER");
             }
-            std::vector<item *> f_inv = p->inv.all_items_with_flag("WETDIAPER");
-            for(std::vector<item *>::iterator it = f_inv.begin() ; it != f_inv.end(); it++)
+            std::vector<const item *> f_inv = p->all_items_with_flag("WETDIAPER");
+            for(std::vector<const item *>::iterator it = f_inv.begin() ; it != f_inv.end(); it++)
             {
-                    (*it)->pee=0;
-                    if((*it)->has_flag("WETDIAPER"))
-                        (*it)->item_tags.erase("WETDIAPER");
+                    item *ptr = (item*)( &it );
+                    (*ptr).pee=0;
+                    if((*ptr).has_flag("WETDIAPER"))
+                        (*ptr).item_tags.erase("WETDIAPER");
             }
             p->add_msg_if_player(m_good, _("You clean your diapers."));
             break;
@@ -2461,12 +2462,13 @@ void iexamine::water_source(player *p, map *m, const int examx, const int examy)
                 if(p->worn[i].has_flag("WETDIAPER"))
                     p->worn[i].item_tags.erase("WETDIAPER");
             }
-            std::vector<item *> f_inv = p->inv.all_items_with_flag("WETDIAPER");
-            for(std::vector<item *>::iterator it = f_inv.begin() ; it != f_inv.end(); it++)
+            std::vector<const item *> f_inv = p->all_items_with_flag("WETDIAPER");
+            for(std::vector<const item *>::iterator it = f_inv.begin() ; it != f_inv.end(); it++)
             {
-                    (*it)->pee=0;
-                    if((*it)->has_flag("WETDIAPER"))
-                        (*it)->item_tags.erase("WETDIAPER");
+                    item *ptr = (item*)( &it );
+                    (*ptr).pee=0;
+                    if((*ptr).has_flag("WETDIAPER"))
+                        (*ptr).item_tags.erase("WETDIAPER");
             }
             p->add_msg_if_player(m_good, _("You clean your diapers."));
             break;
@@ -2520,12 +2522,13 @@ void iexamine::swater_source(player *p, map *m, const int examx, const int examy
                 if(p->worn[i].has_flag("WETDIAPER"))
                     p->worn[i].item_tags.erase("WETDIAPER");
             }
-            std::vector<item *> f_inv = p->inv.all_items_with_flag("WETDIAPER");
-            for(std::vector<item *>::iterator it = f_inv.begin() ; it != f_inv.end(); it++)
+            std::vector<const item *> f_inv = p->all_items_with_flag("WETDIAPER");
+            for(std::vector<const item *>::iterator it = f_inv.begin() ; it != f_inv.end(); it++)
             {
-                    (*it)->pee=0;
-                    if((*it)->has_flag("WETDIAPER"))
-                        (*it)->item_tags.erase("WETDIAPER");
+                    item *ptr = (item*)( &it );
+                    (*ptr).pee=0;
+                    if((*ptr).has_flag("WETDIAPER"))
+                        (*ptr).item_tags.erase("WETDIAPER");
             }
             p->add_msg_if_player(m_good, _("You clean your diapers."));
             break;
