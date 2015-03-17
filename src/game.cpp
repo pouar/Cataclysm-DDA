@@ -7631,12 +7631,26 @@ void game::open_gate(const int examx, const int examy, const ter_id handle_type)
         open_message = _("The palisade gate swings open!");
         close_message = _("The palisade gate swings closed with a crash!");
         bash_dmg = 30;
+    } else if ( handle_type == t_gates_control_metal) {
+        v_wall_type = t_wall_metal_v;
+        h_wall_type = t_wall_metal_h;
+        door_type = t_door_metal_locked;
+        floor_type = t_metal_floor;
+        pull_message = _("You throw the lever...");
+        open_message = _("The door rises!");
+        close_message = _("The door slams shut!");
+        bash_dmg = 60;
     } else {
         return;
     }
 
     add_msg(pull_message);
     u.moves -= 900;
+    if (handle_type == t_gates_control_metal){
+        g->u.moves -= 300;
+    }else{
+        g->u.moves -= 900;
+    }
 
     bool open = false;
     bool close = false;
@@ -10845,6 +10859,7 @@ void game::plfire(bool burst, int default_target_x, int default_target_y)
 
 void game::butcher()
 {
+    const static std::string salvage_string = "salvage";
     if (u.controlling_vehicle) {
         add_msg(m_info, _("You can't butcher while driving!"));
         return;
@@ -10860,23 +10875,21 @@ void game::butcher()
 
     // TODO: Properly handle different material whitelists
     // TODO: Improve quality of this section
-    std::vector<item*> dumpvec;
-    u.inv.dump( dumpvec );
+    auto salvage_filter = []( item it ) {
+        const auto usable = it.get_usable_item( salvage_string );
+        return usable != nullptr;
+    };
+
+    std::vector< item * > salvage_tools = u.items_with( salvage_filter );
     int salvage_tool_index = INT_MIN;
     item *salvage_tool = nullptr;
-    salvage_actor *salvage_iuse = nullptr;
-    for( auto &it : dumpvec ) {
-        if( it == nullptr ) {
-            continue;
-        }
-
-        const auto fun = it->type->get_use( "salvage" );
-        if( fun != nullptr ) {
-            salvage_tool_index = u.inv.position_by_item( it );
-            salvage_iuse = dynamic_cast<salvage_actor*>( fun->get_actor_ptr() );
-            salvage_tool = it;
-            break;
-        }
+    const salvage_actor *salvage_iuse = nullptr;
+    if( !salvage_tools.empty() ) {
+        salvage_tool = salvage_tools.front();
+        salvage_tool_index = u.get_item_position( salvage_tool );
+        item *usable = salvage_tool->get_usable_item( salvage_string );
+        salvage_iuse = dynamic_cast<const salvage_actor*>( 
+            usable->get_use( salvage_string )->get_actor_ptr() );
     }
 
 
