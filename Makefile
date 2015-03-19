@@ -371,7 +371,7 @@ else
       CXXFLAGS += $(shell ncursesw5-config --cflags)
       
       # Work around Cygwin not including gettext support in glibc
-      LDFLAGS += -lintl -liconv
+      LDFLAGS += -lintl -liconv -lgdi32 -lwinmm -limm32 -loleaut32 -lversion  -luuid -lcomctl32 -lwebp -lharfbuzz -lglib-2.0 -lws2_32 -lintl -lole32
     endif
   endif
 endif
