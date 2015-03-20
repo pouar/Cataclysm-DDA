@@ -30,6 +30,6 @@
 *.fon     binary
 *.gz      binary
 *.ico     binary
-*.png     binary
+*.png     binary -delta
 *.ttf     binary
 
