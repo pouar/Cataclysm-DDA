@@ -546,8 +546,8 @@ public:
  void make_angry(); // Called if the player attacks us
  bool wants_to_travel_with(player *p) const;
  int assigned_missions_value();
- std::vector<const Skill*> skills_offered_to(player *p); // Skills that're higher
- std::vector<itype_id> styles_offered_to(player *p); // Martial Arts
+ std::vector<const Skill*> skills_offered_to(const player &p); // Skills that're higher
+ std::vector<itype_id> styles_offered_to(const player &p); // Martial Arts
 // State checks
  bool is_enemy() const; // We want to kill/mug/etc the player
  bool is_following() const; // Traveling w/ player (whether as a friend or a slave)
@@ -713,15 +713,7 @@ public:
      * posx += SEEX; mapx -= 1;
      * This does not change the global position of the NPC.
      */
-    tripoint global_square_location() const;
-    /**
-     * Returns the location of the NPC in global submap coordinates.
-     */
-    tripoint global_sm_location() const;
-    /**
-     * Returns the location of the NPC in global overmap terrain coordinates.
-     */
-    tripoint global_omt_location() const;
+    tripoint global_square_location() const override;
  int plx, ply, plt;// Where we last saw the player, timeout to forgetting
  int itx, ity; // The square containing an item we want
  int guardx, guardy;  // These are the local coordinates that a guard will return to inside of their goal tripoint

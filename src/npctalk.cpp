@@ -8,6 +8,7 @@
 #include "catacharset.h"
 #include "messages.h"
 #include "ammo.h"
+#include "overmapbuffer.h"
 #include <vector>
 #include <string>
 #include <sstream>
@@ -1071,8 +1072,8 @@ std::string dynamic_line(talk_topic topic, npc *p)
                 if( !g->u.backlog.empty() && g->u.backlog.front().type == ACT_TRAIN ) {
                 return _("Shall we resume?");
             }
-            std::vector<const Skill*> trainable = p->skills_offered_to(&(g->u));
-            std::vector<matype_id> styles = p->styles_offered_to(&(g->u));
+            std::vector<const Skill*> trainable = p->skills_offered_to(g->u);
+            std::vector<matype_id> styles = p->styles_offered_to(g->u);
             if (trainable.empty() && styles.empty()) {
                 return _("Sorry, but it doesn't seem I have anything to teach you.");
             } else {
@@ -1082,7 +1083,7 @@ std::string dynamic_line(talk_topic topic, npc *p)
             break;
 
         case TALK_TRAIN_START:
-            if (g->cur_om->is_safe(g->om_location().x, g->om_location().y, g->levz)) {
+            if( overmap_buffer.is_safe( g->global_omt_location() ) ) {
                 return _("Alright, let's begin.");
             } else {
                 return _("It's not safe here.  Let's get to safety first.");
@@ -1122,7 +1123,7 @@ std::string dynamic_line(talk_topic topic, npc *p)
         case TALK_HOW_MUCH_FURTHER:
             {
             // TODO: this ignores the z-component
-            const tripoint player_pos = g->om_global_location();
+            const tripoint player_pos = g->global_omt_location();
             int dist = rl_dist(player_pos, p->goal);
             std::stringstream response;
             dist *= 100;
@@ -1527,7 +1528,7 @@ std::vector<talk_response> gen_responses(talk_topic topic, npc *p)
             RESPONSE(_("How about some items as payment?"));
                 SUCCESS(TALK_MISSION_REWARD);
                     SUCCESS_ACTION(&talk_function::mission_reward);
-            if((!p->skills_offered_to(&(g->u)).empty() || !p->styles_offered_to(&(g->u)).empty())
+            if((!p->skills_offered_to(g->u).empty() || !p->styles_offered_to(g->u).empty())
                   && p->myclass != NC_EVAC_SHOPKEEP) {
                 SELECT_TEMP(_("Maybe you can teach me something as payment."), 0);
                     SUCCESS(TALK_TRAIN);
@@ -2361,8 +2362,8 @@ std::vector<talk_response> gen_responses(talk_topic topic, npc *p)
                 }
                 SUCCESS(TALK_TRAIN_START);
             }
-            std::vector<matype_id> styles = p->styles_offered_to( &(g->u) );
-            std::vector<const Skill*> trainable = p->skills_offered_to( &(g->u) );
+            std::vector<matype_id> styles = p->styles_offered_to(g->u);
+            std::vector<const Skill*> trainable = p->skills_offered_to(g->u);
             if (trainable.empty() && styles.empty()) {
                 RESPONSE(_("Oh, okay.")); // Nothing to learn here
                     SUCCESS(TALK_NONE);
@@ -2408,7 +2409,7 @@ std::vector<talk_response> gen_responses(talk_topic topic, npc *p)
             break;
 
         case TALK_TRAIN_START:
-            if (g->cur_om->is_safe(g->om_location().x, g->om_location().y, g->levz)) {
+            if( overmap_buffer.is_safe( g->global_omt_location() ) ) {
                 RESPONSE(_("Sounds good."));
                     SUCCESS(TALK_DONE);
                         SUCCESS_ACTION(&talk_function::start_training);
@@ -3313,7 +3314,7 @@ void talk_function::lead_to_safety(npc *p)
  // TODO: the target has no z-component
  p->goal.x = target.x;
  p->goal.y = target.y;
- p->goal.z = g->levz;
+ p->goal.z = g->get_levz();
  p->attitude = NPCATT_LEAD;
 }
 
