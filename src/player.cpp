@@ -12111,7 +12111,7 @@ float player::fine_detail_vision_mod()
       has_trait("CEPH_VISION")) {
         vision_ii -= 3;
     }
-
+	if(has_trait("EYEOFSAURON")) { vision_ii -= 9999; }
     if (vision_ii < 1) { vision_ii = 1; }
     return vision_ii;
 }

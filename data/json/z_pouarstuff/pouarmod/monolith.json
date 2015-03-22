@@ -1,0 +1,58 @@
+[
+	{
+		"type" : "overmap_terrain",
+		"id" : "monolith_of_inhumanity",
+		"name" : "Monolith Of Inhumanity",
+		"rotate" : true,
+		"sym" : 77,
+		"color" : "red",
+		"see_cost" : 5,
+		"mondensity" : 0,
+		"sidewalk" : false,
+		"mapgen": [
+			{
+				"method": "json",
+				"weight": 300,
+				"object": {
+					"rows": [
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"            M           ",
+						"            S           ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        ",
+						"                        "
+					],
+					"terrain": {
+						" ": "t_dirt",
+						"S": "t_dirt",
+						"M": "t_column"
+					},
+					"furniture": {
+						" ": [ "f_rubble", "f_wreckage" ]
+					},
+					"signs": {
+						"S": { "signage": "Continents of trash of which you've laid your stake. On a mountain of garbage, from your hands it was made, there stands the monolith of inhumanity. An indestructible testimony of a technological society." }
+					}
+				}
+			}
+		]
+	}
+]

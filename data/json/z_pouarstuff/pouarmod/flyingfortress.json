@@ -4,24 +4,16 @@
 		"object": {
 			"fill_ter": "t_floor",
 			"furniture": {
-				"+": "f_null",
-				".": "f_null",
 				"C": "f_counter",
 				"F": "f_fridge",
-				"O": "f_null",
 				"S": "f_sink",
-				"T": "f_toilet",
 				"W": "f_washer",
 				"b": "f_bathtub",
 				"c": "f_cupboard",
 				"o": "f_oven",
 				"w": "f_dryer",
-				"|": "f_null",
-				"-": "f_null",
-				"P": "f_null",
 				"s": "f_safe_c",
-				"B": "f_null",
-                ",": "f_null"
+				"T": "f_toilet"
 			},
 			"rows": [
 				"|-----------O-----------",
@@ -67,7 +59,10 @@
 				"P": "t_plut_generator",
 				"s": "t_linoleum_white",
 				"B": "t_chunk_blower",
-                ",": "t_linoleum_white"
+				",": "t_linoleum_white"
+			},
+			"fields": {
+				"B": { "field": "fd_blood", "age": 10, "density": 4 }
 			}
 		},
 		"om_terrain": "flying_fortress_1",
@@ -79,12 +74,10 @@
 		"object": {
 			"fill_ter": "t_floor",
 			"furniture": {
-				".": "f_null",
 				"B": "f_bed",
 				"D": "f_dresser",
 				"a": "f_armchair",
-				"d": "f_desk",
-				"|": "f_null"
+				"d": "f_desk"
 			},
 			"rows": [
 				"------------------------",
@@ -130,11 +123,6 @@
 		"method": "json",
 		"object": {
 			"fill_ter": "t_floor",
-			"furniture": {
-				".": "f_null",
-				"O": "f_null",
-				"|": "f_null"
-			},
 			"rows": [
 				"---O-------------------|",
 				".......................|",
@@ -176,13 +164,6 @@
 		"method": "json",
 		"object": {
 			"fill_ter": "t_floor",
-			"furniture": {
-				"+": "f_null",
-				".": "f_null",
-				"P": "f_null",
-				"|": "f_null",
-                ",": "f_null"
-			},
 			"rows": [
 				"|,,,,,,,,,,,,,,,,,,,|...",
 				"|,,,,,,,,,,,,,,,,,,,|...",
@@ -215,7 +196,7 @@
 				"P": "t_water_pool",
 				"|": "t_wall_v_r",
 				"-": "t_wall_h_r",
-                ",": "t_linoleum_white"
+				",": "t_linoleum_white"
 			}
 		},
 		"om_terrain": "flying_fortress_4",
@@ -227,13 +208,7 @@
 		"object": {
 			"fill_ter": "t_floor",
 			"furniture": {
-				"+": "f_null",
-				".": "f_null",
-				"A": "f_null",
-				"G": "f_arcade_machine",
-				"P": "f_null",
-				"|": "f_null",
-                ",": "f_null"
+				"G": "f_arcade_machine"
 			},
 			"rows": [
 				"........................",
@@ -269,7 +244,7 @@
 				"P": "t_water_pool",
 				"|": "t_wall_v_r",
 				"-": "t_wall_h_r",
-                ",": "t_linoleum_white"
+				",": "t_linoleum_white"
 			}
 		},
 		"om_terrain": "flying_fortress_5",
@@ -280,10 +255,6 @@
 		"method": "json",
 		"object": {
 			"fill_ter": "t_floor",
-			"furniture": {
-				".": "f_null",
-				"|": "f_null"
-			},
 			"rows": [
 				".......................|",
 				".......................|",
@@ -324,13 +295,6 @@
 		"method": "json",
 		"object": {
 			"fill_ter": "t_floor",
-			"furniture": {
-				".": "f_null",
-				"O": "f_null",
-				"P": "f_null",
-				"|": "f_null",
-                ",": "f_null"
-			},
 			"rows": [
 				"|........,PPPPPPPPPPPPPP",
 				"|........,PPPPPPPPPPPPPP",
@@ -363,7 +327,7 @@
 				"P": "t_water_pool",
 				"|": "t_wall_v_r",
 				"-": "t_wall_h_r",
-                ",": "t_linoleum_white"
+				",": "t_linoleum_white"
 			}
 		},
 		"om_terrain": "flying_fortress_7",
@@ -374,13 +338,6 @@
 		"method": "json",
 		"object": {
 			"fill_ter": "t_floor",
-			"furniture": {
-				".": "f_null",
-				"O": "f_null",
-				"P": "f_null",
-				"|": "f_null",
-                ",": "f_null"
-			},
 			"rows": [
 				"PPPPPP,.................",
 				"PPPPPP,.................",
@@ -413,7 +370,7 @@
 				"P": "t_water_pool",
 				"|": "t_wall_v_r",
 				"-": "t_wall_h_r",
-                ",": "t_linoleum_white"
+				",": "t_linoleum_white"
 			}
 		},
 		"om_terrain": "flying_fortress_8",
@@ -424,14 +381,6 @@
 		"method": "json",
 		"object": {
 			"fill_ter": "t_floor",
-			"furniture": {
-				".": "f_null",
-				"<": "f_null",
-				">": "f_null",
-				"O": "f_null",
-				"s": "f_sign",
-				"|": "f_null"
-			},
 			"rows": [
 				".......................|",
 				".......................|",
@@ -467,9 +416,9 @@
 				"|": "t_wall_v_r",
 				"-": "t_wall_h_r"
 			},
-			"place_specials": [
-				{ "type": "sign", "x": 5, "y": 18, "signage": "Pouar's Flying Fortress. KEEP OUT! >:(" }
-			],
+			"signs": {
+				"s": { "signage": "Pouar's Flying Fortress. KEEP OUT! >:(" }
+			},
 			"add": [{ "item": "manhole_cover", "x": 10, "y": 23 }]
 		},
 		"om_terrain": "flying_fortress_9",
@@ -480,9 +429,6 @@
 		"method": "json",
 		"object": {
 			"fill_ter": "t_floor",
-			"furniture": {
-				",": "f_null"
-			},
 			"rows": [
 				",,,,,,,,,,,,,,,,,,,,,,,,",
 				",,,,,,,,,,,,,,,,,,,,,,,,",
@@ -521,10 +467,6 @@
 		"method": "json",
 		"object": {
 			"fill_ter": "t_floor",
-			"furniture": {
-				",": "f_null",
-				">": "f_null"
-			},
 			"rows": [
 				",,,,,,,,,,,,,,,,,,,,,,,,",
 				",,,,,,,,,,,,,,,,,,,,,,,,",
@@ -567,15 +509,6 @@
 		"method": "json",
 		"object": {
 			"fill_ter": "t_floor",
-			"furniture": {
-				",": "f_null",
-				">": "f_null",
-				".": "f_null",
-				"#": "f_null",
-				"S": "f_null",
-				"O": "f_null",
-				"o": "f_null"
-			},
 			"rows": [
 				",,,,,,,,,,,,,,,,,,,,,,,,",
 				",,,,,,,,,,,,,,,,,,,,,,,,",

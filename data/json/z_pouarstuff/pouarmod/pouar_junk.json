@@ -499,12 +499,9 @@
 				".": "t_grass",
 				"s": "t_grass"
 			},
-			"furniture": {
-				"s": "f_sign"
-			},
-			"place_specials": [
-				{ "type": "sign", "x": 11, "y": 22, "signage": "Into the public bath. Reservoir of human excretions. The sweat and urine of a thousand men. A goddamned bacteria trap. Microbes making love to amoebas. Spawning secondary human byproducts. Dead skin cells, ejaculate and flora. Disgusting cocktail for the gargling." }
-			]
+			"signs": {
+				"s": { "signage": "Into the public bath. Reservoir of human excretions. The sweat and urine of a thousand men. A goddamned bacteria trap. Microbes making love to amoebas. Spawning secondary human byproducts. Dead skin cells, ejaculate and flora. Disgusting cocktail for the gargling." }
+			}
 		}
 	},
 	{
@@ -623,18 +620,6 @@
 						"s": "t_floor"
 					},
 					"furniture": {
-						".": "f_null",
-						"_": "f_null",
-						",": "f_null",
-						" ": "f_null",
-						"-": "f_null",
-						"|": "f_null",
-						"O": "f_null",
-						"L": "f_null",
-						"+": "f_null",
-						"M": "f_null",
-						"w": "f_null",
-						"x": "f_null",
 						"c": "f_chair",
 						"#": "f_counter",
 						"&": "f_counter",
@@ -646,13 +631,9 @@
 						":": "f_dresser",
 						"T": "f_toilet",
 						"l": "f_vending_c",
-						"S": "f_null",
 						"G": "f_desk",
 						"f": "f_glass_fridge",
-						"5": "f_null",
-						"8": "f_null",
-						"D": "f_displaycase",
-						"s": "f_sign"
+						"D": "f_displaycase"
 					},
 					"place_groups": [
 						{ "item": "corpse", "chance": 45, "x": [ 2,2 ], "y": [ 1,1 ] },
@@ -678,9 +659,9 @@
 						{ "item": "corpse", "chance": 60, "x": [ 2,6 ], "y": [ 13,13 ] },
 						{ "item": "corpse", "chance": 60, "x": [ 2,2 ], "y": [ 14,16 ] }
 					],
-					"place_specials": [
-						{ "type": "sign", "x": 14, "y": 1, "signage": "Into the abyss, perpetual and torturous. The gallery of suicide, internal torment. Archaic carcasses, displayed degeneracy. Once within these walls a life of death will be unleashed. Forever dying are the dead, countless bleeding heads. Cadavers splattered red from the self-slicing of necks. Stenching maggot filled bodies, skulls and bones rot away. The slaughtered souls that chose to die, enveloped in death. Darkness is the only light, suicide the way. Hideous forms of human death, mounds of flesh slowly decay. Embrace the horrid nature, carnage on display. Pain never felt. Enslaved inside this massive grave. Life, evil fate. Only slaves to death can survive this place. Die, perdition. Penance in putrid decadence. Dead miscreants. Enter the decrepit necropolis. Lurid interment in the hellish abattoir. Impetuosity and horror, after-life is tortured. Entrails, guts, and blood is this museums decor. Blood, impiety. Chastened are the sanguinary. Purge, radical. They perish, the victims of vagary. Vile tragedy. With great vehemence the hapless died. Kill, suicide. Serrated blades assist in destiny. Death opened the gallery. Sarcophagus. Ecstasy in suffering. Imprecation. Blood, impiety. Chastened are the sanguinary. Purge, radical. They perish, the victims of vagary" }
-					] 
+					"signs": {
+						"s": { "signage": "Into the abyss, perpetual and torturous. The gallery of suicide, internal torment. Archaic carcasses, displayed degeneracy. Once within these walls a life of death will be unleashed. Forever dying are the dead, countless bleeding heads. Cadavers splattered red from the self-slicing of necks. Stenching maggot filled bodies, skulls and bones rot away. The slaughtered souls that chose to die, enveloped in death. Darkness is the only light, suicide the way. Hideous forms of human death, mounds of flesh slowly decay. Embrace the horrid nature, carnage on display. Pain never felt. Enslaved inside this massive grave. Life, evil fate. Only slaves to death can survive this place. Die, perdition. Penance in putrid decadence. Dead miscreants. Enter the decrepit necropolis. Lurid interment in the hellish abattoir. Impetuosity and horror, after-life is tortured. Entrails, guts, and blood is this museums decor. Blood, impiety. Chastened are the sanguinary. Purge, radical. They perish, the victims of vagary. Vile tragedy. With great vehemence the hapless died. Kill, suicide. Serrated blades assist in destiny. Death opened the gallery. Sarcophagus. Ecstasy in suffering. Imprecation. Blood, impiety. Chastened are the sanguinary. Purge, radical. They perish, the victims of vagary" }
+					}
 				}
 			}
 		]

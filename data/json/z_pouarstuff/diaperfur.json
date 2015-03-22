@@ -370,16 +370,6 @@
 						"*": "t_door_locked"
 					},
 					"furniture": {
-						".": "f_null",
-						"_": "f_null",
-						",": "f_null",
-						" ": "f_null",
-						"-": "f_null",
-						"|": "f_null",
-						"O": "f_null",
-						"L": "f_null",
-						"+": "f_null",
-						"x": "f_null",
 						"c": "f_chair",
 						"#": "f_counter",
 						"&": "f_counter",
@@ -391,7 +381,6 @@
 						":": "f_dresser",
 						"T": "f_toilet",
 						"l": "f_rack",
-						"S": "f_null",
 						"G": "f_desk",
 						"f": "f_rack"
 					},

@@ -49,7 +49,6 @@ void init_mapgen_builtin_functions() {
     mapgen_cfunction_map["crater"]           = &mapgen_crater;
     mapgen_cfunction_map["field"]            = &mapgen_field;
     mapgen_cfunction_map["dirtlot"]          = &mapgen_dirtlot;
-    mapgen_cfunction_map["monolith_of_inhumanity"]          = &mapgen_monolith_of_inhumanity;
     mapgen_cfunction_map["forest"]           = &mapgen_forest_general;
     mapgen_cfunction_map["hive"]             = &mapgen_hive;
     mapgen_cfunction_map["spider_pit"]       = &mapgen_spider_pit;
@@ -455,54 +454,6 @@ void mapgen_field(map *m, oter_id, mapgendata dat, int turn, float)
     }
 
     m->place_items("field", 60, 0, 0, SEEX * 2 - 1, SEEY * 2 - 1, true, turn); // fixme: take 'rock' out and add as regional biome setting
-}
-
-void mapgen_monolith_of_inhumanity(map *m, oter_id, mapgendata, int, float)
-{
-        mapf::formatted_set_simple(m, 0, 0,
-"\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n\
-........................\n",
-        mapf::basic_bind(".", t_dirt),
-        mapf::basic_bind(".", f_null));
-    for (int i = 0; i < SEEX * 2; i++) {
-        for (int j = 0; j < SEEY * 2; j++) {
-            if(i==12 && j==12)
-                m->ter_set(i, j, "t_column");
-            else if(i==12 && j==13)
-            {
-                m->furn_set(i, j, "f_sign");
-                m->set_signage(i, j, "Continents of trash of which you've laid your stake. On a mountain of garbage, from your hands it was made, there stands the monolith of inhumanity. An indestructible testimony of a technological society.");
-            }
-            else if (one_in(2)) {
-                m->furn_set(i, j, f_rubble);
-            } else {
-                m->furn_set(i,j, f_wreckage);
-            }
-        }
-    }
 }
 
 void mapgen_dirtlot(map *m, oter_id, mapgendata, int, float)
