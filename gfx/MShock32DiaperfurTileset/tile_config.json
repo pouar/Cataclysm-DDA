@@ -19545,6 +19545,11 @@
 				},
 				{
 					"rotates": false,
+					"id": "mon_amy_rose",
+					"fg": 20
+				},
+				{
+					"rotates": false,
 					"id": "mon_diaperfur_animatronic_bear",
 					"fg": 28
 				},
@@ -19830,6 +19835,26 @@
 				{
 					"id": "mon_rainbowdash",
 					"fg": 29,
+					"rotates": false
+				},
+				{
+					"id": "amy_dress",
+					"fg": 30,
+					"rotates": false
+				},
+				{
+					"id": "amy_boots",
+					"fg": 31,
+					"rotates": false
+				},
+				{
+					"id": "amy_gloves",
+					"fg": 32,
+					"rotates": false
+				},
+				{
+					"id": "amy_headband",
+					"fg": 33,
 					"rotates": false
 				}
 			]

@@ -5,6 +5,7 @@
     "default" : "mon_null",
     "monsters" : [
       { "monster" : "mon_bat", "freq" : 50, "cost_multiplier" : 2, "pack_size" : [3,12], "conditions" : ["DAWN", "DUSK", "SPRING", "SUMMER", "AUTUMN"] },
+      { "monster" : "mon_amy_rose", "freq" : 50, "cost_multiplier" : 10},
 
       { "monster" : "mon_bear", "freq" : 1, "cost_multiplier" : 10,                "conditions" : ["SPRING", "SUMMER", "AUTUMN"] },
       { "monster" : "mon_bear", "freq" : 3, "cost_multiplier" : 10,                "conditions" : ["NIGHT", "SPRING", "SUMMER", "AUTUMN"] },
@@ -344,6 +345,7 @@
     "default" : "mon_dog",
     "monsters" : [
       { "monster" : "mon_cat", "freq" : 100, "cost_multiplier" : 0 },
+      { "monster" : "mon_amy_rose", "freq" : 50, "cost_multiplier" : 10},
       { "monster" : "mon_cat", "freq" : 20, "cost_multiplier" : 10, "pack_size" : [2,8] },
       { "monster" : "mon_dog", "freq" : 50, "cost_multiplier" : 25, "pack_size" : [1,12] },
       { "monster" : "mon_chicken", "freq" : 50, "cost_multiplier" : 10, "pack_size" : [1,16] },
@@ -909,6 +911,7 @@
       { "monster" : "mon_doom_demon", "freq" :  100, "cost_multiplier" : 2},
       { "monster" : "mon_doom_imp", "freq" :  100, "cost_multiplier" : 2},
       { "monster" : "mon_doom_cacodemon", "freq" :  100, "cost_multiplier" : 2},
+      { "monster" : "mon_amy_rose", "freq" : 50, "cost_multiplier" : 10},
       { "monster" : "mon_doom_former_human", "freq" :  100, "cost_multiplier" : 2}
     ]
   },{
@@ -928,6 +931,7 @@
       { "monster" : "mon_doom_demon", "freq" :  100, "cost_multiplier" : 2},
       { "monster" : "mon_doom_imp", "freq" :  100, "cost_multiplier" : 2},
       { "monster" : "mon_doom_cacodemon", "freq" :  100, "cost_multiplier" : 2},
+      { "monster" : "mon_amy_rose", "freq" : 50, "cost_multiplier" : 10},
       { "monster" : "mon_doom_former_human", "freq" :  100, "cost_multiplier" : 2}
 
     ]
@@ -1066,6 +1070,7 @@
       { "monster" : "mon_boomer", "freq" : 30, "cost_multiplier" : 7 },
       { "monster" : "mon_zombie_brute", "freq" : 10, "cost_multiplier" : 15 },
       { "monster" : "mon_zombie_hulk", "freq" : 1, "cost_multiplier" : 50 },
+      { "monster" : "mon_amy_rose", "freq" : 50, "cost_multiplier" : 10},
       { "monster" : "mon_zombie_master", "freq" : 1, "cost_multiplier" : 25 }
     ]
   },{
@@ -1074,6 +1079,7 @@
     "default" : "mon_zombie",
     "monsters" : [
       { "monster" : "mon_zombie_smoker", "freq" : 180, "cost_multiplier" : 0 },
+      { "monster" : "mon_amy_rose", "freq" : 50, "cost_multiplier" : 10},
       { "monster" : "mon_zombie_survivor", "freq" : 400, "cost_multiplier" : 0 }
     ]
   },{
@@ -1106,6 +1112,7 @@
       { "monster" : "mon_boomer", "freq" : 30, "cost_multiplier" : 7 },
       { "monster" : "mon_zombie_brute", "freq" : 10, "cost_multiplier" : 15 },
       { "monster" : "mon_zombie_hulk", "freq" : 1, "cost_multiplier" : 50 },
+      { "monster" : "mon_amy_rose", "freq" : 50, "cost_multiplier" : 10},
       { "monster" : "mon_zombie_master", "freq" : 1, "cost_multiplier" : 25 }
     ]
   },{
@@ -1170,6 +1177,7 @@
       { "monster" : "mon_zombie_survivor", "freq" : 1, "cost_multiplier" : 25 },
       { "monster" : "mon_boomer", "freq" : 180, "cost_multiplier" : 7 },
       { "monster" : "mon_zombie_brute", "freq" : 10, "cost_multiplier" : 15 },
+      { "monster" : "mon_amy_rose", "freq" : 50, "cost_multiplier" : 10},
       { "monster" : "mon_zombie_hulk", "freq" : 1, "cost_multiplier" : 50 },
       { "monster" : "mon_zombie_master", "freq" : 1, "cost_multiplier" : 25 }
     ]
