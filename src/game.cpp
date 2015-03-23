@@ -529,9 +529,9 @@ void game::reenter_fullscreen(void)
  */
 void game::setup()
 {
-    m = map(); // reset the main map
-
     load_world_modfiles(world_generator->active_world);
+
+    m = map(); // reset the main map
 
     next_npc_id = 1;
     next_faction_id = 1;
@@ -4007,6 +4007,7 @@ void game::debug()
         temp->spawn_at( get_levx(), get_levy(), get_levz() );
         temp->setx( u.posx() - 4 );
         temp->sety( u.posy() - 4 );
+        temp->setz( u.posz() );
         temp->form_opinion(&u);
         temp->mission = NPC_MISSION_NULL;
         temp->add_new_mission( mission::reserve_random(ORIGIN_ANY_NPC, global_omt_location(),
@@ -4434,13 +4435,14 @@ void game::disp_NPCs()
                        (TERMX > FULL_SCREEN_WIDTH) ? (TERMX - FULL_SCREEN_WIDTH) / 2 : 0);
 
     const tripoint ppos = global_omt_location();
-    mvwprintz(w, 0, 0, c_white, _("Your position: %d:%d"), ppos.x, ppos.y);
+    mvwprintz( w, 0, 0, c_white, _("Your overmap position: %d, %d, %d"), ppos.x, ppos.y, ppos.z );
+    mvwprintz( w, 1, 0, c_white, _("Your local position: %d, %d, %d"), u.posx(), u.posy(), u.posz() );
     std::vector<npc *> npcs = overmap_buffer.get_npcs_near_player(100);
     std::sort(npcs.begin(), npcs.end(), npc_dist_to_player);
     for (size_t i = 0; i < 20 && i < npcs.size(); i++) {
         const tripoint apos = npcs[i]->global_omt_location();
-        mvwprintz(w, i + 2, 0, c_white, "%s: %d:%d", npcs[i]->name.c_str(),
-                  apos.x, apos.y);
+        mvwprintz(w, i + 3, 0, c_white, "%s: %d, %d, %d", npcs[i]->name.c_str(),
+                  apos.x, apos.y, apos.z);
     }
     wrefresh(w);
     getch();
@@ -4948,26 +4950,27 @@ void game::refresh_all()
 void game::draw_HP()
 {
     werase(w_HP);
-    nc_color color;
-    std::string health_bar = "";
 
     // The HP window can be in "tall" mode (7x14) or "wide" mode (14x7).
     bool wide = (getmaxy(w_HP) == 7);
     int hpx = wide ? 7 : 0;
     int hpy = wide ? 0 : 1;
     int dy = wide ? 1 : 2;
+    
+    bool const is_self_aware = u.has_trait("SELFAWARE");
+
     for (int i = 0; i < num_hp_parts; i++) {
-        get_HP_Bar(u.hp_cur[i], u.hp_max[i], color, health_bar);
+        auto const &hp = get_hp_bar(u.hp_cur[i], u.hp_max[i]);
 
         wmove(w_HP, i * dy + hpy, hpx);
-        if (u.has_trait("SELFAWARE")) {
-            wprintz(w_HP, color, "%3d  ", u.hp_cur[i]);
+        if (is_self_aware) {
+            wprintz(w_HP, hp.second, "%3d  ", u.hp_cur[i]);
         } else {
-            wprintz(w_HP, color, "%s", health_bar.c_str());
+            wprintz(w_HP, hp.second, "%s", hp.first.c_str());
 
             //Add the trailing symbols for a not-quite-full health bar
             int bar_remainder = 5;
-            while (bar_remainder > (int)health_bar.size()) {
+            while (bar_remainder > (int)hp.first.size()) {
                 --bar_remainder;
                 wprintz(w_HP, c_white, ".");
             }
@@ -5005,14 +5008,13 @@ void game::draw_HP()
             wprintz(w_HP, c_ltgray, " --   ");
         }
     } else {
+        nc_color color = c_red;
         if (u.power_level == u.max_power_level) {
             color = c_blue;
         } else if (u.power_level >= u.max_power_level * .5) {
             color = c_ltblue;
         } else if (u.power_level > 0) {
             color = c_yellow;
-        } else {
-            color = c_red;
         }
         mvwprintz(w_HP, powy, powx, color, "%-3d", u.power_level);
     }
@@ -7578,10 +7580,11 @@ bool pet_menu(monster *z)
                 z->remove_effect("tied");
             }
 
-            int x = z->posx(), y = z->posy();
-            z->move_to(g->u.posx(), g->u.posy(), true);
+            int x = z->posx(), y = z->posy(), zpos = z->posz();
+            z->move_to(g->u.posx(), g->u.posy(), true); // TODO: Use player zpos here
             g->u.setx( x );
             g->u.sety( y );
+            g->u.setz( zpos );
 
             if (t) {
                 z->add_effect("tied", 1, num_bp, true);
@@ -7842,7 +7845,7 @@ void game::examine(int examx, int examy)
         }
     } else {
         //examx,examy has no traps, is a container and doesn't have a special examination function
-        if (m.tr_at( tripoint( examx, examy, u.posz() ) ) == tr_null && m.i_at(examx, examy).empty() &&
+        if( m.tr_at( tripoint( examx, examy, u.posz() ) ).is_null() && m.i_at(examx, examy).empty() &&
             m.has_flag("CONTAINER", examx, examy) && none) {
             add_msg(_("It is empty."));
         } else if (!veh) {
@@ -7851,9 +7854,10 @@ void game::examine(int examx, int examy)
     }
 
     //check for disarming traps last to avoid disarming query black box issue.
-    if(m.tr_at( tripoint( examx, examy, u.posz() ) ) != tr_null) {
+    const tripoint trap_pos( examx, examy, u.posz() );
+    if( !m.tr_at( trap_pos ).is_null() ) {
         iexamine::trap(&u, &m, examx, examy);
-        if(m.tr_at( tripoint( examx, examy, u.posz() ) ) == tr_null) {
+        if( m.tr_at( trap_pos ).is_null() ) {
             Pickup::pick_up(examx, examy, 0);    // After disarming a trap, pick it up.
         }
     }
@@ -7957,12 +7961,9 @@ void game::print_fields_info(int lx, int ly, WINDOW *w_look, int column, int &li
 
 void game::print_trap_info(int lx, int ly, WINDOW *w_look, const int column, int &line)
 {
-    trap_id trapid = m.tr_at(lx, ly);
-    if (trapid == tr_null) {
-        return;
-    }
-    if (traplist[trapid]->can_see( tripoint( lx, ly, get_levz() ), u )) {
-        mvwprintz(w_look, line++, column, traplist[trapid]->color, "%s", traplist[trapid]->name.c_str());
+    const trap &tr = m.tr_at(lx, ly);
+    if( tr.can_see( tripoint( lx, ly, get_levz() ), u )) {
+        mvwprintz(w_look, line++, column, tr.color, "%s", tr.name.c_str());
     }
 }
 
@@ -9361,7 +9362,7 @@ int game::list_items(const int iLastState)
             if (ground_items.empty() && iLastState == 1) {
                 reset_item_list_state(w_items_border, iInfoHeight, bRadiusSort);
                 wrefresh(w_items_border);
-                mvwprintz(w_items, 10, 2, c_white, _("You dont see any items around you!"));
+                mvwprintz(w_items, 10, 2, c_white, _("You don't see any items around you!"));
             } else {
                 werase(w_items);
 
@@ -9625,7 +9626,7 @@ int game::list_monsters(const int iLastState)
 
             if (vMonsters.empty()) {
                 wrefresh(w_monsters_border);
-                mvwprintz(w_monsters, 10, 2, c_white, _("You dont see any monsters around you!"));
+                mvwprintz(w_monsters, 10, 2, c_white, _("You don't see any monsters around you!"));
             } else {
                 if( static_cast<size_t>( iActive ) >= vMonsters.size() ) {
                     iActive = 0;
@@ -9655,12 +9656,13 @@ int game::list_monsters(const int iLastState)
                             mvwprintz(w_monsters, y, 1, selected ? c_ltgreen : c_white, "%s", critter->disp_name().c_str());
                         }
                         nc_color color = c_white;
-                        std::string sText = "";
+                        std::string sText;
 
                         if( m != nullptr ) {
                             m->get_HP_Bar(color, sText);
                         } else {
-                            ::get_HP_Bar( critter->get_hp(), critter->get_hp_max(), color, sText, false );
+                            std::tie(sText, color) = 
+                                ::get_hp_bar( critter->get_hp(), critter->get_hp_max(), false );
                         }
                         mvwprintz(w_monsters, y, 22, color, "%s", sText.c_str());
 
@@ -10825,9 +10827,7 @@ void game::takeoff(int pos)
         return;
     }
 
-    if (u.takeoff(pos)) {
-        u.moves -= 250;    // TODO: Make this variable
-    } else {
+    if (!u.takeoff(pos)) {
         add_msg(m_info, _("Invalid selection."));
     }
 }
@@ -11544,13 +11544,10 @@ bool game::plmove(int dx, int dy)
         }
 
         if (!(u.has_effect("blind") || u.worn_with_flag("BLIND"))) {
-            const trap_id tid = m.tr_at(dest_loc);
-            if (tid != tr_null) {
-                const struct trap &t = *traplist[tid];
-                if ((t.can_see(dest_loc, u)) && !t.is_benign() &&
-                    !query_yn(_("Really step onto that %s?"), t.name.c_str())) {
-                    return false;
-                }
+            const trap &tr = m.tr_at(dest_loc);
+            if( tr.can_see(dest_loc, u) && !tr.is_benign() &&
+                !query_yn(_("Really step onto that %s?"), tr.name.c_str())) {
+                return false;
             }
         }
 
@@ -11728,7 +11725,7 @@ bool game::plmove(int dx, int dy)
                         m.has_flag("FLAT", fdest.x, fdest.y) &&
                         !m.has_furn(fdest.x, fdest.y) &&
                         m.veh_at(fdest.x, fdest.y) == NULL &&
-                        m.tr_at(fdest.x, fdest.y) == tr_null
+                        m.tr_at(fdest.x, fdest.y).is_null()
                         );
 
                     const furn_t furntype = m.furn_at(fpos.x, fpos.y);
@@ -11996,14 +11993,7 @@ bool game::plmove(int dx, int dy)
         // Traps!
         // Try to detect.
         u.search_surroundings();
-        // We stepped on a trap!
-        // Can't use dest_loc here - we may have shifted the map
-        if( m.tr_at( u.pos3() ) != tr_null ) {
-            trap *tr = traplist[m.tr_at( u.pos3() )];
-            if( !u.avoid_trap( u.pos3(), tr ) ) {
-                tr->trigger( u.pos3(), &u );
-            }
-        }
+        m.creature_on_trap( u );
 
         // apply martial art move bonuses
         u.ma_onmove_effects();
@@ -12704,12 +12694,8 @@ void game::vertical_move(int movez, bool force)
         }
     }
 
-    if( m.tr_at( u.pos3() ) != tr_null ) { // We stepped on a trap!
-        trap *tr = traplist[m.tr_at( u.pos3() )];
-        if( force || !u.avoid_trap( u.pos3(), tr ) ) {
-            tr->trigger( u.pos3(), &u );
-        }
-    }
+    // Upon force movement, traps can not be avoided.
+    m.creature_on_trap( u, !force );
 
     // Clear currently active npcs and reload them
     active_npc.clear();
