@@ -2573,7 +2573,7 @@ int item::melee_value(player *p)
 
 int item::bash_resist() const
 {
-    int resist = 0;
+    float resist = 0;
     float l_padding = 0;
     float k_padding = 0;
     int eff_thickness = 1;
@@ -2609,12 +2609,12 @@ int item::bash_resist() const
     // Average based on number of materials.
     resist /= mat_types.size();
 
-    return (int)((resist * eff_thickness * adjustment) + l_padding + k_padding);
+    return std::lround((resist * eff_thickness * adjustment) + l_padding + k_padding);
 }
 
 int item::cut_resist() const
 {
-    int resist = 0;
+    float resist = 0;
     float l_padding = 0;
     float k_padding = 0;
     int eff_thickness = 1;
@@ -2651,12 +2651,12 @@ int item::cut_resist() const
     // Average based on number of materials.
     resist /= mat_types.size();
 
-    return (int)((resist * eff_thickness * adjustment) + l_padding + k_padding);
+    return std::lround((resist * eff_thickness * adjustment) + l_padding + k_padding);
 }
 
 int item::acid_resist() const
 {
-    int resist = 0;
+    float resist = 0;
     // With the multiplying and dividing in previous code, the following
     // is a coefficient equivalent to the bonuses and maluses hardcoded in
     // previous versions. Adjust to make you happier/sadder.
@@ -2676,7 +2676,7 @@ int item::acid_resist() const
     // Average based on number of materials.
     resist /= mat_types.size();
 
-    return (int)(resist * adjustment);
+    return std::lround(resist * adjustment);
 }
 
 bool item::is_two_handed(player *u)
@@ -2850,6 +2850,10 @@ bool item::is_food(player const*u) const
         return true;
 
     if( u->has_active_bionic( "bio_batteries" ) && is_ammo() && ammo_type() == "battery" ) {
+        return true;
+    }
+
+    if( ( u->has_active_bionic( "bio_reactor" ) || u->has_active_bionic( "bio_advreactor" ) ) && is_ammo() && ( ammo_type() == "reactor_slurry" || ammo_type() == "plutonium" ) ) {
         return true;
     }
     if (u->has_active_bionic("bio_furnace") && flammable() && typeId() != "corpse")

@@ -937,6 +937,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         int hunger, thirst, fatigue;
         int bladder,bladdercap,bladdermict,bladderdance,bladderdesp,bladderlast,peerate,peesleeprate;
         int stomach_food, stomach_water;
+        int tank_plut, reactor_plut, slow_rad;
         int oxygen;
         int recoil;
         int driving_recoil;
