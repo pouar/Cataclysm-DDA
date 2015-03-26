@@ -2308,7 +2308,7 @@ void item::set_relative_rot( float rel_rot )
     }
 }
 
-void item::calc_rot(const point &location)
+void item::calc_rot(const tripoint &location)
 {
     const int now = calendar::turn;
     if ( last_rot_check + 10 < now ) {
@@ -4332,12 +4332,12 @@ iteminfo::iteminfo(std::string Type, std::string Name, std::string Fmt, double V
     bDrawName = DrawName;
 }
 
-void item::detonate(point p) const
+void item::detonate( const tripoint &p ) const
 {
     if (type == NULL || type->explosion_on_fire_data.power < 0) {
         return;
     }
-    g->explosion(p.x, p.y, type->explosion_on_fire_data.power, type->explosion_on_fire_data.shrapnel, type->explosion_on_fire_data.fire, type->explosion_on_fire_data.blast);
+    g->explosion( p.x, type->explosion_on_fire_data.power, type->explosion_on_fire_data.shrapnel, type->explosion_on_fire_data.fire, type->explosion_on_fire_data.blast);
 }
 
 bool item_ptr_compare_by_charges( const item *left, const item *right)
@@ -4561,7 +4561,9 @@ int item::processing_speed() const
 
 bool item::process_food( player * /*carrier*/, point pos )
 {
-    calc_rot( pos );
+    // TODO: this functions (and all the other process functions) should be called with a tripoint
+    // If this gets implemented, don't forget that calc_rot expects an *absolute* position.
+    calc_rot( tripoint( g->m.getabs( pos ), g->get_levz() ) );
     if( item_tags.count( "HOT" ) > 0 ) {
         item_counter--;
         if( item_counter == 0 ) {

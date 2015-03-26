@@ -315,9 +315,10 @@ public:
      * Accumulate rot of the item since last rot calculation.
      * This function works for non-rotting stuff, too - it increases the value
      * of rot.
-     * @param p The location of the item to check for temperature.
+     * @param p The absolute, global location (in map square coordinates) of the item to
+     * check for temperature.
      */
-    void calc_rot(const point &p);
+    void calc_rot( const tripoint &p );
     /**
      * Returns whether the item has completely rotten away.
      */
@@ -354,7 +355,7 @@ public:
 
  int brewing_time() const;
  bool ready_to_revive( point pos ); // used for corpses
- void detonate(point p) const;
+ void detonate( const tripoint &p ) const;
  bool can_revive();      // test if item is a corpse and can be revived
 // light emission, determined by type->light_emission (LIGHT_???) tag (circular),
 // overridden by light.* struct (shaped)
