@@ -474,7 +474,7 @@
 						{ "item": "us_pullon_pack", "x": 22, "y": 11 },
 						{ "item": "bladderset", "x": 1, "y": 3 }
 					],
-					"place_groups": [
+					"place_items": [
 						{ "item": "abdl_clothes", "chance": 100, "x": [ 10,22 ], "y": 19 },
 						{ "item": "abdl_clothes", "chance": 100, "x": [ 10,22 ], "y": 19 },
 						{ "item": "abdl_clothes", "chance": 100, "x": [ 10,22 ], "y": 19 },
@@ -554,7 +554,9 @@
 						{ "item": "abdl_clothes", "chance": 100, "x": [ 13,19 ], "y": [ 7,8 ] },
 						{ "item": "abdl_clothes", "chance": 100, "x": [ 13,19 ], "y": [ 10,11 ] },
 						{ "item": "abdl_clothes", "chance": 100, "x": [ 13,19 ], "y": [ 7,8 ] },
-						{ "item": "abdl_clothes", "chance": 100, "x": [ 13,19 ], "y": [ 10,11 ] },
+						{ "item": "abdl_clothes", "chance": 100, "x": [ 13,19 ], "y": [ 10,11 ] }
+					],
+					"place_monsters": [
 						{ "monster": "GROUP_DIAPERFUR", "x": [ 13,19 ], "y": 12 },
 						{ "monster": "GROUP_DIAPERFUR", "x": [ 13,19 ], "y": 9 },
 						{ "monster": "GROUP_DIAPERFUR", "x": [ 13,19 ], "y": 6 },
