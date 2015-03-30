@@ -7588,14 +7588,13 @@ void game::control_vehicle()
 
     if( veh != nullptr && veh->player_in_control( &u ) ) {
         veh->use_controls();
-    } else if (veh && veh->part_with_feature(veh_part, "CONTROLS") >= 0
-               && u.in_vehicle) {
-        if (veh->interact_vehicle_locked()){
+    } else if( veh && veh->part_with_feature( veh_part, "CONTROLS" ) >= 0 && u.in_vehicle ) {
+        if( !veh->interact_vehicle_locked() ) { return; }
+        if( veh->engine_on ) {
             u.controlling_vehicle = true;
-            add_msg(_("You take control of the %s."), veh->name.c_str());
-            if (!veh->engine_on) {
-                veh->start_engine();
-            }
+            add_msg( _("You take control of the %s."), veh->name.c_str() );
+        } else {
+            veh->start_engines( true );
         }
     } else {
         int examx, examy;
@@ -8028,14 +8027,10 @@ void game::print_terrain_info(int lx, int ly, WINDOW *w_look, int column, int &l
     if (m.has_furn(lx, ly)) {
         furn_t furn = m.furn_at(lx, ly);
         tile += "; " + furn.name;
-        if (furn.has_flag("PLANT")) {
+        if( furn.has_flag( "PLANT" ) && !m.i_at( lx, ly ).empty() ) {
             // Plant types are defined by seeds.
-            item plantType = m.i_at(lx, ly)[0];
-            if (plantType.typeId() != "fungal_seeds") {
-                // We rely on the seeds we care about to be
-                // id'd as seed_*.
-                tile += " (" + plantType.typeId().substr(5) + ")";
-            }
+            const item &seed = m.i_at(lx, ly)[0];
+            tile += " (" + seed.get_plant_name() + ")";
         }
     }
 
@@ -13484,11 +13479,8 @@ bool game::spread_fungus( const tripoint &p )
                     m.furn_set(x, y, f_fungal_clump);
                 }
             } else if (m.has_flag("PLANT", x, y)) {
-                for (size_t k = 0; k < m.i_at(x, y).size(); k++) {
-                    m.i_rem(x, y, k);
-                }
-                item seeds("fungal_seeds", int(calendar::turn));
-                m.add_item_or_charges(x, y, seeds);
+                // Replace the (already existing) seed
+                m.i_at( x, y )[0] = item( "fungal_seeds", calendar::turn );
             }
         }
         return true;
@@ -13592,11 +13584,8 @@ bool game::spread_fungus( const tripoint &p )
                                 m.furn_set(i, j, f_fungal_clump);
                             }
                         } else if (m.has_flag("PLANT", i, j)) {
-                            for (size_t k = 0; k < m.i_at(i, j).size(); k++) {
-                                m.i_rem(i, j, k);
-                            }
-                            item seeds("fungal_seeds", int(calendar::turn));
-                            m.add_item_or_charges(x, y, seeds);
+                            // Replace the (already existing) seed
+                            m.i_at( x, y )[0] = item( "fungal_seeds", calendar::turn );
                         }
                     }
                 }
