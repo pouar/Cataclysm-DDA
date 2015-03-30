@@ -192,7 +192,7 @@ void player::sort_armor()
     * + 7 - ASSUMPTION: max possible number of flags @ item
     * + 13 - warmth & enc block
     */
-    int req_mid_h = 3 + 1 + 8 + 7 + 13;
+    int req_mid_h = 3 + 1 + 8 + 7 + 13 + 5;
 
     const int win_h = std::min(TERMY, std::max(FULL_SCREEN_HEIGHT,
                                std::max(req_right_h, req_mid_h)));
