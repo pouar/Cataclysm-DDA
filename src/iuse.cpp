@@ -1499,6 +1499,7 @@ int iuse::oxygen_bottle(player *p, item *it, bool, point)
         p->stim += 8;
         p->pkill += 2;
     }
+    p->remove_effect("winded");
     p->pkill += 2;
     return it->type->charges_to_use();
 }
