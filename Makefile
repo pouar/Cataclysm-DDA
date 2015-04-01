@@ -126,8 +126,8 @@ ifdef RELEASE
     CXXFLAGS += -O3
   else
     ifndef CROSS
-        CXXFLAGS += -march=native -O2
-        LDFLAGS += 
+        CXXFLAGS +=  -flto=$(shell nproc) -march=native -O2
+        LDFLAGS += -flto=$(shell nproc)
     else
         CXXFLAGS += -Os
     endif
