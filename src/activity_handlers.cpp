@@ -159,15 +159,12 @@ void activity_handlers::butcher_finish( player_activity *act, player *p )
         return static_cast<int>( skill_shift );
     };
 
-    pieces += roll_butchery();
-    int practice = 4 + pieces;
-    if( practice > 20 ) {
-        practice = 20;
-    }
-
+    int practice = std::max( 0, 4 + pieces + roll_butchery());
+    
     p->practice("survival", practice);
 
-    // Lose some skins and bones if the rolls are low
+    // Lose some meat, skins, etc if the rolls are low
+    pieces +=   std::min( 0, roll_butchery() );
     skins +=    std::min( 0, roll_butchery() - 4 );
     bones +=    std::min( 0, roll_butchery() - 2 );
     fats +=     std::min( 0, roll_butchery() - 4 );

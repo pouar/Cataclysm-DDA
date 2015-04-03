@@ -274,7 +274,7 @@ void Character::recalc_sight_limits()
     }
 }
 
-bool Character::has_bionic(const bionic_id & b) const
+bool Character::has_bionic(const std::string & b) const
 {
     for (auto &i : my_bionics) {
         if (i.id == b) {
@@ -284,7 +284,7 @@ bool Character::has_bionic(const bionic_id & b) const
     return false;
 }
 
-bool Character::has_active_bionic(const bionic_id & b) const
+bool Character::has_active_bionic(const std::string & b) const
 {
     for (auto &i : my_bionics) {
         if (i.id == b) {

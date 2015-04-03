@@ -2570,8 +2570,7 @@ void player::memorial( std::ofstream &memorial_file, std::string epitaph )
     memorial_file << _("Bionics:") << "\n";
     int total_bionics = 0;
     for( size_t i = 0; i < my_bionics.size(); ++i ) {
-      bionic_id next_bionic_id = my_bionics[i].id;
-      memorial_file << indent << (i+1) << ": " << bionics[next_bionic_id]->name << "\n";
+      memorial_file << indent << (i+1) << ": " << bionic_info(my_bionics[i].id).name << "\n";
       total_bionics++;
     }
     if(total_bionics == 0) {
@@ -4503,7 +4502,7 @@ bool player::has_active_optcloak() const
     return false;
 }
 
-void player::add_bionic( bionic_id b )
+void player::add_bionic( std::string const &b )
 {
     if( has_bionic( b ) ) {
         debugmsg( "Tried to install bionic %s that is already installed!", b.c_str() );
@@ -4523,7 +4522,7 @@ void player::add_bionic( bionic_id b )
     recalc_sight_limits();
 }
 
-void player::remove_bionic(bionic_id b) {
+void player::remove_bionic(std::string const &b) {
     std::vector<bionic> new_my_bionics;
     for(auto &i : my_bionics) {
         if (b == i.id) {
@@ -8315,7 +8314,7 @@ void player::suffer()
                 int power_gen;
                 power_gen = 0;
                 if (has_bionic("bio_advreactor")){
-                    if ((reactor_plut * 0.2) > 2000){
+                    if ((reactor_plut * 0.05) > 2000){
                         power_gen = 2000;
                     } else {
                         power_gen = reactor_plut * 0.05;
@@ -8334,7 +8333,7 @@ void player::suffer()
                         }
                     }
                 } else if (has_bionic("bio_reactor")) {
-                    if ((reactor_plut * 0.1) > 500){
+                    if ((reactor_plut * 0.025) > 500){
                         power_gen = 500;
                     } else {
                         power_gen = reactor_plut * 0.025;
