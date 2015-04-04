@@ -1,4 +1,4 @@
-#include "player.h"
+﻿#include "player.h"
 #include "profession.h"
 #include "bionics.h"
 #include "mission.h"
@@ -4473,19 +4473,19 @@ std::list<item *> player::get_radio_items()
     for( auto &stack : stacks ) {
         item &itemit = stack->front();
         item *stack_iter = &itemit;
-        if (stack_iter->active && stack_iter->has_flag("RADIO_ACTIVATION")) {
+        if( stack_iter->has_flag("RADIO_ACTIVATION") ) {
             rc_items.push_back( stack_iter );
         }
     }
 
     for( auto &elem : worn ) {
-        if( elem.active && elem.has_flag( "RADIO_ACTIVATION" ) ) {
+        if( elem.has_flag( "RADIO_ACTIVATION" ) ) {
             rc_items.push_back( &elem );
         }
     }
 
     if (!weapon.is_null()) {
-        if ( weapon.active  && weapon.has_flag("RADIO_ACTIVATION")) {
+        if ( weapon.has_flag("RADIO_ACTIVATION")) {
             rc_items.push_back( &weapon );
         }
     }
@@ -9160,6 +9160,8 @@ bool player::has_fire(const int quantity) const
         return true;
     } else if (has_charges("torch_lit", 1)) {
         return true;
+    } else if (has_charges("tinderbox_lit", 1)) {
+        return true;
     } else if (has_charges("battletorch_lit", quantity)) {
         return true;
     } else if (has_charges("handflare_lit", 1)) {
@@ -9213,6 +9215,8 @@ void player::use_fire(const int quantity)
     if (g->m.has_nearby_fire(posx(), posy())) {
         return;
     } else if (has_charges("torch_lit", 1)) {
+        return;
+    } else if (has_charges("tinderbox_lit", 1)) {
         return;
     } else if (has_charges("battletorch_lit", 1)) {
         return;
