@@ -726,6 +726,12 @@ bool monster::is_warm() const {
     return has_flag(MF_WARM);
 }
 
+bool monster::is_elec_immune() const
+{
+    return type->sp_defense == &mdefense::zapback ||
+           has_flag( MF_ELECTRIC );
+}
+
 bool monster::is_dead_state() const {
     return hp <= 0;
 }
@@ -895,7 +901,7 @@ void monster::hit_monster(monster &other)
  if (!is_hallucination()) {
   int damage = dice(type->melee_dice, type->melee_sides);
   target->apply_damage( this, bp_torso, damage );
-  type->sp_defense(target, this, nullptr);
+  target->type->sp_defense(target, this, nullptr);
   target->check_dead_state();
  }
 }

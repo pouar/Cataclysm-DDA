@@ -4761,90 +4761,172 @@ void map::debug()
  getch();
 }
 
+void map::update_visibility_cache( visibility_variables &cache) {
+    cache.g_light_level = (int)g->light_level();
+    cache.natural_sight_range = g->u.sight_range(1);
+    cache.light_sight_range = g->u.sight_range(cache.g_light_level);
+    cache.lowlight_sight_range = std::max(cache.g_light_level / 2,
+                                          cache.natural_sight_range);
+    cache.max_sight_range = g->u.unimpaired_range();
+    cache.u_clairvoyance = g->u.clairvoyance();
+    cache.u_sight_impaired = g->u.sight_impaired();
+    cache.bio_night_active = g->u.has_active_bionic("bio_night");
+    
+    cache.u_is_boomered = g->u.has_effect("boomered");
+    
+    for( int x = 0; x < MAPSIZE * SEEX; x++ ) {
+        for( int y = 0; y < MAPSIZE * SEEY; y++ ) {
+            visibility_cache[x][y] = apparent_light_at(x, y, cache);
+        }
+    }
+}
+
+lit_level map::apparent_light_at(int x, int y, const visibility_variables &cache) {
+    const int dist = rl_dist(g->u.posx(), g->u.posy(), x, y);
+
+    int sight_range = cache.light_sight_range;
+    int low_sight_range = cache.lowlight_sight_range;
+
+    // While viewing indoor areas use lightmap model
+    if (!is_outside(x, y)) {
+        sight_range = cache.natural_sight_range;
+
+    // Don't display area as shadowy if it's outside and illuminated by natural light
+    // and illuminated by source of light
+    } else if (light_at(x, y) > LL_LOW || dist <= cache.light_sight_range) {
+        low_sight_range = std::max(cache.g_light_level, cache.natural_sight_range);
+    }
+
+    int real_max_sight_range = std::max(cache.light_sight_range, cache.max_sight_range);
+    int distance_to_look = DAYLIGHT_LEVEL;
+
+    bool can_see = pl_sees( x, y, distance_to_look );
+    lit_level lit = light_at(x, y);
+
+    // now we're gonna adjust real_max_sight, to cover some nearby "highlights",
+    // but at the same time changing light-level depending on distance,
+    // to create actual "gradual" stuff
+    // Also we'll try to ALWAYS show LL_BRIGHT stuff independent of where it is...
+    if (lit != LL_BRIGHT) {
+        if (dist > real_max_sight_range) {
+            int intLit = (int)lit - (dist - real_max_sight_range)/2;
+            if (intLit < 0) intLit = LL_DARK;
+            lit = (lit_level)intLit;
+        }
+    }
+
+    // additional case for real_max_sight_range
+    // if both light_sight_range and max_sight_range were small
+    // it means we really have limited visibility (e.g. inside a pit)
+    // and we shouldn't touch that
+    if (lit > LL_DARK && real_max_sight_range > 1) {
+        real_max_sight_range = distance_to_look;
+    }
+
+    if ((cache.bio_night_active && dist < 15 && dist > cache.natural_sight_range) || // if bio_night active, blackout 15 tile radius around player
+        dist > real_max_sight_range || // too far away, no matter what
+        (dist > cache.light_sight_range &&
+            (lit == LL_DARK ||
+                (cache.u_sight_impaired && lit != LL_BRIGHT) ||
+                !can_see))) { // blind
+        return LL_DARK;
+    } else if (dist > cache.light_sight_range && cache.u_sight_impaired && lit == LL_BRIGHT) {
+        return LL_BRIGHT_ONLY;
+    } else if (dist <= cache.u_clairvoyance || can_see) {
+        if ( lit == LL_BRIGHT ) {
+            return LL_BRIGHT;
+        } else {
+            if ( (dist > low_sight_range && LL_LIT > lit) || (dist > sight_range && LL_LOW == lit) ) {
+                return LL_LOW;
+            } else {
+                return LL_LIT;
+            }
+        }
+    }
+    return LL_BLANK;
+}
+
+visibility_type map::get_visibility( const lit_level ll, const visibility_variables &cache ) const {
+    switch (ll) {
+    case LL_DARK: // can't see this square at all
+        if( cache.u_is_boomered ) {
+            return VIS_BOOMER_DARK;
+        } else {
+            return VIS_DARK;
+        }
+    case LL_BRIGHT_ONLY: // can only tell that this square is bright
+        if( cache.u_is_boomered ) {
+            return VIS_BOOMER;
+        } else {
+            return VIS_LIT;
+        }
+    case LL_LOW: // low light, square visible in monochrome
+    case LL_LIT: // normal light
+    case LL_BRIGHT: // bright light
+        return VIS_CLEAR;
+    case LL_BLANK:
+        return VIS_HIDDEN;
+    }
+    return VIS_HIDDEN;
+}
+
+bool map::apply_vision_effects( WINDOW *w, const point center, int x, int y,
+                                lit_level ll, const visibility_variables &cache ) const {
+    int symbol = ' ';
+    nc_color color = c_black;
+
+    switch( get_visibility(ll, cache) ) {
+        case VIS_DARK: // can't see this square at all
+            symbol = '#';
+            color = c_dkgray;
+	    break;
+        case VIS_CLEAR:
+            // Drew the tile, so bail out now.
+            return false;
+        case VIS_LIT: // can only tell that this square is bright
+            symbol = '#';
+            color = c_ltgray;
+            break;
+        case VIS_BOOMER:
+          symbol = '#';
+          color = c_pink;
+            break;
+        case VIS_BOOMER_DARK:
+          symbol = '#';
+          color = c_magenta;
+            break;
+        case VIS_HIDDEN:
+            symbol = ' ';
+            color = c_black;
+            break;
+    }
+    mvwputch( w, y + getmaxy(w) / 2 - center.y,
+              x + getmaxx(w) / 2 - center.x, color, symbol );
+    return true;
+}
+
 void map::draw(WINDOW* w, const point center)
 {
- // We only need to draw anything if we're not in tiles mode.
- if(is_draw_tiles_mode()) {
-     return;
- }
+    // We only need to draw anything if we're not in tiles mode.
+    if(is_draw_tiles_mode()) {
+        return;
+    }
 
- g->reset_light_level();
- const int g_light_level = (int)g->light_level();
- const int natural_sight_range = g->u.sight_range(1);
- const int light_sight_range = g->u.sight_range(g_light_level);
- const int lowlight_sight_range = std::max(g_light_level / 2, natural_sight_range);
- const int max_sight_range = g->u.unimpaired_range();
- const bool u_is_boomered = g->u.has_effect("boomered");
- const int u_clairvoyance = g->u.clairvoyance();
- const bool u_sight_impaired = g->u.sight_impaired();
- const bool bio_night_active = g->u.has_active_bionic("bio_night");
+    g->reset_light_level();
 
- for  (int realx = center.x - getmaxx(w)/2; realx <= center.x + getmaxx(w)/2; realx++) {
-  for (int realy = center.y - getmaxy(w)/2; realy <= center.y + getmaxy(w)/2; realy++) {
-   const int dist = rl_dist(g->u.posx(), g->u.posy(), realx, realy);
-   int sight_range = light_sight_range;
-   int low_sight_range = lowlight_sight_range;
-   // While viewing indoor areas use lightmap model
-   if (!is_outside(realx, realy)) {
-    sight_range = natural_sight_range;
-   // Don't display area as shadowy if it's outside and illuminated by natural light
-   //and illuminated by source of light
-   } else if (this->light_at(realx, realy) > LL_LOW || dist <= light_sight_range) {
-    low_sight_range = std::max(g_light_level, natural_sight_range);
-   }
+    visibility_variables cache;
+    update_visibility_cache( cache );
 
-   // I've moved this part above loops without even thinking that
-   // this must stay here...
-   int real_max_sight_range = light_sight_range > max_sight_range ? light_sight_range : max_sight_range;
-   int distance_to_look = DAYLIGHT_LEVEL;
+    for( int x = center.x - getmaxx(w)/2; x <= center.x + getmaxx(w)/2; x++ ) {
+        for( int y = center.y - getmaxy(w)/2; y <= center.y + getmaxy(w)/2; y++ ) {
+            const lit_level lighting = visibility_cache[x][y];
+            if( !apply_vision_effects( w, center, x, y, lighting, cache ) ) {
+                drawsq( w, g->u, x, y, false, true, center.x, center.y,
+                        lighting == LL_LOW, lighting == LL_BRIGHT );
+            }
+        }
+    }
 
-   bool can_see = pl_sees( realx, realy, distance_to_look );
-   lit_level lit = light_at(realx, realy);
-
-   // now we're gonna adjust real_max_sight, to cover some nearby "highlights",
-   // but at the same time changing light-level depending on distance,
-   // to create actual "gradual" stuff
-   // Also we'll try to ALWAYS show LL_BRIGHT stuff independent of where it is...
-   if (lit != LL_BRIGHT) {
-       if (dist > real_max_sight_range) {
-           int intLit = (int)lit - (dist - real_max_sight_range)/2;
-           if (intLit < 0) intLit = LL_DARK;
-           lit = (lit_level)intLit;
-       }
-   }
-   // additional case for real_max_sight_range
-   // if both light_sight_range and max_sight_range were small
-   // it means we really have limited visibility (e.g. inside a pit)
-   // and we shouldn't touch that
-   if (lit > LL_DARK && real_max_sight_range > 1) {
-       real_max_sight_range = distance_to_look;
-   }
-
-   if ((bio_night_active && dist < 15 && dist > natural_sight_range) || // if bio_night active, blackout 15 tile radius around player
-       dist > real_max_sight_range ||
-       (dist > light_sight_range &&
-         (lit == LL_DARK ||
-         (u_sight_impaired && lit != LL_BRIGHT) ||
-          !can_see))) {
-    if (u_is_boomered)
-     mvwputch(w, realy+getmaxy(w)/2 - center.y, realx+getmaxx(w)/2 - center.x, c_magenta, '#');
-    else
-         mvwputch(w, realy+getmaxy(w)/2 - center.y, realx+getmaxx(w)/2 - center.x, c_dkgray, '#');
-   } else if (dist > light_sight_range && u_sight_impaired && lit == LL_BRIGHT) {
-    if (u_is_boomered)
-     mvwputch(w, realy+getmaxy(w)/2 - center.y, realx+getmaxx(w)/2 - center.x, c_pink, '#');
-    else
-     mvwputch(w, realy+getmaxy(w)/2 - center.y, realx+getmaxx(w)/2 - center.x, c_ltgray, '#');
-   } else if (dist <= u_clairvoyance || can_see) {
-    drawsq(w, g->u, realx, realy, false, true, center.x, center.y,
-           (dist > low_sight_range && LL_LIT > lit) ||
-           (dist > sight_range && LL_LOW == lit),
-           LL_BRIGHT == lit);
-   } else {
-    mvwputch(w, realy+getmaxy(w)/2 - center.y, realx+getmaxx(w)/2 - center.x, c_black,' ');
-   }
-  }
- }
     g->draw_critter( g->u, center );
 }
 
