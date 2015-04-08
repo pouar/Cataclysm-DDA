@@ -1467,7 +1467,7 @@
         "required" : false, "//":"is this special required for valid city sizes",
         "flags" : [ "CLASSIC" ]
     },
-	{
+    {
         "type" : "overmap_special",
         "id" : "Home Improvement Superstore",
         "overmaps" :

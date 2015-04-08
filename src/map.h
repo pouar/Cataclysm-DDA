@@ -159,10 +159,10 @@ class map
      */
     lit_level apparent_light_at(int x, int y, const visibility_variables &cache);
     visibility_type get_visibility( const lit_level ll,
-				    const visibility_variables &cache ) const;
+                                    const visibility_variables &cache ) const;
 
     bool apply_vision_effects( WINDOW *w, const point center, int x, int y, lit_level ll,
-			       const visibility_variables &cache ) const;
+                               const visibility_variables &cache ) const;
 
  /** Draw a visible part of the map into `w`.
   *
@@ -1093,7 +1093,7 @@ private:
     int bash_rating_internal( const int str, const furn_t &furniture, 
                               const ter_t &terrain, const vehicle *veh, const int part ) const;
 
- long determine_wall_corner(const int x, const int y, const long orig_sym) const;
+ long determine_wall_corner(const int x, const int y) const;
  void cache_seen(const int fx, const int fy, const int tx, const int ty, const int max_range);
  // apply a circular light pattern immediately, however it's best to use...
  void apply_light_source(int x, int y, float luminance, bool trig_brightcalc);
