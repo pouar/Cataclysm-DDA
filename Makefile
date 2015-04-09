@@ -110,7 +110,9 @@ W32ODIR = objwin
 W32ODIRTILES = objwin/tiles
 DDIR = .deps
 
-MAKEFLAGS+=-j$(shell nproc)
+JOBS=$(shell if nproc; then echo -n '';elif [ -a /proc/cpuinfo ] ; then grep -c ^processor /proc/cpuinfo ; elif getconf _NPROCESSORS_ONLN; then echo -n '';elif sysctl -n hw.ncpu;then echo -n '';elif psrinfo -p;then echo -n '';else echo 1;fi 2>/dev/null)
+MAKEFLAGS+=-j$(JOBS)
+
 OS  = $(shell uname -s)
 ifdef CCACHE
   CXX = ccache $(CROSS)g++
