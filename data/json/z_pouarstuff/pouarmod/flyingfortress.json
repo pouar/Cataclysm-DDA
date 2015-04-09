@@ -54,8 +54,8 @@
 				"c": "t_linoleum_white",
 				"o": "t_linoleum_white",
 				"w": "t_linoleum_white",
-				"|": "t_wall_v_r",
-				"-": "t_wall_h_r",
+				"|": "t_wall_r",
+				"-": "t_wall_r",
 				"P": "t_plut_generator",
 				"s": "t_linoleum_white",
 				"B": "t_chunk_blower",
@@ -111,8 +111,8 @@
 				"D": "t_carpet_red",
 				"a": "t_carpet_red",
 				"d": "t_carpet_red",
-				"|": "t_wall_v_r",
-				"-": "t_wall_h_r"
+				"|": "t_wall_r",
+				"-": "t_wall_r"
 			}
 		},
 		"om_terrain": "flying_fortress_2",
@@ -152,8 +152,8 @@
 			"terrain": {
 				".": "t_carpet_red",
 				"O": "t_window",
-				"|": "t_wall_v_r",
-				"-": "t_wall_h_r"
+				"|": "t_wall_r",
+				"-": "t_wall_r"
 			}
 		},
 		"om_terrain": "flying_fortress_3",
@@ -194,8 +194,8 @@
 				"+": "t_door_metal_c",
 				".": "t_carpet_red",
 				"P": "t_water_pool",
-				"|": "t_wall_v_r",
-				"-": "t_wall_h_r",
+				"|": "t_wall_r",
+				"-": "t_wall_r",
 				",": "t_linoleum_white"
 			}
 		},
@@ -242,8 +242,8 @@
 				"A": "t_atm",
 				"G": "t_carpet_red",
 				"P": "t_water_pool",
-				"|": "t_wall_v_r",
-				"-": "t_wall_h_r",
+				"|": "t_wall_r",
+				"-": "t_wall_r",
 				",": "t_linoleum_white"
 			}
 		},
@@ -283,8 +283,8 @@
 			],
 			"terrain": {
 				".": "t_carpet_red",
-				"|": "t_wall_v_r",
-				"-": "t_wall_h_r"
+				"|": "t_wall_r",
+				"-": "t_wall_r"
 			}
 		},
 		"om_terrain": "flying_fortress_6",
@@ -325,8 +325,8 @@
 				".": "t_carpet_red",
 				"O": "t_window",
 				"P": "t_water_pool",
-				"|": "t_wall_v_r",
-				"-": "t_wall_h_r",
+				"|": "t_wall_r",
+				"-": "t_wall_r",
 				",": "t_linoleum_white"
 			}
 		},
@@ -368,8 +368,8 @@
 				".": "t_carpet_red",
 				"O": "t_window",
 				"P": "t_water_pool",
-				"|": "t_wall_v_r",
-				"-": "t_wall_h_r",
+				"|": "t_wall_r",
+				"-": "t_wall_r",
 				",": "t_linoleum_white"
 			}
 		},
@@ -413,8 +413,8 @@
 				">": "t_manhole",
 				"O": "t_window",
 				"s": "t_carpet_red",
-				"|": "t_wall_v_r",
-				"-": "t_wall_h_r"
+				"|": "t_wall_r",
+				"-": "t_wall_r"
 			},
 			"signs": {
 				"s": { "signage": "Pouar's Flying Fortress. KEEP OUT! >:(" }
