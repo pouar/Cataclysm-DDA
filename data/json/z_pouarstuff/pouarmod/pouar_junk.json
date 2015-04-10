@@ -451,14 +451,14 @@
 		]
 	},
 	{
-        "type" : "overmap_terrain",
-        "id" : "public_bath",
-        "name" : "the public bath",
-        "sym" : 79,
-        "color" : "blue",
-        "see_cost" : 2,
-        "mondensity" : 0,
-        "sidewalk" : true
+		"type" : "overmap_terrain",
+		"id" : "public_bath",
+		"name" : "the public bath",
+		"sym" : 79,
+		"color" : "blue",
+		"see_cost" : 2,
+		"mondensity" : 0,
+		"sidewalk" : true
 	},
 	{
 		"type" : "mapgen",
