@@ -386,10 +386,10 @@
 		"type" : "COMESTIBLE",
 		"id" : "headcheese",
 		"name" : "headcheese",
-		"weight" : 238,
+		"weight" : 175,
 		"color" : "red",
 		"addiction_type" : "none",
-		"spoils_in" : 24,
+		"spoils_in" : 0,
 		"stim" : 0,
 		"container" : "null",
 		"to_hit" : 0,
@@ -399,7 +399,7 @@
 		"quench" : 0,
 		"healthy" : -3,
 		"addiction_potential" : 0,
-		"nutrition" : 50,
+		"nutrition" : 25,
 		"description" : "Estranged outcast. Condemned to trash and leftover. Slid off the plate into a vat. Churned with milk and animal fat. Nose, ears, lips, and eyelids, fuzzy strips of pigskin and cow-clits, made into the finest cheeses-throbbing and lined with diseases. A sight worse than human jerky. Poultry products turned to meat and pus compund. Jellified pig parts smothered in succulent lard. Rotten hors d'ourves for the gorging.",
 		"price" : 0,
 		"material" : "flesh",
@@ -407,9 +407,9 @@
 		"volume" : 1,
 		"cutting" : 0,
 		"phase" : "solid",
-		"charges" : 1,
+		"charges" : 2,
 		"bashing" : 0,
-		"flags" : ["EATEN_HOT"],
+		"flags" : ["EATEN_COLD"],
 		"fun" : -10
 	},
 	{
@@ -418,35 +418,32 @@
 		"category": "CC_FOOD",
 		"subcategory": "CSC_FOOD_MEAT",
 		"skill_used": "cooking",
-		"difficulty": 0,
-		"time": 1000,
+		"difficulty": 4,
+		"time": 40000,
 		"reversible": false,
 		"autolearn": true,
-		"qualities":[
-			{"id":"BOIL","level":1,"amount":1}
+		"batch_time_factors":[50, 5],
+		"qualities" : [
+			{"id":"COOK","level":2,"amount":1}
 		],
 		"tools": [
 			[
-				[ "hotplate", 3 ],
+				[ "hotplate", 7 ],
 				[ "char_smoker", 1 ],
-				[ "toolset", 3 ],
-				[ "coffeemaker", 3],
-				[ "atomic_coffeepot", -1 ],
+				[ "toolset", 7 ],
 				[ "fire", -1 ]
 			]
 		],
 		"components": [
 			[
-				[ "meat", 1 ]
+				[ "bone_tainted", 4 ]
 			],
 			[
-				[ "fat", 1 ]
+				[ "meat_tainted", 1 ]
 			],
 			[
-				[ "milk", 1 ]
-			],
-			[
-				[ "lard", 1 ]
+				[ "water_clean", 1],
+				[ "water", 1]
 			]
 		]
 	},
