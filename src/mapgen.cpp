@@ -9527,7 +9527,7 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
             place_items("homeguns", 20, 1, 11, 6, 18, true, 0);
             place_items("bed", 60, 20, 21, 17, 18, true, 0);
             furn_set(13, 9, "f_sign");
-            set_signage(13, 9, "Forgive my humble abode. Rotting bodies clogging the commode. Please pardon the stench and the trunk of a man lying on the workbench. Out by the shed are buzzing hives made of human heads. The gestation of larvae tells us the time of death.");
+            set_signage(tripoint(13, 9, abs_sub.z), "Forgive my humble abode. Rotting bodies clogging the commode. Please pardon the stench and the trunk of a man lying on the workbench. Out by the shed are buzzing hives made of human heads. The gestation of larvae tells us the time of death.");
             if (one_in(2)) {
                 add_spawn("mon_zombie", rng(1, 6), 4, 14);
             } else {
