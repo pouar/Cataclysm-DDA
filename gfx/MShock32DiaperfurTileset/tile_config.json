@@ -18981,13 +18981,13 @@
 				},
 				{
 					"id": "npc_female",
-					"fg": 2,
+					"fg": 22,
 					"rotates": false,
 					"//":"sprite is a modified version of this http://www.furaffinity.net/full/14502184/"
 				},
 				{
 					"id": "npc_male",
-					"fg": 1,
+					"fg": 21,
 					"rotates": false,
 					"//":"sprite is a modified version of this http://www.furaffinity.net/full/14502184/"
 				},
