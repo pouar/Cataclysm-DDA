@@ -1,4 +1,4 @@
-﻿#include "player.h"
+#include "player.h"
 #include "profession.h"
 #include "bionics.h"
 #include "mission.h"
@@ -445,6 +445,10 @@ void player::process_turn()
         charge_power(25);
     }
 
+    remove_items_with( [this]( item &itm ) {
+        return itm.process_artifact( this, pos() );
+    } );
+
     suffer();
 
     // Set our scent towards the norm
@@ -873,7 +877,7 @@ void player::update_bodytemp()
         } else if( furn_at_pos == f_makeshift_bed || furn_at_pos == f_armchair ||
                    furn_at_pos == f_sofa ) {
             floor_bedding_warmth += 500;
-        } else if( veh && veh->part_with_feature (vpart, "BED") >= 0 && 
+        } else if( veh && veh->part_with_feature (vpart, "BED") >= 0 &&
             veh->part_with_feature (vpart, "SEAT") >= 0) {
             floor_bedding_warmth += 250; // BED+SEAT is intentionally worse than just BED
         } else if( veh && veh->part_with_feature (vpart, "BED") >= 0 ) {
@@ -2417,7 +2421,7 @@ void player::memorial( std::ofstream &memorial_file, std::string epitaph )
     const auto closest_city = overmap_buffer.closest_city( point( global_sm_pos.x, global_sm_pos.y ) );
     std::string kill_place;
     if( !closest_city ) {
-        //~ First parameter is a pronoun (“He”/“She”), second parameter is a terrain name.
+        //~ First parameter is a pronoun ("He"/"She"), second parameter is a terrain name.
         kill_place = string_format(_("%s was killed in a %s in the middle of nowhere."),
                      pronoun.c_str(), tername.c_str());
     } else {
@@ -2425,16 +2429,16 @@ void player::memorial( std::ofstream &memorial_file, std::string epitaph )
         //Give slightly different messages based on how far we are from the middle
         const int distance_from_city = closest_city.distance - nearest_city.s;
         if(distance_from_city > nearest_city.s + 4) {
-            //~ First parameter is a pronoun (“He”/“She”), second parameter is a terrain name.
+            //~ First parameter is a pronoun ("He"/"She"), second parameter is a terrain name.
             kill_place = string_format(_("%s was killed in a %s in the wilderness."),
                          pronoun.c_str(), tername.c_str());
 
         } else if(distance_from_city >= nearest_city.s) {
-            //~ First parameter is a pronoun (“He”/“She”), second parameter is a terrain name, third parameter is a city name.
+            //~ First parameter is a pronoun ("He"/"She"), second parameter is a terrain name, third parameter is a city name.
             kill_place = string_format(_("%s was killed in a %s on the outskirts of %s."),
                          pronoun.c_str(), tername.c_str(), nearest_city.name.c_str());
         } else {
-            //~ First parameter is a pronoun (“He”/“She”), second parameter is a terrain name, third parameter is a city name.
+            //~ First parameter is a pronoun ("He"/"She"), second parameter is a terrain name, third parameter is a city name.
             kill_place = string_format(_("%s was killed in a %s in %s."),
                          pronoun.c_str(), tername.c_str(), nearest_city.name.c_str());
         }
@@ -2446,7 +2450,7 @@ void player::memorial( std::ofstream &memorial_file, std::string epitaph )
     memorial_file << "\n";
     memorial_file << string_format(_("In memory of: %s"), name.c_str()) << "\n";
     if(epitaph.length() > 0) { //Don't record empty epitaphs
-        //~ The ???%s??? will be replaced by an epitaph as displyed in the memorial files. Replace the quotation marks as appropriate for your language.
+        //~ The "%s" will be replaced by an epitaph as displyed in the memorial files. Replace the quotation marks as appropriate for your language.
         memorial_file << string_format(pgettext("epitaph","\"%s\""), epitaph.c_str()) << "\n\n";
     }
     //~ First parameter: Pronoun, second parameter: a profession name (with article)
@@ -4794,23 +4798,23 @@ bool player::has_pda()
 bool player::has_alarm_clock()
 {
     return ( has_item_with_flag("ALARMCLOCK") ||
-             ( 
-               ( g->m.veh_at( posx(), posy() ) != nullptr ) && 
+             (
+               ( g->m.veh_at( posx(), posy() ) != nullptr ) &&
                !g->m.veh_at( posx(), posy() )->all_parts_with_feature( "ALARMCLOCK", true ).empty()
              ) ||
              has_bionic("bio_watch")
-           ); 
+           );
 }
 
 bool player::has_watch()
 {
     return ( has_item_with_flag("WATCH") ||
-             ( 
-               ( g->m.veh_at( posx(), posy() ) != nullptr ) && 
+             (
+               ( g->m.veh_at( posx(), posy() ) != nullptr ) &&
                !g->m.veh_at( posx(), posy() )->all_parts_with_feature( "WATCH", true ).empty()
              ) ||
              has_bionic("bio_watch")
-           ); 
+           );
 }
 
 void player::pause()
@@ -4837,7 +4841,7 @@ void player::pause()
     vehicle* veh = NULL;
     for (auto &v : vehs) {
         veh = v.v;
-        if (veh && veh->velocity != 0 && veh->player_in_control(this)) {
+        if (veh && veh->velocity != 0 && veh->player_in_control(*this)) {
             if (one_in(10)) {
                 practice( "driving", 1 );
             }
@@ -5663,7 +5667,7 @@ void player::get_sick()
 
     if (!has_effect("flu") && !has_effect("common_cold") &&
         one_in(900 + get_healthy() + (has_trait("DISRESISTANT") ? 300 : 0))) {
-        if (one_in(6) && !has_effect("flushot")) {
+        if (one_in(6)) {
             add_env_effect("flu", bp_mouth, 3, rng(40000, 80000));
         } else {
             add_env_effect("common_cold", bp_mouth, 3, rng(20000, 60000));
@@ -9099,9 +9103,10 @@ std::vector<item *> player::inv_dump()
     return ret;
 }
 
-std::list<item> player::use_amount(itype_id it, int quantity, bool use_container)
+std::list<item> player::use_amount(itype_id it, int _quantity, bool use_container)
 {
     std::list<item> ret;
+    long quantity = _quantity; // Don't wanny change the function signature right now
     if (weapon.use_amount(it, quantity, use_container, ret)) {
         remove_weapon();
     }
@@ -10080,7 +10085,7 @@ bool player::eat(item *eaten, it_comest *comest)
     return true;
 }
 
-int player::nutrition_for(const it_comest *comest) 
+int player::nutrition_for(const it_comest *comest)
 {
     /* thresholds:
     **  100 : 1x
@@ -10742,7 +10747,7 @@ bool player::wear_item(item *to_wear, bool interactive)
         }
 
         // this simply checked if it was zero, I've updated this for the new encumb system
-        if (to_wear->covers(bp_head) && (encumb(bp_head) + to_wear->get_encumber()) > 20) {
+        if (to_wear->covers(bp_head) && (encumb(bp_head) > 10) && (!(to_wear->get_encumber() < 9))) {
             if(interactive) {
                 add_msg(m_info, wearing_something_on(bp_head) ?
                                 _("You can't wear another helmet!") : _("You can't wear a helmet!"));
@@ -11607,7 +11612,7 @@ void player::read(int inventory_position)
     }
 
     vehicle *veh = g->m.veh_at (posx(), posy());
-    if (veh && veh->player_in_control (this)) {
+    if (veh && veh->player_in_control(*this)) {
         add_msg(m_info, _("It's a bad idea to read while driving!"));
         return;
     }
@@ -13141,7 +13146,7 @@ void player::practice( const Skill* s, int amount, int cap )
         amount /= 2;
     }
 
-    
+
 
     if (skillLevel(s) > cap) { //blunt grinding cap implementation for crafting
         amount = 0;
@@ -13151,7 +13156,7 @@ void player::practice( const Skill* s, int amount, int cap )
                     s->name().c_str(), curLevel);
         }
     }
-    
+
     if (amount > 0 && level.isTraining()) {
         int oldLevel = skillLevel(s);
         skillLevel(s).train(amount);
@@ -13164,7 +13169,7 @@ void player::practice( const Skill* s, int amount, int cap )
             add_msg(m_info, _("You feel that %s tasks of this level are becoming trivial."),
                     s->name().c_str());
         }
-        
+
 
         int chance_to_drop = focus_pool;
         focus_pool -= chance_to_drop / 100;

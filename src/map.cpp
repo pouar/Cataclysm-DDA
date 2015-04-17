@@ -112,16 +112,18 @@ item &map_stack::operator[]( size_t index )
 
 // Map class methods.
 
-map::map(int mapsize)
+map::map( int mapsize, bool zlev )
 {
     nulter = t_null;
     my_MAPSIZE = mapsize;
-#ifdef ZLEVELS
-    grid.resize( my_MAPSIZE * my_MAPSIZE * OVERMAP_LAYERS, nullptr );
-#else
-    grid.resize( my_MAPSIZE * my_MAPSIZE, nullptr );
-#endif
-    dbg(D_INFO) << "map::map(): my_MAPSIZE: " << my_MAPSIZE;
+    zlevels = zlev;
+    if( zlevels ) {
+        grid.resize( my_MAPSIZE * my_MAPSIZE * OVERMAP_LAYERS, nullptr );
+    } else {
+        grid.resize( my_MAPSIZE * my_MAPSIZE, nullptr );
+    }
+
+    dbg(D_INFO) << "map::map(): my_MAPSIZE: " << my_MAPSIZE << " zlevels enabled:" << zlevels;
     veh_in_active_range = true;
     transparency_cache_dirty = true;
     outside_cache_dirty = true;
@@ -280,7 +282,7 @@ bool map::vehproceed()
         return true;
     }
 
-    bool pl_ctrl = veh->player_in_control(&g->u);
+    bool pl_ctrl = veh->player_in_control(g->u);
 
     // k slowdown first.
     int slowdown = veh->skidding? 200 : 20; // mph lost per tile when coasting
@@ -1082,7 +1084,7 @@ bool map::displace_vehicle( tripoint &p, const tripoint &dp, bool test )
     }
 
     // Need old coords to check for remote control
-    bool remote = veh->remote_controlled( &g->u );
+    bool remote = veh->remote_controlled( g->u );
 
     p += dp;
 
@@ -1636,18 +1638,7 @@ int map::combined_movecost( const tripoint &from, const tripoint &to,
 
 bool map::has_flag(const std::string &flag, const int x, const int y) const
 {
-    static const std::string flag_str_REDUCE_SCENT("REDUCE_SCENT"); // construct once per runtime, slash delay 90%
-    if (!INBOUNDS(x, y)) {
-        return false;
-    }
-
-    int vpart;
-    const vehicle *veh = veh_at( x, y, vpart );
-    if( veh != nullptr && flag_str_REDUCE_SCENT == flag && veh->obstacle_at_part( vpart ) >= 0 ) {
-        return true;
-    }
-
-    return has_flag_ter_or_furn(flag, x, y);
+    return has_flag_ter_or_furn(flag, x, y); // Does bound checking
 }
 
 bool map::can_put_items(const int x, const int y)
@@ -1684,17 +1675,7 @@ bool map::has_flag_ter_and_furn(const std::string & flag, const int x, const int
 /////
 bool map::has_flag(const ter_bitflags flag, const int x, const int y) const
 {
-    if (!INBOUNDS(x, y)) {
-        return false;
-    }
-
-    int vpart;
-    const vehicle *veh = veh_at( x, y, vpart );
-    if( veh != nullptr && flag == TFLAG_REDUCE_SCENT && veh->obstacle_at_part( vpart ) >= 0 ) {
-        return true;
-    }
-
-    return has_flag_ter_or_furn(flag, x, y);
+    return has_flag_ter_or_furn(flag, x, y); // Does bound checking
 }
 
 bool map::has_flag_ter(const ter_bitflags flag, const int x, const int y) const
@@ -1735,18 +1716,7 @@ bool map::has_flag_ter_and_furn(const ter_bitflags flag, const int x, const int 
 
 bool map::has_flag( const std::string &flag, const tripoint &p ) const
 {
-    static const std::string flag_str_REDUCE_SCENT( "REDUCE_SCENT" ); // construct once per runtime, slash delay 90%
-    if( !inbounds( p ) ) {
-        return false;
-    }
-
-    int vpart;
-    const vehicle *veh = veh_at( p, vpart );
-    if( veh != nullptr && flag_str_REDUCE_SCENT == flag && veh->obstacle_at_part( vpart ) >= 0 ) {
-        return true;
-    }
-
-    return has_flag_ter_or_furn( flag, p );
+    return has_flag_ter_or_furn( flag, p ); // Does bound checking
 }
 
 bool map::can_put_items( const tripoint &p )
@@ -1784,17 +1754,7 @@ bool map::has_flag_ter_and_furn( const std::string & flag, const tripoint &p ) c
 
 bool map::has_flag( const ter_bitflags flag, const tripoint &p ) const
 {
-    if( !inbounds( p ) ) {
-        return false;
-    }
-
-    int vpart;
-    const vehicle *veh = veh_at( p, vpart );
-    if( veh != nullptr && flag == TFLAG_REDUCE_SCENT && veh->obstacle_at_part( vpart ) >= 0 ) {
-        return true;
-    }
-
-    return has_flag_ter_or_furn( flag, p );
+    return has_flag_ter_or_furn( flag, p ); // Does bound checking
 }
 
 bool map::has_flag_ter( const ter_bitflags flag, const tripoint &p ) const
@@ -2178,7 +2138,12 @@ bool map::is_last_ter_wall(const bool no_furn, const int x, const int y,
 
 bool map::flammable_items_at( const tripoint &p )
 {
-    for( const auto &i : i_at(p) ) {
+    if( has_flag( TFLAG_SEALED, p ) && !has_flag( TFLAG_ALLOW_FIELD_EFFECT, p ) ) {
+        // Sealed containers don't allow fire, so shouldn't allow setting the fire either
+        return false;
+    }
+
+    for( const auto &i : i_at( p ) ) {
         if( i.flammable() ) {
             // Total fire resistance == 0
             return true;
@@ -2256,11 +2221,12 @@ void map::decay_fields_and_scent( const int amount )
                     const int x = sx + smx * SEEX;
                     const int y = sy + smy * SEEY;
 
+                    field &fields = cur_submap->fld[sx][sy];
                     if( !outside_cache[x][y] ) {
+                        to_proc -= fields.fieldCount();
                         continue;
                     }
 
-                    field &fields = cur_submap->fld[sx][sy];
                     for( auto &fp : fields ) {
                         to_proc--;
                         field_entry &cur = fp.second;
@@ -4090,7 +4056,7 @@ bool map::could_see_items( const tripoint &p, const player &u ) const
 }
 
 template <typename Stack>
-std::list<item> use_amount_stack( Stack stack, const itype_id type, int &quantity,
+std::list<item> use_amount_stack( Stack stack, const itype_id type, long &quantity,
                                 const bool use_container )
 {
     std::list<item> ret;
@@ -4105,7 +4071,7 @@ std::list<item> use_amount_stack( Stack stack, const itype_id type, int &quantit
 }
 
 std::list<item> map::use_amount_square( const tripoint &p, const itype_id type,
-                                        int &quantity, const bool use_container )
+                                        long &quantity, const bool use_container )
 {
     std::list<item> ret;
     int vpart = -1;
@@ -4125,10 +4091,9 @@ std::list<item> map::use_amount_square( const tripoint &p, const itype_id type,
 }
 
 std::list<item> map::use_amount( const tripoint &origin, const int range, const itype_id type,
-                                 const int amount, const bool use_container )
+                                 long &quantity, const bool use_container )
 {
     std::list<item> ret;
-    int quantity = amount;
     for( int radius = 0; radius <= range && quantity > 0; radius++ ) {
         tripoint p( origin.x - radius, origin.y - radius, origin.z );
         int &x = p.x;
@@ -4136,8 +4101,7 @@ std::list<item> map::use_amount( const tripoint &origin, const int range, const 
         for( x = origin.x - radius; x <= origin.x + radius; x++ ) {
             for( y = origin.y - radius; y <= origin.y + radius; y++ ) {
                 if( rl_dist( origin, p ) >= radius ) {
-                    std::list<item> tmp;
-                    tmp = use_amount_square( p , type, quantity, use_container );
+                    std::list<item> tmp = use_amount_square( p , type, quantity, use_container );
                     ret.splice( ret.end(), tmp );
                 }
             }
@@ -4204,10 +4168,9 @@ void use_charges_from_furn( const furn_t &f, const itype_id &type, long &quantit
 }
 
 std::list<item> map::use_charges(const tripoint &origin, const int range,
-                                 const itype_id type, const long amount)
+                                 const itype_id type, long &quantity)
 {
     std::list<item> ret;
-    long quantity = amount;
     for( int radius = 0; radius <= range && quantity > 0; radius++ ) {
         tripoint p( origin.x - radius, origin.y - radius, origin.z );
         int &x = p.x;
@@ -4695,6 +4658,10 @@ field_entry *map::get_field( const tripoint &p, const field_id t ) {
     return current_submap->fld[lx][ly].findField( t );
 }
 
+field_entry *map::get_field( const point pnt, const field_id t ) {
+    return get_field( tripoint( pnt, abs_sub.z ), t );
+}
+
 bool map::add_field(const tripoint &p, const field_id t, int density, const int age)
 {
     if( !inbounds( p ) ) {
@@ -4722,6 +4689,8 @@ bool map::add_field(const tripoint &p, const field_id t, int density, const int 
         creature_in_field( g->u ); //Hit the player with the field if it spawned on top of them.
     }
 
+    // Dirty the transparency cache now that field processing doesn't always do it
+    set_transparency_cache_dirty();
     return true;
 }
 
@@ -4831,11 +4800,32 @@ void map::update_visibility_cache( visibility_variables &cache) {
     
     cache.u_is_boomered = g->u.has_effect("boomered");
     
+    int sm_squares_seen[my_MAPSIZE][my_MAPSIZE];
+    memset(sm_squares_seen, 0, sizeof(sm_squares_seen));
+
     for( int x = 0; x < MAPSIZE * SEEX; x++ ) {
         for( int y = 0; y < MAPSIZE * SEEY; y++ ) {
-            visibility_cache[x][y] = apparent_light_at(x, y, cache);
+            lit_level ll = apparent_light_at(x, y, cache);
+            visibility_cache[x][y] = ll;
+            sm_squares_seen[x/SEEX][y/SEEY] += (
+                ll == LL_BRIGHT ||
+                ll == LL_LIT
+            );
         }
     }
+
+    for (int x = 0; x < my_MAPSIZE; x++) {
+        for (int y = 0; y < my_MAPSIZE; y++) {
+            if ( sm_squares_seen[x][y] > 36 ) { // 25% of the submap is visible
+                const tripoint sm(x,y,g->get_levz());
+                const auto abs_sm = map::abs_sub + sm;
+                const auto abs_omt = overmapbuffer::sm_to_omt_copy( abs_sm );
+                overmap_buffer.set_seen( abs_omt.x, abs_omt.y, abs_omt.z, true);
+            }
+        }        
+    }
+
+
 }
 
 lit_level map::apparent_light_at(int x, int y, const visibility_variables &cache) {
@@ -4843,6 +4833,7 @@ lit_level map::apparent_light_at(int x, int y, const visibility_variables &cache
 
     int sight_range = cache.light_sight_range;
     int low_sight_range = cache.lowlight_sight_range;
+    lit_level lit = light_at(x, y);
 
     // While viewing indoor areas use lightmap model
     if (!is_outside(x, y)) {
@@ -4850,7 +4841,7 @@ lit_level map::apparent_light_at(int x, int y, const visibility_variables &cache
 
     // Don't display area as shadowy if it's outside and illuminated by natural light
     // and illuminated by source of light
-    } else if (light_at(x, y) > LL_LOW || dist <= cache.light_sight_range) {
+    } else if (lit > LL_LOW || dist <= cache.light_sight_range) {
         low_sight_range = std::max(cache.g_light_level, cache.natural_sight_range);
     }
 
@@ -4858,7 +4849,6 @@ lit_level map::apparent_light_at(int x, int y, const visibility_variables &cache
     int distance_to_look = DAYLIGHT_LEVEL;
 
     bool can_see = pl_sees( x, y, distance_to_look );
-    lit_level lit = light_at(x, y);
 
     // now we're gonna adjust real_max_sight, to cover some nearby "highlights",
     // but at the same time changing light-level depending on distance,
@@ -4927,8 +4917,8 @@ visibility_type map::get_visibility( const lit_level ll, const visibility_variab
     return VIS_HIDDEN;
 }
 
-bool map::apply_vision_effects( WINDOW *w, const point center, int x, int y,
-                                lit_level ll, const visibility_variables &cache ) const {
+bool map::apply_vision_effects( WINDOW *w, lit_level ll,
+                                const visibility_variables &cache ) const {
     int symbol = ' ';
     nc_color color = c_black;
 
@@ -4957,10 +4947,10 @@ bool map::apply_vision_effects( WINDOW *w, const point center, int x, int y,
             color = c_black;
             break;
     }
-    mvwputch( w, y + getmaxy(w) / 2 - center.y,
-              x + getmaxx(w) / 2 - center.x, color, symbol );
+    wputch( w, color, symbol );
     return true;
 }
+
 
 void map::draw(WINDOW* w, const point center)
 {
@@ -4974,13 +4964,31 @@ void map::draw(WINDOW* w, const point center)
     visibility_variables cache;
     update_visibility_cache( cache );
 
-    for( int x = center.x - getmaxx(w)/2; x <= center.x + getmaxx(w)/2; x++ ) {
-        for( int y = center.y - getmaxy(w)/2; y <= center.y + getmaxy(w)/2; y++ ) {
-            const lit_level lighting = visibility_cache[x][y];
-            if( !apply_vision_effects( w, center, x, y, lighting, cache ) ) {
-                drawsq( w, g->u, x, y, false, true, center.x, center.y,
-                        lighting == LL_LOW, lighting == LL_BRIGHT );
+    // X and y are in map coordinates, but might be out of range of the map.
+    // When they are out of range, we just draw '#'s.
+    for( int y = center.y - getmaxy(w) / 2; y <= center.y + getmaxy(w) / 2; y++ ) {
+        wmove( w, y - center.y + getmaxy(w) / 2, 0 );
+        if( y < 0 || y >= MAPSIZE * SEEY ) {
+            for( int x = 0; x < getmaxx(w); x++ ) {
+                wputch( w, c_dkgray, '#' );
             }
+            continue;
+        }
+        int x = center.x - getmaxx(w) / 2;
+        while( x < 0 ) {
+            wputch( w, c_dkgray, '#' );
+            x++;
+        }
+        for( ; x < MAPSIZE * SEEX && x <= center.x + getmaxx(w) / 2; x++ ) {
+            const lit_level lighting = visibility_cache[x][y];
+            if( !apply_vision_effects( w, lighting, cache ) ) {
+                drawsq( w, g->u, x, y, false, true, center.x, center.y,
+                        lighting == LL_LOW, lighting == LL_BRIGHT, true );
+            }
+        }
+        while( x <= center.x + getmaxx(w) / 2 ) {
+            wputch( w, c_dkgray, '#' );
+            x++;
         }
     }
 
@@ -4989,7 +4997,7 @@ void map::draw(WINDOW* w, const point center)
 
 void map::drawsq(WINDOW* w, player &u, const int x, const int y, const bool invert_arg,
                  const bool show_items_arg, const int view_center_x_arg, const int view_center_y_arg,
-                 const bool low_light, const bool bright_light)
+                 const bool low_light, const bool bright_light, const bool inorder)
 {
     // We only need to draw anything if we're not in tiles mode.
     if(is_draw_tiles_mode()) {
@@ -5007,8 +5015,6 @@ void map::drawsq(WINDOW* w, player &u, const int x, const int y, const bool inve
         cx = u.posx();
     if (cy == -1)
         cy = u.posy();
-    const int k = x + getmaxx(w)/2 - cx;
-    const int j = y + getmaxy(w)/2 - cy;
     nc_color tercol;
     const ter_t &curr_ter = ter_at(x,y);
     const furn_t &curr_furn = furn_at(x,y);
@@ -5136,13 +5142,21 @@ void map::drawsq(WINDOW* w, player &u, const int x, const int y, const bool inve
     }
 
     if (invert) {
-        mvwputch_inv(w, j, k, tercol, sym);
+        tercol = invert_color(tercol);
     } else if (hi) {
-        mvwputch_hi (w, j, k, tercol, sym);
+        tercol = hilite(tercol);
     } else if (graf) {
-        mvwputch    (w, j, k, red_background(tercol), sym);
+        tercol = red_background(tercol);
+    }
+
+    if( inorder ) {
+        // Rastering the whole map, take advantage of automatically moving the cursor.
+        wputch(w, tercol, sym);
     } else {
-        mvwputch    (w, j, k, tercol, sym);
+        // Otherwise move the cursor before drawing.
+        const int k = x + getmaxx(w) / 2 - cx;
+        const int j = y + getmaxy(w) / 2 - cy;
+        mvwputch(w, j, k, tercol, sym);
     }
 }
 
@@ -5567,13 +5581,13 @@ void map::save()
 {
     for( int gridx = 0; gridx < my_MAPSIZE; gridx++ ) {
         for( int gridy = 0; gridy < my_MAPSIZE; gridy++ ) {
-#ifdef ZLEVELS
-            for( int gridz = -OVERMAP_DEPTH; gridz <= OVERMAP_HEIGHT; gridz++ ) {
-                saven( gridx, gridy, gridz );
+            if( zlevels ) {
+                for( int gridz = -OVERMAP_DEPTH; gridz <= OVERMAP_HEIGHT; gridz++ ) {
+                    saven( gridx, gridy, gridz );
+                }
+            } else {
+                saven( gridx, gridy, abs_sub.z );
             }
-#else
-            saven( gridx, gridy, abs_sub.z );
-#endif
         }
     }
 }
@@ -5698,11 +5712,11 @@ void map::shift( const int sx, const int sy )
 
 void map::vertical_shift( const int newz )
 {
-#ifndef ZLEVELS
-    (void)newz;
-    debugmsg( "Called map::vertical_shift outside z-level build (this shouldn't happen)" );
-    return;
-#else
+    if( !zlevels ) {
+        debugmsg( "Called map::vertical_shift in a non-z-level world" );
+        return;
+    }
+
     if( newz < -OVERMAP_DEPTH || newz > OVERMAP_HEIGHT ) {
         debugmsg( "Tried to get z-level %d outside allowed range of %d-%d", 
                   newz, -OVERMAP_DEPTH, OVERMAP_HEIGHT );
@@ -5725,7 +5739,6 @@ void map::vertical_shift( const int newz )
     }
 
     reset_vehicle_cache();
-#endif
 }
 
 // saven saves a single nonant.  worldx and worldy are used for the file
@@ -5752,12 +5765,12 @@ void map::saven( const int gridx, const int gridy, const int gridz )
     const int abs_x = abs_sub.x + gridx;
     const int abs_y = abs_sub.y + gridy;
     const int abs_z = gridz;
-#ifndef ZLEVELS
-    if( gridz != abs_sub.z ) {
+
+    if( !zlevels && gridz != abs_sub.z ) {
         debugmsg( "Tried to save submap (%d,%d,%d) as (%d,%d,%d), which isn't supported in non-z-level builds", 
                   abs_x, abs_y, abs_sub.z, abs_x, abs_y, gridz );
     }
-#endif
+
     dbg( D_INFO ) << "map::saven abs_x: " << abs_x << "  abs_y: " << abs_y << "  abs_z: " << abs_z
                   << "  gridn: " << gridn;
     submap_to_save->turn_last_touched = int(calendar::turn);
@@ -5772,17 +5785,14 @@ void map::saven( const int gridx, const int gridy, const int gridz )
 // (worldx,worldy,worldz) denotes the absolute coordinate of the submap
 // in grid[0].
 void map::loadn( const int gridx, const int gridy, const bool update_vehicles ) {
-#ifdef ZLEVELS
-    for( int gridz = -OVERMAP_DEPTH; gridz <= OVERMAP_HEIGHT; gridz++ ) {
-        bool need_veh_update = update_vehicles && gridz == abs_sub.z;
-#else
-    int gridz = abs_sub.z;
-    bool need_veh_update = update_vehicles;
-    {
-#endif
-        // TODO: Update vehicles on all z-levels, but only after the veh cache becomes 3D
-        
-        loadn( gridx, gridy, gridz, need_veh_update );
+    if( zlevels ) {
+        for( int gridz = -OVERMAP_DEPTH; gridz <= OVERMAP_HEIGHT; gridz++ ) {
+            bool need_veh_update = update_vehicles && gridz == abs_sub.z;
+            // TODO: Update vehicles on all z-levels, but only after the veh cache becomes 3D
+            loadn( gridx, gridy, gridz, need_veh_update );
+        }
+    } else {
+        loadn( gridx, gridy, abs_sub.z, update_vehicles );
     }
 }
 
@@ -6062,12 +6072,10 @@ void map::actualize( const int gridx, const int gridy, const int gridz )
 
 void map::copy_grid( const point to, const point from )
 {
-#ifdef ZLEVELS
-    for( int z = -OVERMAP_DEPTH; z <= OVERMAP_HEIGHT; z++ ) {
-#else
-    int z = abs_sub.z;
-    {
-#endif
+    const int zmin = zlevels ? -OVERMAP_DEPTH : abs_sub.z;
+    const int zmax = zlevels ? OVERMAP_HEIGHT : abs_sub.z;
+
+    for( int z = zmin; z <= zmax; z++ ) {
         const auto smap = get_submap_at_grid( from.x, from.y, z );
         setsubmap( get_nonant( to.x, to.y, z ), smap );
         for( auto &it : smap->vehicles ) {
@@ -6231,14 +6239,9 @@ bool map::inbounds(const int x, const int y) const
 
 bool map::inbounds(const int x, const int y, const int z) const
 {
-#ifdef ZLEVELS
     return (x >= 0 && x < SEEX * my_MAPSIZE && 
             y >= 0 && y < SEEY * my_MAPSIZE && 
             z >= -OVERMAP_DEPTH && z <= OVERMAP_HEIGHT);
-#else
-    (void)z;
-    return (x >= 0 && x < SEEX * my_MAPSIZE && y >= 0 && y < SEEY * my_MAPSIZE);
-#endif
 }
 
 bool map::inbounds( const tripoint &p ) const
@@ -6390,7 +6393,7 @@ void map::build_map_cache()
         }
     }
 
-    build_seen_cache();
+    build_seen_cache( g->u.pos3() );
     generate_lightmap();
 }
 
@@ -6510,7 +6513,7 @@ void map::setsubmap( const size_t grididx, submap * const smap )
 submap *map::get_submap_at( const int x, const int y, const int z ) const
 {
     if( !inbounds( x, y, z ) ) {
-        debugmsg( "Tried to access invalid map position (%d,%d, %d)", x, y, z );
+        debugmsg( "Tried to access invalid map position (%d, %d, %d)", x, y, z );
         return nullptr;
     }
     return get_submap_at_grid( x / SEEX, y / SEEY, z );
@@ -6519,7 +6522,7 @@ submap *map::get_submap_at( const int x, const int y, const int z ) const
 submap *map::get_submap_at( const tripoint &p ) const
 {
     if( !inbounds( p ) ) {
-        debugmsg( "Tried to access invalid map position (%d,%d, %d)", p.x, p.y, p.z );
+        debugmsg( "Tried to access invalid map position (%d, %d, %d)", p.x, p.y, p.z );
         return nullptr;
     }
     return get_submap_at_grid( p.x / SEEX, p.y / SEEY, p.z );
@@ -6571,29 +6574,23 @@ size_t map::get_nonant( const int gridx, const int gridy ) const
 
 size_t map::get_nonant( const int gridx, const int gridy, const int gridz ) const
 {
-#ifdef ZLEVELS
     if( gridx < 0 || gridx >= my_MAPSIZE ||
         gridy < 0 || gridy >= my_MAPSIZE ||
-        gridz < -OVERMAP_DEPTH || gridz > OVERMAP_HEIGHT) {
+        gridz < -OVERMAP_DEPTH || gridz > OVERMAP_HEIGHT ) {
         debugmsg( "Tried to access invalid map position at grid (%d,%d,%d)", gridx, gridy, gridz );
         return 0;
     }
 
-    const int indexz = gridz + OVERMAP_HEIGHT; // Can't be lower than 0
-    return indexz + ( gridx + gridy * my_MAPSIZE ) * OVERMAP_LAYERS;
-#else
-    if( gridx < 0 || gridx >= my_MAPSIZE ||
-        gridy < 0 || gridy >= my_MAPSIZE ) {
-        debugmsg( "Tried to access invalid map position at grid (%d,%d,%d)", gridx, gridy, gridz );
-        return 0;
+    if( zlevels ) {
+        const int indexz = gridz + OVERMAP_HEIGHT; // Can't be lower than 0
+        return indexz + ( gridx + gridy * my_MAPSIZE ) * OVERMAP_LAYERS;
+    } else {
+        return gridx + gridy * my_MAPSIZE;
     }
-
-    return gridx + gridy * my_MAPSIZE;
-#endif
 }
 
-tinymap::tinymap(int mapsize)
-: map(mapsize)
+tinymap::tinymap(int mapsize, bool zlevels)
+: map(mapsize, zlevels)
 {
 }
 
@@ -6945,11 +6942,6 @@ const field &map::field_at( const int x, const int y ) const
     return field_at( tripoint( x, y, abs_sub.z ) );
 }
 
-int map::get_field_age( const point p, const field_id t ) const
-{
-    return get_field_age( tripoint( p, abs_sub.z ), t );
-}
-
 int map::get_field_strength( const point p, const field_id t ) const
 {
     return get_field_strength( tripoint( p, abs_sub.z ), t );
@@ -6975,11 +6967,6 @@ int map::set_field_strength( const point p, const field_id t, const int str, boo
     return set_field_strength( tripoint( p, abs_sub.z ), t, str, isoffset );
 }
 
-field_entry *map::get_field( const point p, const field_id t )
-{
-    return get_field( tripoint( p, abs_sub.z ), t );
-}
-
 bool map::add_field(const point p, const field_id t, const int density, const int age)
 {
     return add_field( tripoint( p, abs_sub.z ), t, density, age );
@@ -6995,9 +6982,9 @@ void map::remove_field( const int x, const int y, const field_id field_to_remove
     remove_field( tripoint( x, y, abs_sub.z ), field_to_remove );
 }
 
-field &map::get_field( const int x, const int y )
+field &map::get_field( const tripoint &p )
 {
-    return field_at( tripoint( x, y, abs_sub.z ) );
+    return field_at( p );
 }
 
 void map::creature_on_trap( Creature &c, bool const may_avoid )
@@ -7040,8 +7027,8 @@ template<typename Functor>
     // Submaps that contain the bounding points
     const int min_smx = minx / SEEX;
     const int min_smy = miny / SEEY;
-    const int max_smx = ( maxx + SEEX - 1 ) / SEEX;
-    const int max_smy = ( maxy + SEEY - 1 ) / SEEY;
+    const int max_smx = maxx / SEEX;
+    const int max_smy = maxy / SEEY;
     // Z outermost, because submaps are flat
     tripoint gp;
     int &z = gp.z;

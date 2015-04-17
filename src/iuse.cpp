@@ -3331,7 +3331,7 @@ int iuse::radio_mod( player *p, item *, bool, point )
 
     remove_radio_mod( modded, *p );
 
-    p->add_msg_if_player( _( "You modify your %s to listen for %s activation signal on the radio." ), 
+    p->add_msg_if_player( _( "You modify your %s to listen for %s activation signal on the radio." ),
                           modded.tname().c_str(), colorname.c_str() );
     modded.item_tags.insert( "RADIO_ACTIVATION" );
     modded.item_tags.insert( "RADIO_MOD" );
@@ -3419,7 +3419,7 @@ int iuse::fish_trap(player *p, item *it, bool t, point pos)
         }
 
         if (it->charges == 0) {
-            p->add_msg_if_player(_("Fishes are not silly to go in here without bait."));
+            p->add_msg_if_player(_("Fish are not foolish enough to go in here without bait."));
             return 0;
         }
 
@@ -4073,11 +4073,13 @@ int iuse::radio_on(player *p, item *it, bool t, point pos)
                 message = weather_forecast( tref.abs_sm_pos );
             }
             for( auto &elem : message ) {
-                if (dice(10, 100) > dice(10, tref.signal_strength * 3)) {
-                    if (!one_in(10)) {
-                        elem = '#';
-                    } else {
+                int signal_roll = dice(10, tref.signal_strength * 3);
+                int static_roll = dice(10, 100);
+                if (static_roll > signal_roll) {
+                    if (static_roll < signal_roll * 1.1 && one_in(4)) {
                         elem = char( rng( 'a', 'z' ) );
+                    } else {
+                        elem = '#';
                     }
                 }
             }
@@ -5655,7 +5657,7 @@ int iuse::tazer(player *p, item *it, bool, point)
     }
 
     if (dirx == p->posx() && diry == p->posy()) {
-        p->add_msg_if_player(m_info, _("Umm. No."));
+        p->add_msg_if_player(m_info, _("Umm.  No."));
         return 0;
     }
     int mondex = g->mon_at(dirx, diry);
@@ -5731,7 +5733,7 @@ int iuse::tazer2(player *p, item *it, bool, point)
         }
 
         if (dirx == p->posx() && diry == p->posy()) {
-            p->add_msg_if_player(m_info, _("Umm. No."));
+            p->add_msg_if_player(m_info, _("Umm.  No."));
             return 0;
         }
 
@@ -8862,7 +8864,7 @@ int iuse::camera(player *p, item *it, bool, point)
         init_memory_card_with_random_stuff(p, mc);
 
         if (mc->has_flag("MC_ENCRYPTED")) {
-            if (!query_yn(_("This memory card is encrypted. Format and clear data?"))) {
+            if (!query_yn(_("This memory card is encrypted.  Format and clear data?"))) {
                 return it->type->charges_to_use();
             }
         }
@@ -9176,12 +9178,12 @@ int iuse::radiocontrol(player *p, item *it, bool t, point)
         std::stringstream choice_str;
         choice_str << (choice - 2);
         signal += choice_str.str();
-        
+
         auto item_list = p->get_radio_items();
         for( auto &elem : item_list ) {
             if( ( elem )->has_flag( "BOMB" ) && ( elem )->has_flag( signal ) ) {
                 p->add_msg_if_player( m_warning,
-                    _("The %s in you inventory would explode on this signal. Place it down before sending the signal."),
+                    _("The %s in you inventory would explode on this signal.  Place it down before sending the signal."),
                     ( elem )->display_name().c_str() );
                 return 0;
             }

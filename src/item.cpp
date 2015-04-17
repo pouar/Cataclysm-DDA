@@ -3454,14 +3454,10 @@ int item::noise() const
     if( gunmod != nullptr ) {
         return gunmod->noise();
     }
-    // TODO: use islot_gun::loudness here.
-    int ret = 0;
+    const islot_gun* gun = type->gun.get();
+    int ret = gun->loudness;
     if( has_curammo() ) {
-        ret = get_curammo()->ammo->damage;
-    }
-    ret *= .8;
-    if (ret >= 5) {
-        ret += 20;
+        ret += get_curammo()->ammo->damage;
     }
     for( auto &elem : contents ) {
         if( elem.is_gunmod() ) {
@@ -3771,8 +3767,8 @@ int item::pick_reload_ammo( const player &u, bool interactive )
     amenu.query();
     if( amenu.ret < 0 || amenu.ret >= ( int )ammo_list.size() ) {
         // invalid selection / escaped from the menu
-        return INT_MIN;
-    }
+        return INT_MIN + 2;
+    }    
     const auto &selected = ammo_list[ amenu.ret ];
     uistate.lastreload[ ammo_type() ] = std::get<0>( selected )->id;
     return std::get<1>( selected );
@@ -4188,7 +4184,7 @@ int item::amount_of(const itype_id &it, bool used_as_tool) const
     return count;
 }
 
-bool item::use_amount(const itype_id &it, int &quantity, bool use_container, std::list<item> &used)
+bool item::use_amount(const itype_id &it, long &quantity, bool use_container, std::list<item> &used)
 {
     // First, check contents
     bool used_item_contents = false;
@@ -4621,6 +4617,9 @@ bool item::process_food( player * /*carrier*/, point pos )
 
 bool item::process_artifact( player *carrier, point /*pos*/ )
 {
+    if( !is_artifact() ) {
+        return false;
+    }
     // Artifacts are currently only useful for the player character, the messages
     // don't consider npcs. Also they are not processed when laying on the ground.
     // TODO: change game::process_artifact to work with npcs,
@@ -5008,10 +5007,7 @@ bool item::process( player *carrier, point pos, bool activate )
     // Otherwise processing continues. This allows items that are processed as
     // food and as litcig and as ...
 
-    if( is_artifact() && process_artifact( carrier, pos ) ) {
-        return true;
-    }
-    // Remaining stuff is only done for active items, artifacts are always "active".
+    // Remaining stuff is only done for active items.
     if( !active ) {
         return false;
     }
