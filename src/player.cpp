@@ -155,8 +155,8 @@ player::player() : Character()
  position.y = 0;
  zpos = 0;
  id = -1; // -1 is invalid
- view_offset_x = 0;
- view_offset_y = 0;
+ view_offset.x = 0;
+ view_offset.y = 0;
  str_cur = 8;
  str_max = 8;
  dex_cur = 8;
@@ -471,8 +471,7 @@ void player::process_turn()
     }
     // You *are* a plant.  Unless someone hunts triffids by scent,
     // you don't smell like prey.
-    // Or maybe you're debugging and would rather not be smelled.
-    if (has_trait("CHLOROMORPH") || has_trait("DEBUG_NOSCENT")) {
+    if( has_trait("CHLOROMORPH") ) {
         norm_scent = 0;
     }
 
@@ -5163,6 +5162,10 @@ void player::on_gethit(Creature *source, body_part bp_hit, damage_instance &) {
 
 dealt_damage_instance player::deal_damage(Creature* source, body_part bp, const damage_instance& d)
 {
+    if( has_trait( "DEBUG_NODMG" ) ) {
+        return dealt_damage_instance();
+    }
+
     dealt_damage_instance dealt_dams = Creature::deal_damage(source, bp, d); //damage applied here
     int dam = dealt_dams.total_damage(); //block reduction should be by applied this point
 
@@ -5245,12 +5248,36 @@ dealt_damage_instance player::deal_damage(Creature* source, body_part bp, const 
         }
     }
 
+
+    
+        //Acid blood effects.
+        bool u_see = g->u.sees(*this);
+        int cut_dam = dealt_dams.type_damage(DT_CUT);
+        if (has_trait("ACIDBLOOD") && !one_in(3) && (dam >= 4 || cut_dam > 0) && (rl_dist(g->u.pos(), source->pos()) <= 1)) {
+            if (is_player()) {
+                add_msg(m_good, _("Your acidic blood splashes %s in mid-attack!"),
+                                source->disp_name().c_str());
+            } else if (u_see) {
+                add_msg(_("%s's acidic blood splashes on %s in mid-attack!"),
+                            disp_name().c_str(),
+                            source->disp_name().c_str());
+            }
+            damage_instance acidblood_damage;
+            acidblood_damage.add_damage(DT_ACID, rng(4,16));
+            if (!one_in(4)) {
+            source->deal_damage(this, bp_arm_l, acidblood_damage);
+            source->deal_damage(this, bp_arm_r, acidblood_damage);
+            } else {
+            source->deal_damage(this, bp_torso, acidblood_damage);
+            source->deal_damage(this, bp_head, acidblood_damage);
+            }
+        }
+        
     if (has_trait("ADRENALINE") && !has_effect("adrenaline") &&
         (hp_cur[hp_head] < 25 || hp_cur[hp_torso] < 15)) {
         add_effect("adrenaline", 200);
     }
 
-    int cut_dam = dealt_dams.type_damage(DT_CUT);
     switch (bp) {
     case bp_eyes:
         if (dam > 5 || cut_dam > 0) {
@@ -5379,10 +5406,12 @@ void player::mod_pain(int npain) {
  */
 void player::apply_damage(Creature *source, body_part hurt, int dam)
 {
-    if( is_dead_state() ) {
+    if( is_dead_state() || has_trait( "DEBUG_NODMG" ) ) {
         // don't do any more damage if we're already dead
+        // Or if we're debugging and don't want to die
         return;
     }
+
     hp_part hurtpart;
     switch (hurt) {
         case bp_eyes: // Fall through to head damage
@@ -6101,6 +6130,10 @@ void player::process_effects() {
         remove_effect("brainworm");
         remove_effect("paincysts");
         add_msg_if_player(m_good, _("Something writhes and inside of you as it dies."));
+    }
+    if (has_trait("ACIDBLOOD") && (has_effect("dermatik") || has_effect("brainworm"))) {
+        remove_effect("dermatik");
+        remove_effect("bloodworms");
     }
     if (has_trait("EATHEALTH") && has_effect("tapeworm")) {
         remove_effect("tapeworm");
@@ -13706,6 +13739,8 @@ void player::burn_move_stamina( int moves )
 }
 
 field_id player::playerBloodType() const {
+    if (has_trait("ACIDBLOOD"))
+        return fd_acid;
     if (has_trait("THRESH_PLANT"))
         return fd_blood_veggy;
     if (has_trait("THRESH_INSECT") || has_trait("THRESH_SPIDER"))
