@@ -44,6 +44,7 @@
 #include "iuse_actor.h"
 #include "mutation.h"
 #include "mtype.h"
+#include "map.h"
 #include "overmap.h"
 #include "omdata.h"
 #include "crafting.h"
@@ -92,8 +93,10 @@ bool is_valid_in_w_terrain(int x, int y)
 
 // This is the main game set-up process.
 game::game() :
+    map_ptr( new map() ),
     new_game(false),
     uquit(QUIT_NO),
+    m( *map_ptr ),
     w_terrain(NULL),
     w_overmap(NULL),
     w_omlegend(NULL),
@@ -141,7 +144,6 @@ void game::load_static_data()
     init_mapgen_builtin_functions();
     init_fields();
     init_morale();
-    init_diseases();             // Set up disease lookup table
     init_savedata_translation_tables();
     init_npctalk();
     init_artifacts();
@@ -626,7 +628,7 @@ void game::start_game(std::string worldname)
     lev.y -= MAPSIZE / 2;
     load_map( lev );
 
-    m.build_map_cache();
+    m.build_map_cache( get_levz() );
     // Do this after the map cache has been build!
     start_loc.place_player( u );
     // Start the overmap with out immediate neighborhood visible, this needs to be after place_player
@@ -1528,7 +1530,7 @@ bool game::do_turn()
     sounds::process_sounds();
     // Update vision caches for monsters. If this turns out to be expensive,
     // consider a stripped down cache just for monsters.
-    m.build_map_cache();
+    m.build_map_cache( get_levz() );
     monmove();
     update_stair_monsters();
     u.process_turn();
@@ -2267,7 +2269,7 @@ input_context game::get_player_input(std::string &action)
                                 if( u.sees( elem.getPosX() + i, elem.getPosY() ) ) {
                                     m.drawsq( w_terrain, u, 
                                               tripoint( elem.getPosX() + i, elem.getPosY(), u.posz() + u.view_offset.z ),
-                                              false, true, u.pos3() + u.view_offset );
+                                              false, true, u.posx() + u.view_offset.x, u.posy() + u.view_offset.y );
                                 } else {
                                     const int iDY =
                                         POSY + ( elem.getPosY() - ( u.posy() + u.view_offset.y ) );
@@ -4966,7 +4968,8 @@ void game::draw_critter( const Creature &critter, const tripoint &center )
         return;
     }
     if( critter.posz() != center.z ) {
-        return;
+        // Should cancel drawing, but z-levels aren't always properly set yet
+        //return;
     }
     if( u.sees( critter ) || &critter == &u ) {
         critter.draw( w_terrain, center.x, center.y, false );
@@ -5002,7 +5005,7 @@ void game::draw_ter( const tripoint &center, bool looking )
     const int posx = center.x;
     const int posy = center.y;
 
-    m.build_map_cache();
+    m.build_map_cache( center.z );
     m.draw( w_terrain, center );
 
     // Draw monsters
@@ -7428,7 +7431,7 @@ void game::exam_vehicle(vehicle &veh, const tripoint &p, int cx, int cy)
     refresh_all();
 }
 
-bool game::forced_gate_closing( const tripoint &p, ter_id door_type, int bash_dmg )
+bool game::forced_gate_closing( const tripoint &p, const ter_id door_type, int bash_dmg )
 {
     // TODO: Z
     const int &x = p.x;
@@ -7533,7 +7536,7 @@ bool game::forced_gate_closing( const tripoint &p, ter_id door_type, int bash_dm
         }
     }
 
-    m.ter_set(x, y, door_type);
+    m.ter_set( x, y, door_type );
     if (m.has_flag("NOITEM", x, y)) {
         auto items = m.i_at(x, y);
         while (!items.empty()) {
@@ -7666,7 +7669,7 @@ void game::open_gate( const tripoint &p, const ter_id handle_type )
                             (m.ter(examx + wall_x + gate_x, examy + wall_y + gate_y) == floor_type)) {  //closing the gate...
                             close = true;
                             while (m.ter(cur_x, cur_y) == floor_type) {
-                                forced_gate_closing( tripoint( cur_x, cur_y, p.z ), door_type, bash_dmg);
+                                forced_gate_closing( tripoint( cur_x, cur_y, p.z ), door_type, bash_dmg );
                                 cur_x = cur_x + gate_x;
                                 cur_y = cur_y + gate_y;
                             }
@@ -8229,10 +8232,10 @@ void game::print_object_info( const tripoint &lp, WINDOW *w_look, const int colu
         mvwprintw(w_look, line++, column, _("There is a %s there. Parts:"), veh->name.c_str());
         line = veh->print_part_desc(w_look, line, (mouse_hover) ? getmaxx(w_look) : 48, veh_part);
         if (!mouse_hover) {
-            m.drawsq( w_terrain, u, lp, true, true, lp );
+            m.drawsq( w_terrain, u, lp, true, true, lp.x, lp.y );
         }
     } else if (!mouse_hover) {
-        m.drawsq(w_terrain, u, lp, true, true, lp );
+        m.drawsq(w_terrain, u, lp, true, true, lp.x, lp.y );
     }
     handle_multi_item_info( lp, w_look, column, line, mouse_hover );
 }
@@ -8623,7 +8626,8 @@ void game::zones_manager()
                                          tripoint( iX, iY, u.posz() + u.view_offset.z ),
                                          false,
                                          false,
-                                         u.pos3() + u.view_offset );
+                                         u.posx() + u.view_offset.x,
+                                         u.posy() + u.view_offset.y );
                             } else {
                                 if (u.has_effect("boomered")) {
                                     mvwputch(w_terrain, iY - offset_y, iX - offset_x, c_magenta, '#');
@@ -8689,10 +8693,9 @@ point game::look_around(WINDOW *w_info, const point pairCoordsFirst)
     const int offset_x = (u.posx() + u.view_offset.x) - getmaxx(w_terrain) / 2;
     const int offset_y = (u.posy() + u.view_offset.y) - getmaxy(w_terrain) / 2;
 
-    tripoint lp( u.posx() + u.view_offset.x, u.posy() + u.view_offset.y, u.posz() + 0 );
+    tripoint lp = u.pos3() + u.view_offset;
     int &lx = lp.x;
     int &ly = lp.y;
-    int &lz = lp.z;
 
     if (bSelectZone && bHasFirstPoint) {
         lx = pairCoordsFirst.x;
@@ -8775,7 +8778,7 @@ point game::look_around(WINDOW *w_info, const point pairCoordsFirst)
                             for (int iX = std::min(pairCoordsFirst.x, lx); iX <= std::max(pairCoordsFirst.x, lx); ++iX) {
                                 if (u.sees(iX, iY)) {
                                     m.drawsq(w_terrain, u,
-                                             tripoint( iX, iY, u.posz() + u.view_offset.z ),
+                                             tripoint( iX, iY, lp.z ),
                                              false,
                                              false,
                                              lx,
@@ -8805,7 +8808,7 @@ point game::look_around(WINDOW *w_info, const point pairCoordsFirst)
         } else {
             //Look around
             if (u.sees(lx, ly)) {
-                print_all_tile_info( tripoint(lx, ly, get_levz()), w_info, 1, off, false);
+                print_all_tile_info( lp, w_info, 1, off, false);
 
             } else if (u.sight_impaired() &&
                        m.light_at(lx, ly) == LL_BRIGHT &&
@@ -8867,16 +8870,16 @@ point game::look_around(WINDOW *w_info, const point pairCoordsFirst)
                     continue; // TODO: Make this work in z-level FOV update
                 }
 
-                int new_levz = get_levz() + ( action == "LEVEL_UP" ? 1 : -1 );
+                int new_levz = lp.z + ( action == "LEVEL_UP" ? 1 : -1 );
                 if( new_levz > OVERMAP_HEIGHT ) {
                     new_levz = OVERMAP_HEIGHT;
                 } else if( new_levz < -OVERMAP_DEPTH ) {
                     new_levz = -OVERMAP_DEPTH;
                 }
 
-                add_msg("levx: %d, levy: %d, levz :%d", get_levx(), get_levy(), new_levz);
-                m.vertical_shift( new_levz );
-                lz = get_levz();
+                add_msg("levx: %d, levy: %d, levz :%d", get_levx(), get_levy(), new_levz );
+                u.view_offset.z = new_levz - u.posz();
+                lp.z = new_levz;
                 refresh_all();
                 draw_ter( lp, true );
             } else if (!ctxt.get_coordinates(w_terrain, lx, ly)) {
@@ -8915,8 +8918,9 @@ point game::look_around(WINDOW *w_info, const point pairCoordsFirst)
         }
     } while (action != "QUIT" && action != "CONFIRM");
 
-    if( m.has_zlevels() && get_levz() != old_levz ) {
-        m.vertical_shift( old_levz );
+    if( m.has_zlevels() && lp.z != old_levz ) {
+        m.build_map_cache( old_levz );
+        u.view_offset.z = 0;
     }
 
     inp_mngr.set_timeout(-1);
@@ -11734,7 +11738,7 @@ bool game::plmove(int dx, int dy)
             if (!query_yn(_("Really attack %s?"), active_npc[npcdex]->name.c_str())) {
                 if (active_npc[npcdex]->is_friend()) {
                     add_msg(_("%s moves out of the way."), active_npc[npcdex]->name.c_str());
-                    active_npc[npcdex]->move_away_from(u.posx(), u.posy());
+                    active_npc[npcdex]->move_away_from( u.pos3() );
                 }
 
                 return false; // Cancel the attack
@@ -13124,7 +13128,7 @@ void game::update_map(int &x, int &y)
     }
 
     // Make sure map cache is consistent since it may have shifted.
-    m.build_map_cache();
+    m.build_map_cache( get_levz() );
 
     // Update what parts of the world map we can see
     update_overmap_seen();
