@@ -1029,7 +1029,7 @@ void vehicle::use_controls()
         if((stereo_on || fuel_left(fuel_type_battery, true))) {
             stereo_on = !stereo_on;
             int music_index = 0;
-            std::vector<const item*> cd_inv = g->u.all_items_with_flag( "CD" );
+            std::vector<item*> cd_inv = g->u.all_items_with_flag( "CD" );
             std::vector<itype_id> music_types;
             std::vector<std::string> music_names;
             add_msg((stereo_on) ? _("Loading...") : _("Ejecting..."));

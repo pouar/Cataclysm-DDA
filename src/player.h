@@ -712,7 +712,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         /**
          * All items that have the given flag (@ref item::has_flag).
          */
-        std::vector<const item *> all_items_with_flag( const std::string flag ) const;
+        std::vector<item *> all_items_with_flag( const std::string flag );
 
         void process_active_items();
         /**

@@ -13979,9 +13979,9 @@ float player::power_rating() const
     return ret;
 }
 
-std::vector<const item *> player::all_items_with_flag( const std::string flag ) const
+std::vector<item *> player::all_items_with_flag( const std::string flag )
 {
-    return items_with( [&flag]( const item & it ) {
+    return items_with( [&flag]( item & it ) {
         return it.has_flag( flag );
     } );
 }
