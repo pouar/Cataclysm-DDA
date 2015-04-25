@@ -494,6 +494,21 @@ public:
         return sm->get_ter( x, y );
     }
 
+    inline const trap &get_trap_t() const
+    {
+        return *traplist[ sm->get_trap( x, y ) ];
+    }
+
+    inline const furn_t &get_furn_t() const
+    {
+        return furnlist[ sm->get_furn( x, y ) ];
+    }
+
+    inline const ter_t &get_ter_t() const
+    {
+        return terlist[ sm->get_ter( x, y ) ];
+    }
+
     inline const field &get_field() const
     {
         return sm->fld[x][y];
@@ -690,7 +705,7 @@ furn_id refers to a position in the furnlist[] where the furn_t struct is stored
 about ter_id above.
 */
 extern furn_id f_null,
-    f_hay,
+    f_hay, f_cattails,
     f_rubble, f_rubble_rock, f_wreckage, f_ash,
     f_barricade_road, f_sandbag_half, f_sandbag_wall,
     f_bulletin,

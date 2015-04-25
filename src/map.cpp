@@ -1314,7 +1314,7 @@ bool map::can_move_furniture( const tripoint &pos, player *p ) {
     int required_str = furniture_type.move_str_req;
 
     // Object can not be moved (or nothing there)
-    if( required_str < 0 ) { 
+    if( required_str < 0 ) {
         return false;
     }
 
@@ -1815,7 +1815,7 @@ bool map::has_flag_ter_and_furn( const ter_bitflags flag, const tripoint &p ) co
 
 // Bashable - common function
 
-int map::bash_rating_internal( const int str, const furn_t &furniture, 
+int map::bash_rating_internal( const int str, const furn_t &furniture,
                                const ter_t &terrain, const vehicle *veh, const int part ) const
 {
     bool furn_smash = false;
@@ -2323,7 +2323,7 @@ bool map::has_adjacent_furniture( const tripoint &p )
     {
         const int adj_x = p.x + cx[i];
         const int adj_y = p.y + cy[i];
-        if ( has_furn( tripoint( adj_x, adj_y, p.z ) ) && 
+        if ( has_furn( tripoint( adj_x, adj_y, p.z ) ) &&
              furn_at( tripoint( adj_x, adj_y, p.z ) ).has_flag("BLOCKSDOOR") ) {
             return true;
         }
@@ -2428,8 +2428,7 @@ void map::create_spores( const tripoint &p, Creature* source )
                     }
                 } else if (((i == x && j == y) || one_in(4)) &&
                            g->num_zombies() <= 1000) { // Spawn a spore
-                    spore.spawn(i, j);
-                    g->add_zombie(spore);
+                    g->summon_mon("mon_spore", tripoint(i, j, p.z));
                 }
             }
         }
@@ -3271,7 +3270,7 @@ bool map::open_door( const tripoint &p, const bool inside, const bool check_only
 void map::translate(const ter_id from, const ter_id to)
 {
     if (from == to) {
-        debugmsg( "map::translate %s => %s", 
+        debugmsg( "map::translate %s => %s",
                   terlist[from].name.c_str(),
                   terlist[from].name.c_str() );
         return;
@@ -3293,7 +3292,7 @@ void map::translate(const ter_id from, const ter_id to)
 void map::translate_radius(const ter_id from, const ter_id to, float radi, const tripoint &p )
 {
     if( from == to ) {
-        debugmsg( "map::translate %s => %s", 
+        debugmsg( "map::translate %s => %s",
                   terlist[from].name.c_str(),
                   terlist[from].name.c_str() );
         return;
@@ -3501,7 +3500,7 @@ void map::spawn_item(const int x, const int y, const std::string &type_id,
                      const unsigned quantity, const long charges,
                      const unsigned birthday, const int damlevel, const bool rand)
 {
-    spawn_item( tripoint( x, y, abs_sub.z ), type_id, 
+    spawn_item( tripoint( x, y, abs_sub.z ), type_id,
                 quantity, charges, birthday, damlevel, rand );
 }
 
@@ -3894,7 +3893,7 @@ static bool process_item( item_stack &items, Iterator &n, const tripoint &locati
     return true;
 }
 
-static bool process_map_items( item_stack &items, std::list<item>::iterator &n, 
+static bool process_map_items( item_stack &items, std::list<item>::iterator &n,
                                const tripoint &location, std::string )
 {
     return process_item( items, n, location, false );
@@ -3954,7 +3953,7 @@ void map::process_items( bool const active, T processor, std::string const &sign
 }
 
 template<typename T>
-void map::process_items_in_submap( submap *const current_submap, 
+void map::process_items_in_submap( submap *const current_submap,
                                    const tripoint &gridp,
                                    T processor, std::string const &signal )
 {
@@ -4067,7 +4066,7 @@ bool map::could_see_items( const tripoint &p, const player &u ) const
     if( container ) {
         // can see inside of containers if adjacent or
         // on top of the container
-        return ( abs( p.x - u.posx() ) <= 1 && 
+        return ( abs( p.x - u.posx() ) <= 1 &&
                  abs( p.y - u.posy() ) <= 1 &&
                  abs( p.z - u.posz() ) <= 1 );
     }
@@ -4360,7 +4359,7 @@ std::list<std::pair<tripoint, item *> > map::get_rc_items( int x, int y, int z )
     return rc_pairs;
 }
 
-static bool trigger_radio_item( item_stack &items, std::list<item>::iterator &n, 
+static bool trigger_radio_item( item_stack &items, std::list<item>::iterator &n,
                                 const tripoint &pos,
                                 std::string signal )
 {
@@ -4389,7 +4388,7 @@ static bool trigger_radio_item( item_stack &items, std::list<item>::iterator &n,
         trigger_item = true;
     }
     if( trigger_item ) {
-        return process_item( items, n, pos, true ); 
+        return process_item( items, n, pos, true );
     }
     return false;
 }
@@ -4473,8 +4472,8 @@ void map::add_trap(const int x, const int y, const trap_id t)
 
 void map::add_trap( const tripoint &p, const trap_id t)
 {
-    if( !inbounds( p ) ) 
-    { 
+    if( !inbounds( p ) )
+    {
         return;
     }
 
@@ -4817,9 +4816,9 @@ void map::update_visibility_cache( visibility_variables &cache, const int zlev )
     cache.u_clairvoyance = g->u.clairvoyance();
     cache.u_sight_impaired = g->u.sight_impaired();
     cache.bio_night_active = g->u.has_active_bionic("bio_night");
-    
+
     cache.u_is_boomered = g->u.has_effect("boomered");
-    
+
     int sm_squares_seen[my_MAPSIZE][my_MAPSIZE];
     memset(sm_squares_seen, 0, sizeof(sm_squares_seen));
 
@@ -4846,7 +4845,7 @@ void map::update_visibility_cache( visibility_variables &cache, const int zlev )
                 const auto abs_omt = overmapbuffer::sm_to_omt_copy( abs_sm );
                 overmap_buffer.set_seen( abs_omt.x, abs_omt.y, abs_omt.z, true);
             }
-        }        
+        }
     }
 
 
@@ -5017,7 +5016,7 @@ void map::draw( WINDOW* w, const tripoint &center )
                 const lit_level lighting = visibility_cache[x][y];
                 if( !apply_vision_effects( w, lighting, cache ) ) {
                     const maptile curr_maptile = cur_submap->get_maptile( lx, ly );
-                    draw_maptile( w, g->u, p, curr_maptile, 
+                    draw_maptile( w, g->u, p, curr_maptile,
                                   false, true, center.x, center.y,
                                   lighting == LL_LOW, lighting == LL_BRIGHT, true );
                 }
@@ -5631,7 +5630,7 @@ std::vector<point> map::route(const int Fx, const int Fy, const int Tx, const in
                     } else if( rating > 1 ) {
                         // Expected number of turns to bash it down, 1 turn to move there
                         // and 2 turns of penalty not to trash everything just because we can
-                        newg += ( 20 / rating ) + 2 + 4; 
+                        newg += ( 20 / rating ) + 2 + 4;
                     } else if( rating == 1 ) {
                         // Desperate measures, avoid whenever possible
                         newg += 1000;
@@ -5827,7 +5826,7 @@ void map::vertical_shift( const int newz )
     }
 
     if( newz < -OVERMAP_DEPTH || newz > OVERMAP_HEIGHT ) {
-        debugmsg( "Tried to get z-level %d outside allowed range of %d-%d", 
+        debugmsg( "Tried to get z-level %d outside allowed range of %d-%d",
                   newz, -OVERMAP_DEPTH, OVERMAP_HEIGHT );
         return;
     }
@@ -5876,7 +5875,7 @@ void map::saven( const int gridx, const int gridy, const int gridz )
     const int abs_z = gridz;
 
     if( !zlevels && gridz != abs_sub.z ) {
-        debugmsg( "Tried to save submap (%d,%d,%d) as (%d,%d,%d), which isn't supported in non-z-level builds", 
+        debugmsg( "Tried to save submap (%d,%d,%d) as (%d,%d,%d), which isn't supported in non-z-level builds",
                   abs_x, abs_y, abs_sub.z, abs_x, abs_y, gridz );
     }
 
@@ -6204,7 +6203,7 @@ void map::spawn_monsters( const tripoint &gp, mongroup &group, bool ignore_sight
     const int gy = gp.y;
     const int s_range = std::min(SEEX * (MAPSIZE / 2), g->u.sight_range( g->light_level() ) );
     int pop = group.population;
-    std::vector<point> locations;
+    std::vector<tripoint> locations;
     if( !ignore_sight ) {
         // If the submap is one of the outermost submaps, assume that monsters are
         // invisible there.
@@ -6233,7 +6232,7 @@ void map::spawn_monsters( const tripoint &gp, mongroup &group, bool ignore_sight
             if( has_flag_ter_or_furn( TFLAG_INDOORS, fx, fy ) ) {
                 continue; // monster must spawn outside.
             }
-            locations.push_back( point( fx, fy ) );
+            locations.push_back( tripoint( fx, fy, gp.z ) );
         }
     }
     if( locations.empty() ) {
@@ -6251,11 +6250,11 @@ void map::spawn_monsters( const tripoint &gp, mongroup &group, bool ignore_sight
         for( int i = 0; i < spawn_details.pack_size; i++) {
             for( int tries = 0; tries < 10 && !locations.empty(); tries++ ) {
                 const size_t index = rng( 0, locations.size() - 1 );
-                const point p = locations[index];
-                if( !tmp.can_move_to( p.x, p.y ) ) {
+                const tripoint &p = locations[index];
+                if( !tmp.can_move_to( p ) ) {
                     continue; // target can not contain the monster
                 }
-                tmp.spawn( p.x, p.y );
+                tmp.spawn( p.x, p.y, p.z );
                 g->add_zombie( tmp );
                 locations.erase( locations.begin() + index );
                 break;
@@ -6290,8 +6289,9 @@ void map::spawn_monsters(bool ignore_sight)
                         tmp.friendly = -1;
                     }
                     int fx = mx + gx * SEEX, fy = my + gy * SEEY;
+                    tripoint pos( fx, fy, abs_sub.z );
 
-                    while ((!g->is_empty(fx, fy) || !tmp.can_move_to(fx, fy)) && tries < 10) {
+                    while ((!g->is_empty( pos ) || !tmp.can_move_to( pos )) && tries < 10) {
                         mx = (i.posx + rng(-3, 3)) % SEEX;
                         my = (i.posy + rng(-3, 3)) % SEEY;
                         if (mx < 0) {
@@ -6305,7 +6305,7 @@ void map::spawn_monsters(bool ignore_sight)
                         tries++;
                     }
                     if (tries != 10) {
-                        tmp.spawn(fx, fy);
+                        tmp.spawn( fx, fy, abs_sub.z );
                         g->add_zombie(tmp);
                     }
                 }
@@ -6351,15 +6351,15 @@ bool map::inbounds(const int x, const int y) const
 
 bool map::inbounds(const int x, const int y, const int z) const
 {
-    return (x >= 0 && x < SEEX * my_MAPSIZE && 
-            y >= 0 && y < SEEY * my_MAPSIZE && 
+    return (x >= 0 && x < SEEX * my_MAPSIZE &&
+            y >= 0 && y < SEEY * my_MAPSIZE &&
             z >= -OVERMAP_DEPTH && z <= OVERMAP_HEIGHT);
 }
 
 bool map::inbounds( const tripoint &p ) const
 {
- return (p.x >= 0 && p.x < SEEX * my_MAPSIZE && 
-         p.y >= 0 && p.y < SEEY * my_MAPSIZE && 
+ return (p.x >= 0 && p.x < SEEX * my_MAPSIZE &&
+         p.y >= 0 && p.y < SEEY * my_MAPSIZE &&
          p.z >= -OVERMAP_DEPTH && p.z <= OVERMAP_HEIGHT);
 }
 
@@ -6418,7 +6418,7 @@ long map::determine_wall_corner( const tripoint &p ) const
     switch( bits ) {
         case 1 | 2 | 4 | 8: return LINE_XXXX;
         case 0 | 2 | 4 | 8: return LINE_OXXX;
-        
+
         case 1 | 0 | 4 | 8: return LINE_XOXX;
         case 0 | 0 | 4 | 8: return LINE_OOXX;
 
@@ -6472,7 +6472,7 @@ void map::build_outside_cache( const int zlev )
 
             for( int sx = 0; sx < SEEX; ++sx ) {
                 for( int sy = 0; sy < SEEY; ++sy ) {
-                    if( terlist[ cur_submap->get_ter( sx, sy ) ].has_flag( TFLAG_INDOORS ) || 
+                    if( terlist[ cur_submap->get_ter( sx, sy ) ].has_flag( TFLAG_INDOORS ) ||
                         furnlist[ cur_submap->get_furn( sx, sy ) ].has_flag( TFLAG_INDOORS ) ) {
                         const int x = sx + ( smx * SEEX );
                         const int y = sy + ( smy * SEEY );
@@ -6515,7 +6515,7 @@ void map::build_map_cache( const int zlev )
         reset_vehicle_cache();
         cached_zlev = zlev;
     }
-    
+
     build_outside_cache( zlev );
     build_transparency_cache( zlev );
 
@@ -7063,7 +7063,7 @@ void map::add_road_vehicles(bool city, int facing)
         if (one_in(40)) {
             int vx = rng(8, 16);
             int vy = rng(8, 16);
-            int car_type = rng(1, 27);
+            int car_type = rng(1, 30);
             if (car_type <= 10) {
                 add_vehicle("car", vx, vy, facing, 0, -1);
             } else if (car_type <= 14) {
@@ -7078,6 +7078,8 @@ void map::add_road_vehicles(bool city, int facing)
                 add_vehicle("rara_x", vx, vy, facing, 0, -1);
             } else if (car_type <= 25) {
                 add_vehicle("apc", vx, vy, facing, 0, -1);
+            } else if (car_type <= 28) {
+                add_vehicle("car_sports_electric", vx, vy, facing, 0, -1);
             } else {
                 add_vehicle("armored_car", vx, vy, facing, 0, -1);
             }
@@ -7161,7 +7163,7 @@ template<typename Functor>
 }
 
 template<typename Functor>
-    void map::function_over( const int stx, const int sty, const int stz, 
+    void map::function_over( const int stx, const int sty, const int stz,
                              const int enx, const int eny, const int enz, Functor fun ) const
 {
     // start and end are just two points, end can be "before" start

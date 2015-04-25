@@ -1133,11 +1133,24 @@ std::string item::info(bool showtext, std::vector<iteminfo> *dump, bool debug) c
         }
     }
 
-    if ( !type->qualities.empty()){
-        for(std::map<std::string, int>::const_iterator quality = type->qualities.begin();
-            quality != type->qualities.end(); ++quality){
-            dump->push_back(iteminfo("QUALITIES", "", string_format(_("Has level %1$d %2$s quality."),
-                            quality->second, quality::get_name(quality->first).c_str())));
+    for( const auto &quality : type->qualities ){
+        const auto desc = string_format( _("Has level %1$d %2$s quality."),
+                                         quality.second, 
+                                         quality::get_name(quality.first).c_str() );
+        dump->push_back( iteminfo( "QUALITIES", "", desc ) );
+    }
+    bool intro = false; // Did we print the "Contains items with qualities" line
+    for( const auto &content : contents ) {
+        for( const auto quality : content.type->qualities ) {
+            if( !intro ) {
+                intro = true;
+                dump->push_back( iteminfo( "QUALITIES", "", _("Contains items with qualities:") ) );
+            }
+
+            const auto desc = string_format( _("  Level %1$d %2$s quality."),
+                                         quality.second, 
+                                         quality::get_name( quality.first ).c_str() );
+            dump->push_back( iteminfo( "QUALITIES", "", desc ) );
         }
     }
 
@@ -2290,17 +2303,21 @@ bool item::has_quality(std::string quality_id) const {
     return has_quality(quality_id, 1);
 }
 
-bool item::has_quality(std::string quality_id, int quality_value) const {
-    bool ret = false;
-    if ( !type->qualities.empty()){
-        for(std::map<std::string, int>::const_iterator quality = type->qualities.begin(); quality != type->qualities.end(); ++quality){
-            if(quality->first == quality_id && quality->second >= quality_value) {
-                ret = true;
-                break;
-            }
+bool item::has_quality(std::string quality_id, int quality_value) const
+{
+    for( const auto &quality : type->qualities ) {
+        if( quality.first == quality_id && quality.second >= quality_value ) {
+            return true;
         }
     }
-    return ret;
+
+    for( const auto &content : contents ) {
+        if( content.has_quality( quality_id, quality_value ) ) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool item::has_technique(matec_id tech)
@@ -2723,7 +2740,6 @@ int item::acid_resist() const
     // With the multiplying and dividing in previous code, the following
     // is a coefficient equivalent to the bonuses and maluses hardcoded in
     // previous versions. Adjust to make you happier/sadder.
-    float adjustment = 1.5;
 
     if (is_null()) {
         return resist;
@@ -2739,7 +2755,7 @@ int item::acid_resist() const
     // Average based on number of materials.
     resist /= mat_types.size();
 
-    return std::lround(resist * adjustment);
+    return std::lround(resist);
 }
 
 bool item::is_two_handed(player *u)
@@ -4051,7 +4067,7 @@ itype_id item::typeId() const
     return type->id;
 }
 
-bool item::getlight(float & luminance, int & width, int & direction, bool calculate_dimming ) const {
+bool item::getlight(float & luminance, int & width, int & direction ) const {
     luminance = 0;
     width = 0;
     direction = 0;
@@ -4063,7 +4079,7 @@ bool item::getlight(float & luminance, int & width, int & direction, bool calcul
         }
         return true;
     } else {
-        const int lumint = getlight_emit( calculate_dimming );
+        const int lumint = getlight_emit();
         if ( lumint > 0 ) {
             luminance = (float)lumint;
             return true;
@@ -4075,7 +4091,7 @@ bool item::getlight(float & luminance, int & width, int & direction, bool calcul
 /*
  * Returns just the integer
  */
-int item::getlight_emit(bool calculate_dimming) const {
+int item::getlight_emit() const {
     const int mult = 10; // woo intmath
     const int chargedrop = 5 * mult; // start dimming at 1/5th charge.
 
@@ -4084,7 +4100,7 @@ int item::getlight_emit(bool calculate_dimming) const {
     if ( lumint == 0 ) {
         return 0;
     }
-    if ( calculate_dimming && has_flag("CHARGEDIM") && is_tool() && !has_flag("USE_UPS")) {
+    if ( has_flag("CHARGEDIM") && is_tool() && !has_flag("USE_UPS")) {
         it_tool * tool = dynamic_cast<it_tool *>(type);
         int maxcharge = tool->max_charges;
         if ( maxcharge > 0 ) {
@@ -4095,6 +4111,14 @@ int item::getlight_emit(bool calculate_dimming) const {
         lumint = 10;
     }
     return lumint / 10;
+}
+
+int item::getlight_emit_active() const
+{
+    if( active && charges > 0 ) {
+        return getlight_emit();
+    }
+    return 0;
 }
 
 // How much more of this liquid can be put in this container
