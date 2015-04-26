@@ -152,7 +152,7 @@ class monster : public Creature, public JsonSerializer, public JsonDeserializer
         // the route.  Give up after f steps.
 
         // How good of a target is given creature (checks for visibility)
-        float rate_target( Creature &c, int &bresenham_slope, float best, bool smart = false ) const;
+        float rate_target( Creature &c, int &bresen1, int &bresen2, float best, bool smart = false ) const;
         // Pass all factions to mon, so that hordes of same-faction mons
         // do not iterate over each other
         void plan(const mfactions &factions);
@@ -320,7 +320,7 @@ class monster : public Creature, public JsonSerializer, public JsonDeserializer
         bool setpos( const int x, const int y, const int z, const bool level_change = false );
         bool setpos( const point &p, const bool level_change = false );
         bool setpos( const tripoint &p, const bool level_change = false );
-        const point &pos() const override;
+        const tripoint &pos3() const override;
         inline int posx() const override
         {
             return position.x;
@@ -331,7 +331,7 @@ class monster : public Creature, public JsonSerializer, public JsonDeserializer
         }
         inline int posz() const override
         {
-            return zpos;
+            return position.z;
         }
 
         short ignoring;
@@ -362,9 +362,7 @@ class monster : public Creature, public JsonSerializer, public JsonDeserializer
         int hp;
         std::vector<int> sp_timeout;
         std::vector <tripoint> plans;
-        point position;
-        // Temporary z-level coord, should later be merged with position
-        int zpos;
+        tripoint position;
         int last_loaded; //time the monster was last loaded
         bool dead;
         /** Attack another monster */
