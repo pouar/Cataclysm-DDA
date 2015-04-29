@@ -128,11 +128,11 @@ ifdef RELEASE
     CXXFLAGS += -O3
   else
     ifndef CROSS
-        CXXFLAGS += -march=native -O2
+        CXXFLAGS += -march=native -O2 -flto=8
     else
         CXXFLAGS += -Os
     endif
-    LDFLAGS += -s
+    LDFLAGS += -s -flto=8
   endif
   # OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
   # Strip symbols, generates smaller executable.
@@ -155,7 +155,7 @@ ifdef CLANG
   WARNINGS = -Wall -Wextra -Wno-switch -Wno-sign-compare -Wno-missing-braces -Wno-type-limits -Wno-narrowing
 endif
 
-OTHERS += --std=gnu++14
+OTHERS += --std=c++11
 
 CXXFLAGS += $(WARNINGS) $(DEBUG) $(PROFILE) $(OTHERS) -MMD
 
