@@ -1412,8 +1412,10 @@ void vehicle_part::deserialize(JsonIn &jsin)
     data.read("items", items);
     data.read("target_first_x", target.first.x);
     data.read("target_first_y", target.first.y);
+    data.read("target_first_z", target.first.z);
     data.read("target_second_x", target.second.x);
     data.read("target_second_y", target.second.y);
+    data.read("target_second_z", target.second.z);
 }
 
 void vehicle_part::serialize(JsonOut &json) const
@@ -1432,8 +1434,10 @@ void vehicle_part::serialize(JsonOut &json) const
     json.member("items", items);
     json.member("target_first_x", target.first.x);
     json.member("target_first_y", target.first.y);
+    json.member("target_first_z", target.first.z);
     json.member("target_second_x", target.second.x);
     json.member("target_second_y", target.second.y);
+    json.member("target_second_z", target.second.z);
     json.end_object();
 }
 
@@ -1475,7 +1479,6 @@ void vehicle::deserialize(JsonIn &jsin)
     data.read("turn_dir", turn_dir);
     data.read("velocity", velocity);
     data.read("cruise_velocity", cruise_velocity);
-    data.read("music_id", music_id);
     data.read("cruise_on", cruise_on);
     data.read("engine_on", engine_on);
     data.read("tracking_on", tracking_on);
@@ -1548,7 +1551,6 @@ void vehicle::serialize(JsonOut &json) const
     json.member( "turn_dir", turn_dir );
     json.member( "velocity", velocity );
     json.member( "cruise_velocity", cruise_velocity );
-    json.member( "music_id", music_id);
     json.member( "cruise_on", cruise_on );
     json.member( "engine_on", engine_on );
     json.member( "tracking_on", tracking_on );
