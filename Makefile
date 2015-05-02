@@ -127,11 +127,7 @@ ifdef RELEASE
   ifeq ($(NATIVE), osx)
     CXXFLAGS += -O3
   else
-    ifndef CROSS
-        CXXFLAGS += -march=native -O2 -flto=8
-    else
-        CXXFLAGS += -Os
-    endif
+    CXXFLAGS += -march=native -O2 -flto=8
     LDFLAGS += -s -flto=8
   endif
   # OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
