@@ -9009,8 +9009,6 @@ bool player::has_fire(const int quantity) const
         return true;
     } else if (has_charges("torch_lit", 1)) {
         return true;
-    } else if (has_charges("tinderbox_lit", 1)) {
-        return true;
     } else if (has_charges("battletorch_lit", quantity)) {
         return true;
     } else if (has_charges("handflare_lit", 1)) {
@@ -9064,8 +9062,6 @@ void player::use_fire(const int quantity)
     if( g->m.has_nearby_fire( pos3() ) ) {
         return;
     } else if (has_charges("torch_lit", 1)) {
-        return;
-    } else if (has_charges("tinderbox_lit", 1)) {
         return;
     } else if (has_charges("battletorch_lit", 1)) {
         return;
