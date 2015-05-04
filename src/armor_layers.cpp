@@ -5,6 +5,7 @@
 #include "output.h"
 #include "item.h"
 #include "translations.h"
+#include "itype.h"
 
 #include <vector>
 #include <string>

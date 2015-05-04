@@ -14,10 +14,18 @@
 #include "messages.h"
 #include "mapsharing.h"
 #include "iuse_actor.h"
+#include "mongroup.h"
+#include "npc.h"
+#include "event.h"
+#include "monster.h"
+#include "veh_type.h"
+#include "artifact.h"
+#include "omdata.h"
 
 #include <cmath>
 #include <stdlib.h>
 #include <fstream>
+#include <cstring>
 
 extern bool is_valid_in_w_terrain(int,int);
 
@@ -128,7 +136,7 @@ map::map( int mapsize, bool zlev )
     veh_in_active_range = true;
     transparency_cache_dirty = true;
     outside_cache_dirty = true;
-    memset(veh_exists_at, 0, sizeof(veh_exists_at));
+    std::memset(veh_exists_at, 0, sizeof(veh_exists_at));
     traplocs.resize( traplist.size() );
 }
 
@@ -224,10 +232,18 @@ void map::update_vehicle_list( submap *const to )
 
 void map::destroy_vehicle (vehicle *veh)
 {
-    if (!veh) {
+    if( !veh ) {
         debugmsg("map::destroy_vehicle was passed NULL");
         return;
     }
+
+    if( veh->smz < -OVERMAP_DEPTH && veh->smz > OVERMAP_HEIGHT ) {
+        debugmsg( "destroy_vehicle got a vehicle outside allowed z-level range! name=%s, submap:%d,%d,%d",
+                  veh->name.c_str(), veh->smx, veh->smy, veh->smz );
+        // Try to fix by moving the vehicle here
+        veh->smz = abs_sub.z;
+    }
+
     submap * const current_submap = get_submap_at_grid(veh->smx, veh->smy, veh->smz);
     for (size_t i = 0; i < current_submap->vehicles.size(); i++) {
         if (current_submap->vehicles[i] == veh) {
@@ -4903,7 +4919,7 @@ void map::update_visibility_cache( visibility_variables &cache, const int zlev )
     cache.u_is_boomered = g->u.has_effect("boomered");
 
     int sm_squares_seen[my_MAPSIZE][my_MAPSIZE];
-    memset(sm_squares_seen, 0, sizeof(sm_squares_seen));
+    std::memset(sm_squares_seen, 0, sizeof(sm_squares_seen));
 
     tripoint p;
     p.z = zlev;

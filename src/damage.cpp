@@ -1,9 +1,10 @@
 #include "item.h"
-#include "monster.h"
 #include "game.h"
 #include "map.h"
 #include "damage.h"
 #include "rng.h"
+#include "monster.h"
+#include "npc.h"
 #include <map>
 
 damage_instance::damage_instance() { }

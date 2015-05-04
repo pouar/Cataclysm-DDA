@@ -3,16 +3,8 @@
 
 #include "character.h"
 #include "item.h"
-#include "trap.h"
-#include "morale.h"
-#include "mutation.h"
-#include "crafting.h"
-#include "vehicle.h"
-#include "martialarts.h"
 #include "player_activity.h"
-#include "messages.h"
 #include "clzones.h"
-#include "artifact.h"
 #include "weighted_list.h"
 
 #include <unordered_set>
@@ -27,6 +19,16 @@ struct trap;
 class mission;
 class profession;
 nc_color encumb_color(int level);
+enum morale_type : int;
+class morale_point;
+enum game_message_type : int;
+class ma_technique;
+class martialart;
+struct recipe;
+struct item_comp;
+struct tool_comp;
+class vehicle;
+struct it_comest;
 
 struct special_attack {
     std::string text;
@@ -198,6 +200,14 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         int  swim_speed();
         /** Maintains body wetness and handles the rate at which the player dries */
         void update_body_wetness();
+        /** Increases hunger, thirst, fatigue, stimms wearing off, dying from hunger and dying from overdose */
+        void update_needs();
+        /** Handles passive regeneration of pain and maybe hp, except sleep regeneration. 
+          * Updates health and checks for sickness.
+          */
+        void regen();
+        /** Regenerates stamina */
+        void update_stamina();
 
         /** Returns true if the player has a conflicting trait to the entered trait
          *  Uses has_opposite_trait(), has_lower_trait(), and has_higher_trait() to determine conflicts.
@@ -415,7 +425,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         /** Returns true if a gun misfires, jams, or has other problems, else returns false */
         bool handle_gun_damage( const itype &firing, const std::set<std::string> &curammo_effects );
         /** Handles gun firing effects and functions */
-        void fire_gun(int targetx, int targety, bool burst);
+        void fire_gun( const tripoint &target, bool burst );
         void fire_gun( const tripoint &target, long burst_size );
 
         /** Activates any on-dodge effects and checks for dodge counter techniques */

@@ -14,6 +14,12 @@
 #include "ui.h"
 #include "debug.h"
 #include "sounds.h"
+#include "translations.h"
+#include "options.h"
+#include "material.h"
+#include "monster.h"
+#include "npc.h"
+#include "veh_type.h"
 
 #include <fstream>
 #include <sstream>
@@ -3315,7 +3321,7 @@ void vehicle::power_parts( const tripoint &sm_loc )//TODO: more categories of po
     if( engine_on ) {
         for( size_t e = 0; e < engines.size(); ++e ) {
             // Electric engines consume power when actually used, not passively
-            if( !is_engine_type_on(e, fuel_type_battery) ) {
+            if( is_engine_on( e ) && !is_engine_type(e, fuel_type_battery) ) {
                 engine_epower += part_epower( engines[e] );
             }
         }
@@ -5551,7 +5557,7 @@ bool vehicle::automatic_fire_turret( int p, const itype &gun, const itype &ammo,
     // Drain a ton of power
     tmp_ups.charges = drain( fuel_type_battery, 1000 );
     tmp.worn.insert( tmp.worn.end(), tmp_ups );
-    tmp.fire_gun( targ, abs( parts[p].mode ) );
+    tmp.fire_gun( targ, (long)abs( parts[p].mode ) );
     // Return whatever is left.
     refill( fuel_type_battery, tmp.worn.back().charges );
     charges = tmp.weapon.charges; // Return real ammo, in case of burst ending early
@@ -5599,7 +5605,7 @@ bool vehicle::manual_fire_turret( int p, player &shooter, const itype &guntype,
         // Put our shooter on the roof of the vehicle
         shooter.add_effect( "on_roof", 1 );
         // TODO (maybe): Less recoil? We're using a mounted, stabilized turret
-        shooter.fire_gun( targ, abs( parts[p].mode ) );
+        shooter.fire_gun( targ, (long)abs( parts[p].mode ) );
         // And now back - we don't want to get any weird behavior
         shooter.remove_effect( "on_roof" );
     }
@@ -5836,6 +5842,16 @@ int vehicle::obstacle_at_part( int p ) const
 /*-----------------------------------------------------------------------------
  *                              VEHICLE_PART
  *-----------------------------------------------------------------------------*/
+bool vehicle_part::setid( const std::string & str )
+{
+    auto const vpit = vehicle_part_types.find( str );
+    if( vpit == vehicle_part_types.end() ) {
+        return false;
+    }
+    id = str;
+    iid = vpit->second.loadid;
+    return true;
+}
 
 void vehicle_part::properties_from_item( const item &used_item )
 {
