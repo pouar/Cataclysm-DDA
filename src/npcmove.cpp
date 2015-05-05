@@ -569,8 +569,8 @@ npc_action npc::method_of_fleeing(int enemy)
 {
     int speed = (enemy == TARGET_PLAYER ? g->u.get_speed() :
                  g->zombie(enemy).get_speed());
-    point enemy_loc = (enemy == TARGET_PLAYER ? point(g->u.posx(), g->u.posy()) :
-                       point(g->zombie(enemy).posx(), g->zombie(enemy).posy()));
+    tripoint enemy_loc = enemy == TARGET_PLAYER ?
+        g->u.pos3() : g->zombie(enemy).pos3();
     int distance = rl_dist(pos(), enemy_loc);
 
     if (choose_escape_item() != INT_MIN) { // We have an escape item!
@@ -2270,10 +2270,7 @@ void npc::set_destination()
     std::string dest_type = options[rng(0, options.size() - 1)];
 
     int dist = 0;
-    const point p = overmap_buffer.find_closest(global_omt_location(), dest_type, dist, false);
-    goal.x = p.x;
-    goal.y = p.y;
-    goal.z = g->get_levz();
+    goal = overmap_buffer.find_closest(global_omt_location(), dest_type, dist, false);
 }
 
 void npc::go_to_destination()

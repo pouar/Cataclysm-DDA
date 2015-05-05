@@ -284,7 +284,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         /** Removes the mutation's child flag from the player's list */
         void remove_child_flag( const std::string &mut );
 
-        const tripoint &pos3() const override;
+        const tripoint &pos() const override;
         /** Returns the player's sight range */
         int sight_range( int light_level ) const override;
         /** Returns the player maximum vision range factoring in mutations, diseases, and other effects */
@@ -1001,7 +1001,8 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         bool is_invisible() const;
         bool is_deaf() const;
         // Checks whether a player can hear a sound at a given volume and location.
-        bool can_hear( const point source, const int volume ) const;
+        bool can_hear( const tripoint &source, const int volume ) const;
+        bool can_hear( const point &source, const int volume ) const;
         // Returns a multiplier indicating the keeness of a player's hearing.
         float hearing_ability() const;
         int visibility( bool check_color = false,
@@ -1060,7 +1061,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
          * Returns the target of the active mission or @ref overmap::invalid_point if there is
          * no active mission.
          */
-        point get_active_mission_target() const;
+        tripoint get_active_mission_target() const;
         /**
          * Set which mission is active. The mission must be listed in @ref active_missions.
          */
@@ -1122,7 +1123,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         inventory cached_crafting_inventory;
         int cached_moves;
         int cached_turn;
-        point cached_position;
+        tripoint cached_position;
 
         struct weighted_int_list<const char*> melee_miss_reasons;
 

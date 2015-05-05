@@ -5094,8 +5094,8 @@ void game::draw_minimap()
     const tripoint curs = u.global_omt_location();
     const int cursx = curs.x;
     const int cursy = curs.y;
-    const point targ = u.get_active_mission_target();
-    bool drew_mission = targ == overmap::invalid_point;
+    const tripoint targ = u.get_active_mission_target();
+    bool drew_mission = targ == overmap::invalid_tripoint;
 
     for (int i = -2; i <= 2; i++) {
         for (int j = -2; j <= 2; j++) {
@@ -5232,7 +5232,7 @@ void game::draw_minimap()
             if (!drew_mission && targ.x == omx && targ.y == omy) {
                 // If there is a mission target, and it's not on the same
                 // overmap terrain as the player character, mark it.
-                // TODO: target does not contain a z-component, targets are assume to be on z=0
+                // TODO: Inform player if the mission is above or below
                 drew_mission = true;
                 if (i != 0 || j != 0) {
                     ter_color = red_background(ter_color);
@@ -5279,7 +5279,14 @@ void game::draw_minimap()
                     arrowy = 6;
                 }
             }
-            mvwputch(w_minimap, arrowy, arrowx, c_red, '*');
+            char glyph = '*';
+            if( targ.z > u.posz() ) {
+                glyph = '^';
+            } else if( targ.z < u.posz() ) {
+                glyph = 'v';
+            }
+
+            mvwputch( w_minimap, arrowy, arrowx, c_red, glyph );
         }
     }
     wrefresh(w_minimap);
@@ -7862,7 +7869,7 @@ bool pet_menu(monster *z)
             return true;
         }
 
-        bool success = g->make_drop_activity( ACT_STASH, z->pos() );
+        bool success = g->make_drop_activity( ACT_STASH, z->pos2() );
         if( success ) {
             z->add_effect("controlled", 5);
         }
@@ -10192,7 +10199,7 @@ int game::move_liquid(item &liquid)
 void game::drop(int pos)
 {
     if (pos == INT_MIN) {
-        make_drop_activity( ACT_DROP, u.pos() );
+        make_drop_activity( ACT_DROP, u.pos2() );
     } else if (pos == -1 && u.weapon.has_flag("NO_UNWIELD")) {
         add_msg(m_info, _("You cannot drop your %s."), u.weapon.tname().c_str());
         return;
@@ -11585,6 +11592,29 @@ bool game::plmove(int dx, int dy)
     } else {
         x = u.posx() + dx;
         y = u.posy() + dy;
+    }
+
+    if( u.has_effect( "amigara" ) ) {
+        int curdist = INT_MAX;
+        int newdist = INT_MAX;
+        for( int cx = 0; cx < SEEX * MAPSIZE; cx++ ) {
+            for( int cy = 0; cy < SEEY * MAPSIZE; cy++ ) {
+                if( m.ter( cx, cy ) == t_fault ) {
+                    int dist = rl_dist( cx, cy, u.posx(), u.posy() );
+                    if( dist < curdist ) {
+                        curdist = dist;
+                    }
+                    dist = rl_dist( cx, cy, x, y );
+                    if( dist < newdist ) {
+                        newdist = dist;
+                    }
+                }
+            }
+        }
+        if( newdist > curdist ) {
+            add_msg( m_info, _( "You cannot pull yourself away from the faultline..." ) );
+            return false;
+        }
     }
 
     const tripoint dest_loc( x, y, u.posz() );

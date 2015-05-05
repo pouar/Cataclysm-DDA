@@ -1594,7 +1594,11 @@ void mission::deserialize(JsonIn &jsin)
     jo.read("reward", reward);
     jo.read("uid", uid );
     JsonArray ja = jo.get_array("target");
-    if (ja.size() == 2) {
+    if( ja.size() == 3 ) {
+        target.x = ja.get_int(0);
+        target.y = ja.get_int(1);
+        target.z = ja.get_int(2);
+    } else if( ja.size() == 2 ) {
         target.x = ja.get_int(0);
         target.y = ja.get_int(1);
     }
@@ -1634,6 +1638,7 @@ void mission::serialize(JsonOut &json) const
     json.start_array();
     json.write(target.x);
     json.write(target.y);
+    json.write(target.z);
     json.end_array();
 
     json.member("item_id", item_id);
