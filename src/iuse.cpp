@@ -8632,6 +8632,14 @@ int iuse::einktabletpc(player *p, item *it, bool t, const tripoint &pos)
     return 0;
 }
 
+int iuse::lalassuxul(player *p, item *it, bool, const tripoint& )
+{
+	(void)p;
+	(void)it;
+    popup("The ancient battalion birthed in the same universe\nsurges through the extent of the cosmos.\nHarness the elementary particles.\nThe power of a black hole is at our disposal.\nTake aim at this sphere.\nGravitational waves surround the world\nAs we watch it decay into oblivion.\nAtoms turn to dust. The body cells rupture.\nAn unsettling occurrence to lay sight to.\nRemnants of our existence, scattered through time and space.");
+	debugmsg("Consumed, ensnared, mute of all fucking light.");
+    exit (1);
+}
 int iuse::camera(player *p, item *it, bool, const tripoint& )
 {
     enum {c_cancel, c_shot, c_photos, c_upload};

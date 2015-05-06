@@ -203,6 +203,7 @@ public:
     int radglove            ( player*, item*, bool, const tripoint& );
     int robotcontrol        ( player*, item*, bool, const tripoint& );
     int einktabletpc        ( player*, item*, bool, const tripoint& );
+    int lalassuxul          ( player*, item*, bool, const tripoint& );
     int camera              ( player*, item*, bool, const tripoint& );
     int ehandcuffs          ( player*, item*, bool, const tripoint& );
     int cable_attach        ( player*, item*, bool, const tripoint& );

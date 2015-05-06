@@ -1065,5 +1065,27 @@
 		"type" : "snippet",
 		"category": "flier",
 		"text": "WARNING! Dihydrogen Monoxide is a colorless and odorless chemical compound. It can cause excessive sweating and urination. It is used in nuclear plants, cleaning solvents, fire suppressants, and is the primary component of acid rain. It can be synthesized by burning rocket fuel. It is found in our water supply, baby formulas, lakes and streams. BAN DHMO NOW!!!"
+	},
+	{
+		"type": "TOOL",
+		"id": "lalassuxul",
+		"symbol": ";",
+		"color": "dark_gray",
+		"name": "Lugal.zu.i.men. Lalassu Xul",
+		"description": "I am your king. The Evil Spectre.",
+		"price": 20000,
+		"material": ["null", "null"],
+		"weight": 0,
+		"volume": 0,
+		"bashing": 0,
+		"cutting": 0,
+		"to_hit": 0,
+		"max_charges": 0,
+		"initial_charges": 0,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"ammo": "NULL",
+		"revert_to": "lalassuxul",
+		"use_action": "LALASSUXUL"
 	}
 ]

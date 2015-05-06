@@ -316,6 +316,7 @@ void Item_factory::init()
     iuse_function_list["RADGLOVE"] = &iuse::radglove;
     iuse_function_list["ROBOTCONTROL"] = &iuse::robotcontrol;
     iuse_function_list["EINKTABLETPC"] = &iuse::einktabletpc;
+    iuse_function_list["LALASSUXUL"] = &iuse::lalassuxul;
     iuse_function_list["CAMERA"] = &iuse::camera;
     iuse_function_list["EHANDCUFFS"] = &iuse::ehandcuffs;
     iuse_function_list["CABLE_ATTACH"]  = &iuse::cable_attach;
