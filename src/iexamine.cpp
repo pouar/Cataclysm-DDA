@@ -2460,7 +2460,7 @@ void iexamine::recycler(player *p, map *m, int examx, int examy)
 void iexamine::trap(player *p, map *m, int examx, int examy)
 {
     const auto &tr = m->tr_at(examx, examy);
-    if( p == nullptr || !p->is_player() || tr.is_null() || tr.id == "tr_chunkblower" ) {
+    if( p == nullptr || !p->is_player() || tr.is_null() || tr.loadid == tr_chunkblower ) {
         return;
     }
     const int possible = tr.get_difficulty();
