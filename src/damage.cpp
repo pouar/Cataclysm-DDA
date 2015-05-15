@@ -83,7 +83,7 @@ void dealt_damage_instance::set_damage( damage_type dt, int amount )
 }
 int dealt_damage_instance::type_damage( damage_type dt ) const
 {
-    if( dealt_dams.size() < (size_t)dt ) {
+    if( (size_t)dt < dealt_dams.size()  ) {
         return dealt_dams[dt];
     }
 
@@ -139,13 +139,6 @@ float resistances::get_effective_resist( const damage_unit &du )
             effective_resist = 0;
     }
     return effective_resist;
-}
-
-
-
-void ammo_effects( int x, int y, const std::set<std::string> &effects )
-{
-    ammo_effects( tripoint( x, y, g->u.posz() ), effects );
 }
 
 void ammo_effects( const tripoint &p, const std::set<std::string> &effects )

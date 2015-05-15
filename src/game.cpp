@@ -667,6 +667,16 @@ void game::start_game(std::string worldname)
     //spawn the monsters
     m.spawn_monsters( true ); // Static monsters
 
+    // Make sure that no monsters are near the player
+    // This can happen in lab starts
+    for( size_t i = 0; i < num_zombies(); ) {
+        if( m.clear_path( zombie( i ).pos(), u.pos(), 40, 1, 100 ) ) {
+            despawn_monster( i );
+        } else {
+            i++;
+        }
+    }
+
     //Create mutation_category_level
     u.set_highest_cat_level();
     //Calc mutation drench protection stats
@@ -3845,9 +3855,9 @@ void game::debug()
     case 12:
         add_msg(m_info, _("Martial arts debug."));
         add_msg(_("Your eyes blink rapidly as knowledge floods your brain."));
-        for( auto &style : martialarts ) {
-            if (style.first != "style_none") {
-                u.add_martialart(style.first);
+        for( auto &style : all_martialart_types() ) {
+            if( style != matype_id( "style_none" ) ) {
+                u.add_martialart(style);
             }
         }
         add_msg(m_good, _("You now know a lot more than just 10 styles of kung fu."));
@@ -6810,7 +6820,6 @@ bool game::revive_corpse( const tripoint &p, int n )
     if( !revive_corpse( p, &m.i_at( p )[n] ) ) {
         return false;
     }
-    m.i_rem( p, n );
     return true;
 }
 
@@ -6840,6 +6849,7 @@ bool game::revive_corpse( const tripoint &p, item *it )
     }
 
     add_zombie(critter);
+    m.i_rem(p, it);
     return true;
 }
 
@@ -7118,7 +7128,7 @@ bool game::vehicle_near()
 
 bool game::refill_vehicle_part(vehicle &veh, vehicle_part *part, bool test)
 {
-    vpart_info part_info = vehicle_part_types[part->id];
+    const vpart_info &part_info = part->info();
     if (!part_info.has_flag("FUEL_TANK")) {
         return false;
     }
@@ -7276,9 +7286,9 @@ void game::exam_vehicle(vehicle &veh, const tripoint &p, int cx, int cy)
         u.activity.values.push_back(veh.index_of_part(vehint.sel_vehicle_part));
         u.activity.values.push_back(vehint.sel_type); // int. might make bitmask
         if (vehint.sel_vpart_info != NULL) {
-            u.activity.str_values.push_back(vehint.sel_vpart_info->id);
+            u.activity.str_values.push_back(vehint.sel_vpart_info->id.str());
         } else {
-            u.activity.str_values.push_back("null");
+            u.activity.str_values.push_back(vpart_info::null.str());
         }
         u.moves = 0;
     }
@@ -7592,11 +7602,11 @@ void game::control_vehicle()
             veh->start_engines( true );
         }
     } else {
-        int examx, examy;
-        if (!choose_adjacent(_("Control vehicle where?"), examx, examy)) {
+        tripoint examp;
+        if (!choose_adjacent(_("Control vehicle where?"), examp)) {
             return;
         }
-        veh = m.veh_at(examx, examy, veh_part);
+        veh = m.veh_at(examp, veh_part);
         if (!veh) {
             add_msg(_("No vehicle there."));
             return;
@@ -7875,7 +7885,7 @@ void game::examine( const tripoint &p )
         }
     }
 
-    veh = m.veh_at(examx, examy, veh_part);
+    veh = m.veh_at(examp, veh_part);
     if (veh) {
         int vpcargo = veh->part_with_feature(veh_part, "CARGO", false);
         int vpkitchen = veh->part_with_feature(veh_part, "KITCHEN", true);
@@ -7884,40 +7894,39 @@ void game::examine( const tripoint &p )
         int vpcraftrig = veh->part_with_feature(veh_part, "CRAFTRIG", true);
         int vpchemlab = veh->part_with_feature(veh_part, "CHEMLAB", true);
         int vpcontrols = veh->part_with_feature(veh_part, "CONTROLS", true);
-        auto here_ground = m.i_at(examx, examy);
+        auto here_ground = m.i_at(examp);
         if( (vpcargo >= 0 && !veh->get_items(vpcargo).empty()) || vpkitchen >= 0 ||
             vpfaucet >= 0 || vpweldrig >= 0 || vpcraftrig >= 0 || vpchemlab >= 0 ||
             vpcontrols >= 0 || !here_ground.empty() ) {
-            Pickup::pick_up( {examx, examy, u.posz()}, 0);
+            Pickup::pick_up( examp, 0);
         } else if (u.controlling_vehicle) {
             add_msg(m_info, _("You can't do that while driving."));
         } else if (abs(veh->velocity) > 0) {
             add_msg(m_info, _("You can't do that on a moving vehicle."));
         } else {
-            exam_vehicle(*veh, tripoint( examx, examy, get_levz() ) );
+            exam_vehicle(*veh, examp );
         }
         return;
     }
 
-    if (m.has_flag("CONSOLE", examx, examy)) {
-        use_computer( tripoint( examx, examy, curz ) );
+    if (m.has_flag("CONSOLE", examp)) {
+        use_computer( examp );
         return;
     }
-    const furn_t *xfurn_t = &furnlist[m.furn(examx, examy)];
-    const ter_t *xter_t = &terlist[m.ter(examx, examy)];
+    const furn_t *xfurn_t = &furnlist[m.furn(examp)];
+    const ter_t *xter_t = &terlist[m.ter(examp)];
 
-    const int player_x = u.posx();
-    const int player_y = u.posy();
+    const tripoint player_pos = u.pos();
 
-    if (m.has_furn(examx, examy)) {
-        xfurn_t->examine(&u, &m, examx, examy);
+    if (m.has_furn(examp)) {
+        xfurn_t->examine(&u, &m, examp);
     } else {
-        xter_t->examine(&u, &m, examx, examy);
+        xter_t->examine(&u, &m, examp);
     }
 
-    // Did the player get moved? Bail out if so; our examx and examy probably
-    // aren't valid anymore.
-    if (player_x != u.posx() || player_y != u.posy()) {
+    // Did the player get moved? Bail out if so; our examp probably
+    // isn't valid anymore.
+    if( player_pos != u.pos() ) {
         return;
     }
 
@@ -7942,30 +7951,29 @@ void game::examine( const tripoint &p )
         }
     }
 
-    if (m.has_flag("SEALED", examx, examy)) {
+    if (m.has_flag("SEALED", examp)) {
         if (none) {
-            if (m.has_flag("UNSTABLE", examx, examy)) {
-                add_msg(_("The %s is too unstable to remove anything."), m.name(examx, examy).c_str());
+            if (m.has_flag("UNSTABLE", examp)) {
+                add_msg(_("The %s is too unstable to remove anything."), m.name(examp).c_str());
             } else {
-                add_msg(_("The %s is firmly sealed."), m.name(examx, examy).c_str());
+                add_msg(_("The %s is firmly sealed."), m.name(examp).c_str());
             }
         }
     } else {
-        //examx,examy has no traps, is a container and doesn't have a special examination function
-        if( m.tr_at( tripoint( examx, examy, u.posz() ) ).is_null() && m.i_at(examx, examy).empty() &&
-            m.has_flag("CONTAINER", examx, examy) && none) {
+        //examp has no traps, is a container and doesn't have a special examination function
+        if( m.tr_at( examp ).is_null() && m.i_at(examp).empty() &&
+            m.has_flag("CONTAINER", examp) && none) {
             add_msg(_("It is empty."));
         } else if (!veh) {
-            Pickup::pick_up( {examx, examy, u.posz()}, 0);
+            Pickup::pick_up( examp, 0);
         }
     }
 
     //check for disarming traps last to avoid disarming query black box issue.
-    const tripoint trap_pos( examx, examy, u.posz() );
-    if( !m.tr_at( trap_pos ).is_null() ) {
-        iexamine::trap(&u, &m, examx, examy);
-        if( m.tr_at( trap_pos ).is_null() ) {
-            Pickup::pick_up( {examx, examy, u.posz()}, 0);    // After disarming a trap, pick it up.
+    if( !m.tr_at( examp ).is_null() ) {
+        iexamine::trap(&u, &m, examp);
+        if( m.tr_at( examp ).is_null() ) {
+            Pickup::pick_up( examp, 0);    // After disarming a trap, pick it up.
         }
     }
 }
@@ -8705,7 +8713,7 @@ tripoint game::look_around( WINDOW *w_info, const tripoint &start_point,
 
                     auto zlev_sound = sounds::sound_at( tmp );
                     if( !zlev_sound.empty() ) {
-                        mvwprintw( w_info, ++off, 1, 
+                        mvwprintw( w_info, ++off, 1,
                                    tmp.z > lp.z ?  _("You heard %s from above.") : _("You heard %s from below."),
                                    zlev_sound.c_str() );
                     }
@@ -12304,7 +12312,7 @@ bool game::plmove(int dx, int dy)
         tripoint dest( x, y, u.posz() );
         // tile is impassable
         int tunneldist = 0;
-        while( m.move_cost(dest) == 0 || 
+        while( m.move_cost(dest) == 0 ||
                ( ( mon_at(dest) != -1 || npc_at(dest) != -1 ) && tunneldist > 0 ) ) {
             //add 1 to tunnel distance for each impassable tile in the line
             tunneldist += 1;
@@ -12404,6 +12412,10 @@ void game::plswim(int x, int y)
     if (u.has_effect("onfire")) {
         add_msg(_("The water puts out the flames!"));
         u.remove_effect("onfire");
+    }
+    if (u.has_effect("glowing")) {
+        add_msg(_("The water washes off the glowing goo!"));
+        u.remove_effect("glowing");
     }
     int movecost = u.swim_speed();
     u.practice("swimming", u.is_underwater() ? 2 : 1);

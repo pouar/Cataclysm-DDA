@@ -142,21 +142,23 @@ class Creature
         /** Make a single melee attack with the currently equipped weapon against the targeted
          *  creature. Should always be overwritten by the appropriate player/NPC/monster function. */
         virtual void melee_attack(Creature &t, bool allow_special,
-                                  matec_id technique) = 0;
+                                  const matec_id & technique) = 0;
+        /**
+         * Calls the to other melee_attack function with an empty technique id (meaning no specific
+         * technique should be used).
+         */
+        void melee_attack(Creature &t, bool allow_special);
 
-        /** Fires a projectile at the target point from the source point with total_dispersion
-         *  dispersion. Returns the rolled dispersion of the shot. */
-        virtual double projectile_attack(const projectile &proj, int sourcex, int sourcey,
-                                         int targetx, int targety, double total_dispersion);
+        /** 
+         *  Fires a projectile at the target point from the source point with total_dispersion
+         *  dispersion.
+         *  Returns the rolled dispersion of the shot and the actually hit point.
+         */
+        std::pair<double, tripoint> projectile_attack( const projectile &proj, const tripoint &source,
+                                                       const tripoint &target, double total_dispersion );
         /** Overloaded version that assumes the projectile comes from this Creature's postion. */
-        virtual double projectile_attack(const projectile &proj, int targetx, int targety,
-                                         double total_dispersion);
-
-        /*
-        // instantly deals damage at the target point
-        virtual int smite_attack(game* g, projectile &proj, int targetx, int targety,
-                std::set<std::string>& proj_effects);
-                */
+        std::pair<double, tripoint> projectile_attack( const projectile &proj, const tripoint &target,
+                                                       double total_dispersion );
 
         // handles dodges and misses, allowing triggering of martial arts counter
         virtual void dodge_hit(Creature *source, int hit_spread) = 0;

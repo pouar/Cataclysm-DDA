@@ -142,6 +142,25 @@ void monster::poly(mtype *t)
     faction = t->default_faction;
 }
 
+bool monster::can_upgrade() const
+{
+    // If we don't upgrade
+    if ((type->half_life <= 0 && type->base_upgrade_chance <= 0) ||
+        (type->upgrade_group == "NULL" && type->upgrades_into == "NULL")) {
+        return false;
+    }
+    // Or we aren't allowed to yet
+    if (ACTIVE_WORLD_OPTIONS["MONSTER_UPGRADE_FACTOR"] <= 0) {
+        return false;
+    } else {
+        if ((calendar::turn.get_turn() / DAYS(1)) <
+             (type->upgrade_min / ACTIVE_WORLD_OPTIONS["MONSTER_UPGRADE_FACTOR"])) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void monster::update_check() {
     // Hallucinations don't upgrade!
     if (is_hallucination()) {
@@ -154,7 +173,13 @@ void monster::update_check() {
         return;
     }
     int current_day = calendar::turn.get_turn()/ DAYS(1);
-    int upgrade_time = type->upgrade_min * ACTIVE_WORLD_OPTIONS["MONSTER_GROUP_DIFFICULTY"];
+    int upgrade_time = 0;
+    if (ACTIVE_WORLD_OPTIONS["MONSTER_UPGRADE_FACTOR"] > 0) {
+        upgrade_time = type->upgrade_min / ACTIVE_WORLD_OPTIONS["MONSTER_UPGRADE_FACTOR"];
+    } else {
+        // Should ensure that the monsters never upgrade
+        upgrade_time = current_day + 1;
+    }
     add_msg(m_debug, "Current:day: %d", current_day);
     add_msg(m_debug, "Upgrade time : %d", upgrade_time);
     add_msg(m_debug, "Last loaded: %d", last_loaded);
@@ -816,7 +841,7 @@ void monster::absorb_hit(body_part, damage_instance &dam) {
     }
 }
 
-void monster::melee_attack(Creature &target, bool, matec_id) {
+void monster::melee_attack(Creature &target, bool, const matec_id&) {
     mod_moves(-100);
     if (type->melee_dice == 0) { // We don't attack, so just return
         return;
@@ -1683,6 +1708,16 @@ void monster::make_friendly()
 void monster::make_ally(monster *z) {
     friendly = z->friendly;
     faction = z->faction;
+}
+
+int monster::get_last_load() const
+{
+    return last_loaded;
+}
+
+void monster::set_last_load(int day)
+{
+    last_loaded = day;
 }
 
 void monster::reset_last_load()

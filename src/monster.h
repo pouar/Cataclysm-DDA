@@ -46,6 +46,7 @@ class monster : public Creature, public JsonSerializer, public JsonDeserializer
         }
 
         void poly(mtype *t);
+        bool can_upgrade() const;
         void update_check();
         void spawn( const tripoint &p); // All this does is moves the monster to p
         m_size get_size() const override;
@@ -225,7 +226,8 @@ class monster : public Creature, public JsonSerializer, public JsonDeserializer
         void absorb_hit(body_part bp, damage_instance &dam) override;
         void dodge_hit(Creature *source, int hit_spread) override;
         bool block_hit(Creature *source, body_part &bp_hit, damage_instance &d) override;
-        void melee_attack(Creature &p, bool allow_special = true, matec_id force_technique = "") override;
+        using Creature::melee_attack;
+        void melee_attack(Creature &p, bool allow_special, const matec_id &force_technique) override;
         virtual int deal_melee_attack(Creature *source, int hitroll) override;
         virtual int deal_projectile_attack(Creature *source, double missed_by,
                                            const projectile &proj, dealt_damage_instance &dealt_dam) override;
@@ -360,8 +362,12 @@ class monster : public Creature, public JsonSerializer, public JsonDeserializer
          * and to reviving monsters that spawn from a corpse.
          */
         void init_from_item( const item &itm );
+        /** Gets the last time the monster was loaded. */
+        int get_last_load() const;
+        /** Sets the last time the monster was loaded to the given day. */
+        void set_last_load(int day);
 
-        /** Sets the last time the monster was loaded to the current turn */
+        /** Sets the last time the monster was loaded to the current day */
         void reset_last_load();
 
     private:
