@@ -1134,7 +1134,7 @@ void trapfunc::snake( Creature *c, const tripoint &p )
     }
 }
 
-void trapfunc::chunkblower(Creature *c, int x, int y)
+void trapfunc::chunkblower(Creature *c, const tripoint &p )
 {
     if (c != NULL) {
         c->add_msg_player_or_npc(m_bad, _("Your grinded mash of arms and legs, torsos and heads, now hamburger meat."), _("Your grinded mash of arms and legs, torsos and heads, now hamburger meat."),
