@@ -12,7 +12,6 @@
 #include "live_view.h"
 #include <vector>
 #include <map>
-#include <queue>
 #include <list>
 #include <stdarg.h>
 
@@ -84,7 +83,6 @@ class overmap;
 struct event;
 enum event_type : int;
 struct vehicle_part;
-struct vehicle_prototype;
 
 class game
 {
@@ -358,7 +356,6 @@ class game
         bool has_gametype() const;
         special_game_id gametype() const;
 
-        std::map<std::string, vehicle *> vtypes;
         void toggle_sidebar_style(void);
         void toggle_fullscreen(void);
         void temp_exit_fullscreen(void);
@@ -464,13 +461,6 @@ class game
         // @param center the center of view, same as when calling map::draw
         void draw_critter( const Creature &critter, const tripoint &center );
 
-        // Vehicle related JSON loaders and variables
-        void load_vehicle(JsonObject &jo);
-        void reset_vehicles();
-        void finalize_vehicles();
-
-        std::queue<vehicle_prototype *> vehprototypes;
-
         nc_color limb_color(player *p, body_part bp, bool bleed = true,
                             bool bite = true, bool infect = true);
 
@@ -497,8 +487,12 @@ class game
         // with the cargo flag (if there is one), otherwise they are
         // dropped onto the ground.
         void drop(std::vector<item> &dropped, std::vector<item> &dropped_worn,
-                  int freed_volume_capacity, int dirx, int diry);
-        bool make_drop_activity( enum activity_type act, const tripoint &target );
+                  int freed_volume_capacity, tripoint dir, 
+                  bool to_vehicle = true); // emulate old behaviour normally
+        void drop(std::vector<item> &dropped, std::vector<item> &dropped_worn,
+                  int freed_volume_capacity, int dirx, int diry,
+                  bool to_vehicle = true); // emulate old behaviour normally
+        bool make_drop_activity(enum activity_type act, const tripoint &target, bool to_vehicle = true);
     private:
         // Game-start procedures
         void print_menu(WINDOW *w_open, int iSel, const int iMenuOffsetX, int iMenuOffsetY,
