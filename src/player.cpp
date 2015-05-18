@@ -1869,7 +1869,7 @@ int player::peeself(bool ctrl)
             if(!has_trait("DL"))
                 add_morale(MORALE_PEESELF, -20, -20);
             if(inwater==false && peefurnid != "f_toilet")
-                g->m.add_field(posx(), posy(), fd_pee, 3);
+                g->m.add_field(pos(), fd_pee, 3,0);
         }
     if(ctrl == true)
     {
@@ -2218,6 +2218,7 @@ void player::pee()
         return;
     }
     int peex, peey;
+	tripoint peepos;
 
     if(male)
     {
@@ -2229,13 +2230,14 @@ void player::pee()
     {
         peex=posx();
         peey=posy();
+        peepos=pos();
     }
     bladder=0;
 
     std::string peeterid = g->m.get_ter(peex,peey);
     std::string peefurnid = g->m.get_furn(peex,peey);
     if(peeterid != "t_water_sh" && peeterid != "t_water_dp" && peeterid != "t_swater_sh" && peeterid != "t_swater_dp" && peeterid != "t_water_pool" && peeterid != "t_sewage" && peeterid != "t_lava" && peefurnid != "f_toilet")
-        g->m.add_field( peex, peey, fd_pee,3 );
+        g->m.add_field( peepos, fd_pee,3,0 );
     if(peeterid == "t_water_pool")
     {
         add_msg(m_info, _("You pee in the pool."));

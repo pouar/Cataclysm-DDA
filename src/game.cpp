@@ -12179,7 +12179,7 @@ bool game::plmove(int dx, int dy)
         }
     for( size_t i = 0; i < u.worn.size(); ++i ) {
         if (u.worn[i].has_flag("CRINKLE")) {
-        sounds::sound(x, y, 40, _("your diaper crinkling."));
+        sounds::sound(u.pos(), 40, _("your diaper crinkling."));
         }
     }
         // If we moved out of the nonant, we need update our map data

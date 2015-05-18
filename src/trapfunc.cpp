@@ -1138,7 +1138,7 @@ void trapfunc::chunkblower(Creature *c, const tripoint &p )
 {
     if (c != NULL) {
         c->add_msg_player_or_npc(m_bad, _("Your grinded mash of arms and legs, torsos and heads, now hamburger meat."), _("Your grinded mash of arms and legs, torsos and heads, now hamburger meat."),
-                                 g->m.tername(x, y).c_str());
+                                 g->m.tername(p).c_str());
         c->add_memorial_log(pgettext("memorial_male", "reduced to ground beef."),
                             pgettext("memorial_female", "reduced to ground beef."));
         monster *z = dynamic_cast<monster *>(c);

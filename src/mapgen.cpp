@@ -9635,10 +9635,10 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
                     }
                     if ( dat.is_groundcover( this->ter(i, j) ) ) {
                         if (one_in(20)) {
-                            add_trap(i, j, tr_beartrap);
+                            madd_trap( this, i, j, tr_beartrap);
                         }
                         if (one_in(20)) {
-                            add_trap(i, j, tr_tripwire);
+                            madd_trap( this, i, j, tr_tripwire);
                         }
                         if (one_in(15)) {
                             ter_set(i, j, t_pit);
