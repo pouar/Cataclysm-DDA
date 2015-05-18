@@ -1828,8 +1828,8 @@ int player::peeself(bool ctrl)
     bool wetdiaper = false;
     bool leak = false;
     bool wet = false;
-    std::string peeterid = g->m.get_ter(posx(),posy());
-    std::string peefurnid = g->m.get_furn(posx(),posy());
+    std::string peeterid = g->m.get_ter(pos());
+    std::string peefurnid = g->m.get_furn(pos());
     bool inwater = false;
     if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp" || peeterid == "t_water_pool" || peeterid == "t_sewage" || peeterid == "t_lava")
         inwater = true;
@@ -2217,25 +2217,22 @@ void player::pee()
         add_msg(m_critical, _("You can't take your pants off with those handcuffs on."));
         return;
     }
-    int peex, peey;
 	tripoint peepos;
 
     if(male)
     {
-        if (!choose_adjacent(_("Pee where?"), peex, peey)) {
+        if (!choose_adjacent(_("Pee where?"), peepos)) {
             return;
         }
     }
     else
     {
-        peex=posx();
-        peey=posy();
         peepos=pos();
     }
     bladder=0;
 
-    std::string peeterid = g->m.get_ter(peex,peey);
-    std::string peefurnid = g->m.get_furn(peex,peey);
+    std::string peeterid = g->m.get_ter(peepos);
+    std::string peefurnid = g->m.get_furn(peepos);
     if(peeterid != "t_water_sh" && peeterid != "t_water_dp" && peeterid != "t_swater_sh" && peeterid != "t_swater_dp" && peeterid != "t_water_pool" && peeterid != "t_sewage" && peeterid != "t_lava" && peefurnid != "f_toilet")
         g->m.add_field( peepos, fd_pee,3,0 );
     if(peeterid == "t_water_pool")

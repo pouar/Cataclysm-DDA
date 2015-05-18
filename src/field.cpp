@@ -297,7 +297,7 @@ void game::init_fields()
         {
             "fd_pee",
             {_("urine splatter"), _("urine stain"), _("puddle of urine")}, '~', 0,
-            {c_yellow, c_yellow, c_yellow}, {true, true, true}, {false, false, false}, 1500,
+            {c_yellow, c_yellow, c_yellow}, {true, true, true}, {false, false, false}, DAYS(1)/3,
             {0,0,0}
         },
 
