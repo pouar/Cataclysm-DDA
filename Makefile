@@ -129,8 +129,8 @@ ifdef RELEASE
   ifeq ($(NATIVE), osx)
     CXXFLAGS += -O3
   else
-    CXXFLAGS += -march=native -O2 -flto=8
-    LDFLAGS += -s -flto=8
+    CXXFLAGS += -march=native -O2 -flto=$(JOBS)
+    LDFLAGS += -s -flto=$(JOBS)
   endif
   # OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
   # Strip symbols, generates smaller executable.
