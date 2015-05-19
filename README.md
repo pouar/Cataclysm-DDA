@@ -14,3 +14,5 @@ Also, It seems I diverged enough from the original that the saves are no longer 
 
 ![screenshot](http://thepouar.dnsdojo.com/pouar/downloads/cataclysm-ss5.png "screenshot 1")
 ![screenshot](http://thepouar.dnsdojo.com/pouar/downloads/cataclysm-ss4.png "screenshot 2")
+
+### Since a bug may be my fault and not an upstream issue, report it to [https://thepouar.dnsdojo.com/bugzilla/enter_bug.cgi?product=Cataclysm%3ADDA%20Diaperfur%20Edition](https://thepouar.dnsdojo.com/bugzilla/enter_bug.cgi?product=Cataclysm%3ADDA%20Diaperfur%20Edition) first.
