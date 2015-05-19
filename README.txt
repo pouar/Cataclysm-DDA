@@ -14,4 +14,4 @@ to see what changes I made, checkout both the master and diaperfur branch, makes
 
 Also, It seems I diverged enough from the original that the saves are no longer compatible with the original. Probably a good idea to have a seperate world.
 
-Since a bug may be my fault and not an upstream issue, report it to https://thepouar.dnsdojo.com/bugzilla/enter_bug.cgi?product=Cataclysm%3ADDA%20Diaperfur%20Edition first.
+Since a bug may be my fault and not an upstream issue, report it to https://thepouar.dnsdojo.com/bugzilla first.
