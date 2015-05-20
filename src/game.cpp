@@ -411,7 +411,7 @@ void game::init_ui()
         locW = sidebarWidth;
         stat2H = 2;
         stat2W = sidebarWidth;
-        messH = TERMY - (statH + locH + stat2H);
+        messH = TERRAIN_WINDOW_TERM_HEIGHT - (statH + locH + stat2H);
         messW = sidebarWidth;
 
         // Now position the elements relative to each other.
@@ -429,7 +429,7 @@ void game::init_ui()
         messY = stat2Y + stat2H;
 
         mouseview_y = messY + 7;
-        mouseview_h = TERMY - mouseview_y - 5;
+        mouseview_h = TERRAIN_WINDOW_TERM_HEIGHT - mouseview_y - 5;
         mouseview_w = sidebarWidth;
     } else {
         // standard sidebar style
@@ -438,7 +438,7 @@ void game::init_ui()
         messX = MINIMAP_WIDTH;
         messY = 0;
         messW = sidebarWidth - messX;
-        messH = TERMY - 5; // 1 for w_location + 4 for w_stat, w_messages starts at 0
+        messH = TERRAIN_WINDOW_TERM_HEIGHT - 5; // 1 for w_location + 4 for w_stat, w_messages starts at 0
         hpX = 0;
         hpY = MINIMAP_HEIGHT;
         // under the minimap, but down to the same line as w_location (which is under w_messages)
@@ -461,7 +461,7 @@ void game::init_ui()
         stat2W = sidebarWidth;
 
         mouseview_y = stat2Y + stat2H;
-        mouseview_h = TERMY - mouseview_y;
+        mouseview_h = TERRAIN_WINDOW_TERM_HEIGHT - mouseview_y;
         mouseview_w = sidebarWidth - MINIMAP_WIDTH;
     }
 
@@ -548,7 +548,7 @@ void game::setup()
 {
     load_world_modfiles(world_generator->active_world);
 
-    m = map( static_cast<bool>( ACTIVE_WORLD_OPTIONS["ZLEVELS"] ) );
+    m = std::move( map( static_cast<bool>( ACTIVE_WORLD_OPTIONS["ZLEVELS"] ) ) );
 
     next_npc_id = 1;
     next_faction_id = 1;
@@ -1253,11 +1253,10 @@ bool game::do_turn()
 
         submap *sm = elem.second;
 
-        for( auto &_i : sm->vehicles ) {
-            auto veh = _i;
-
+        const bool in_bubble_z = m.has_zlevels() || sm_loc.z == get_levz();
+        for( auto &veh : sm->vehicles ) {
             veh->power_parts( sm_loc );
-            veh->idle( sm_loc.z == get_levz() && m.inbounds(in_reality.x, in_reality.y) );
+            veh->idle( in_bubble_z && m.inbounds(in_reality.x, in_reality.y) );
         }
     }
     m.process_fields();
@@ -3732,8 +3731,12 @@ void game::debug()
             while( num_zombies() > 0 ) {
                 despawn_monster( 0 );
             }
-            m.clear_vehicle_cache();
-            m.vehicle_list.clear();
+            const int minz = m.has_zlevels() ? -OVERMAP_DEPTH : get_levz();
+            const int maxz = m.has_zlevels() ? OVERMAP_HEIGHT : get_levz();
+            for( int z = minz; z < maxz; z++ ) {
+                m.clear_vehicle_cache( z );
+                m.clear_vehicle_list( z );
+            }
             // offset because load_map expects the coordinates of the top left corner, but the
             // player will be centered in the middle of the map.
             const int nlevx = tmp.x * 2 - int(MAPSIZE / 2);
@@ -4984,7 +4987,12 @@ void game::draw_veh_dir_indicator(void)
 
 void game::refresh_all()
 {
-    m.reset_vehicle_cache();
+    const int minz = m.has_zlevels() ? -OVERMAP_DEPTH : get_levz();
+    const int maxz = m.has_zlevels() ? OVERMAP_HEIGHT : get_levz();
+    for( int z = minz; z < maxz; z++ ) {
+        m.reset_vehicle_cache( z );
+    }
+
     draw();
     refresh();
 }
@@ -12909,11 +12917,11 @@ void game::vertical_move(int movez, bool force)
     }
 
     u.moves -= 100;
-    m.clear_vehicle_cache();
-    m.vehicle_list.clear();
-    m.set_transparency_cache_dirty();
-    m.set_outside_cache_dirty();
     if( !m.has_zlevels() ) {
+        m.clear_vehicle_cache( z_before );
+        m.access_cache( z_before ).vehicle_list.clear();
+        m.set_transparency_cache_dirty( z_before );
+        m.set_outside_cache_dirty( z_before );
         m.load( get_levx(), get_levy(), z_after, true );
     }
 
