@@ -130,10 +130,10 @@ void game::init_morale()
     _("Found kitten <3"),
     _("Sucking Pacifer"),
     _("Hugging Plushie"),
-    _("Wearing Urine Soaked Clothing"),
+    _("Peed Your Pants"),
     _("Wearing Diaper"),
     _("Gotta Pee"),
-    _("Everyone Saw You Pee Your Pants")
+    _("Leaking Everywhere")
     };
     for (int i = 0; i < NUM_MORALE_TYPES; ++i) {
         morale_data[i]=tmp_morale_data[i];
