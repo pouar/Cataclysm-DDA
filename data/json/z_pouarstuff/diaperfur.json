@@ -613,10 +613,14 @@
 		"leads_to" : ["DRAGON_FUR"],
 		"wet_protection" : [
 			{ "part" : "HEAD", "ignored" : 5 },
-			{ "part" : "LEGS", "ignored" : 16 },
-			{ "part" : "FEET", "ignored" : 5 },
-			{ "part" : "ARMS", "ignored" : 14 },
-			{ "part" : "HANDS", "ignored" : 4 },
+			{ "part" : "LEG_L", "ignored" : 16 },
+			{ "part" : "LEG_R", "ignored" : 16 },
+			{ "part" : "FOOT_L", "ignored" : 5 },
+			{ "part" : "FOOT_R", "ignored" : 5 },
+			{ "part" : "ARM_L", "ignored" : 14 },
+			{ "part" : "ARM_R", "ignored" : 14 },
+			{ "part" : "HAND_L", "ignored" : 4 },
+			{ "part" : "HAND_R", "ignored" : 4 },
 			{ "part" : "TORSO", "ignored" : 30 }
 		]
 	},
