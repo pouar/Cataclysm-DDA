@@ -125,6 +125,9 @@ else
 endif
 RC  = $(CROSS)windres
 # enable optimizations. slow to build
+ifdef CXXABI
+	CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=$(CXXABI)
+endif
 ifdef RELEASE
   ifeq ($(NATIVE), osx)
     CXXFLAGS += -O3
