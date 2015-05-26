@@ -4045,6 +4045,14 @@ void game::debug()
                 smenu.addentry( 0, true, 'h', "%s: %d", _("Hunger"), p.hunger );
                 smenu.addentry( 1, true, 't', "%s: %d", _("Thirst"), p.thirst );
                 smenu.addentry( 2, true, 'f', "%s: %d", _("Fatigue"), p.fatigue );
+                smenu.addentry( 3, true, 'h', "%s: %d", _("Bladder"), p.bladder );
+                smenu.addentry( 4, true, 'f', "%s: %d", _("Bladder Micturation Point"), p.bladdermict );
+                smenu.addentry( 5, true, 'h', "%s: %d", _("Fidgeting Point"), p.bladderdance );
+                smenu.addentry( 6, true, 't', "%s: %d", _("Desperation"), p.bladderdesp );
+                smenu.addentry( 7, true, 'f', "%s: %d", _("Last Minute Point"), p.bladderlast );
+                smenu.addentry( 8, true, 't', "%s: %d", _("Bladder Capacity"), p.bladdercap );
+                smenu.addentry( 9, true, 'f', "%s: %d", _("Bladder Fill Rate"), p.peerate );
+                smenu.addentry( 10, true, 'f', "%s: %d", _("Bladder Fill Rate When Asleep"), p.peesleeprate );
                 smenu.addentry( 999, true, 'q', "%s", _("[q]uit") );
                 smenu.selected = 0;
                 smenu.query();
@@ -4058,6 +4066,30 @@ void game::debug()
                     break;
                 case 2:
                     bp_ptr = &p.fatigue;
+                    break;
+                case 3:
+                    bp_ptr = &p.bladder;
+                    break;
+                case 4:
+                    bp_ptr = &p.bladdermict;
+                    break;
+                case 5:
+                    bp_ptr = &p.bladderdance;
+                    break;
+                case 6:
+                    bp_ptr = &p.bladderdesp;
+                    break;
+                case 7:
+                    bp_ptr = &p.bladderlast;
+                    break;
+                case 8:
+                    bp_ptr = &p.bladdercap;
+                    break;
+                case 9:
+                    bp_ptr = &p.peerate;
+                    break;
+                case 10:
+                    bp_ptr = &p.peesleeprate;
                     break;
                 default:
                     break;
