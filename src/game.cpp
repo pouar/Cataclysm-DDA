@@ -2657,7 +2657,7 @@ bool game::handle_action()
             break;
 
         case ACTION_UNLOAD:
-            unload(u.weapon);
+            unload( -1 );
             break;
 
         case ACTION_THROW:
@@ -6614,7 +6614,7 @@ void game::resonance_cascade( const tripoint &p )
             case 13:
             case 14:
             case 15:
-                spawn_details = MonsterGroupManager::GetResultFromGroup("GROUP_NETHER");
+                spawn_details = MonsterGroupManager::GetResultFromGroup( mongroup_id( "GROUP_NETHER" ) );
                 invader = monster( GetMType(spawn_details.name), dest );
                 add_zombie(invader);
                 break;
@@ -9282,7 +9282,20 @@ int game::list_items(const int iLastState)
     //Area to search +- of players position.
     const int iRadius = 12 + (u.per_cur * 2);
 
-    bool sort_radius = true;
+    bool sort_radius;
+    bool addcategory;
+
+    // use previously selected sorting method
+    if (uistate.list_item_sort == 1) {
+        sort_radius = true;
+        addcategory = false;
+    } else if (uistate.list_item_sort == 2) {
+        sort_radius = false;
+        addcategory = true;
+    } else { // default state after start
+	sort_radius = true;
+	addcategory = false;
+    }
 
     //this stores the items found, along with the coordinates
     std::vector<map_item_stack> ground_items_radius = find_nearby_items(iRadius);
@@ -9310,7 +9323,6 @@ int game::list_items(const int iLastState)
     tripoint iLastActive = tripoint_min;
     bool reset = true;
     bool refilter = true;
-    bool addcategory = false;
     int page_num = 0;
     int iCatSortNum = 0;
     map_item_stack *activeItem = NULL;
@@ -9381,11 +9393,11 @@ int game::list_items(const int iLastState)
                     sort_radius = false;
                     addcategory = true;
                     std::sort( ground_items.begin(), ground_items.end(), map_item_stack::map_item_stack_sort );
-
+                    uistate.list_item_sort = 2; // list is sorted by category
                 } else {
                     sort_radius = true;
-
                     ground_items = ground_items_radius;
+                    uistate.list_item_sort = 1; // list is sorted by distance
                 }
 
                 highPEnd = -1;
@@ -9395,8 +9407,15 @@ int game::list_items(const int iLastState)
                 mSortCategory.clear();
                 refilter = true;
                 reset = true;
+                    
             }
 
+            if ( uistate.list_item_sort == 1 ) {
+                ground_items = ground_items_radius;
+            } else if ( uistate.list_item_sort == 2 ) {
+                std::sort( ground_items.begin(), ground_items.end(), map_item_stack::map_item_stack_sort );
+            }
+                    
             if (refilter) {
                 refilter = false;
 
@@ -11160,24 +11179,32 @@ void game::reload()
 // If it's a gun, some gunmods can also be loaded
 void game::unload(int pos)
 {
-    // this is necessary to prevent re-selection of the same item later
-    item it = (u.inv.remove_item(pos));
-    if (!it.is_null()) {
-        unload(it);
-        u.i_add(it);
-    } else {
-        item ite;
-        if (pos == -1) { // item is wielded as weapon.
-            ite = u.weapon;
-            u.weapon = item("null", 0); //ret_null;
-            unload(ite);
-            u.weapon = ite;
+    item &itm = u.i_at( pos );
+    if( !itm.is_null() ) {
+        unload( itm );
+    } else if( pos == -1 || pos == INT_MIN ) {
+        // Empty hands and unloading the weapon
+        // or explicitly requested unload item menu
+        auto filter = [&]( const item &it ) {
+            return u.rate_action_unload( it ) == HINT_GOOD;
+        };
+
+        auto pr = inv_map_splice( filter, _("Unload item:") );
+        if( pr.second == nullptr ) {
+            add_msg( _("Never mind.") );
             return;
-        } else { //this is that opportunity for reselection where the original container is worn, see issue #808
-            item &itm = u.i_at(pos);
-            if (!itm.is_null()) {
-                unload(itm);
-            }
+        }
+
+        // TODO: Wrap it nicely into a player function
+        if( pr.first == -1 ) {
+            // Shouldn't happen
+            return;
+        } else if( pr.first != INT_MIN ) {
+            // In the inventory
+            unload( pr.first );
+        } else {
+            // Off the ground
+            unload( *pr.second );
         }
     }
 }
@@ -11572,10 +11599,6 @@ bool game::plmove(int dx, int dy)
         }
         return false;
     }
-    if (!u.move_effects()) {
-        u.moves -= 100;
-        return false;
-    }
 
     int x = 0;
     int y = 0;
@@ -11622,9 +11645,21 @@ bool game::plmove(int dx, int dy)
         return false;
     }
 
-    // Check if our movement is actually an attack on a monster
+    // Check if our movement is actually an attack on a monster or npc
     int mondex = mon_at(dest_loc);
+    int npcdex = npc_at( dest_loc );
     // Are we displacing a monster?  If it's vermin, always.
+
+    bool attacking = false;
+    if (mondex != -1 || npcdex != -1){
+        attacking = true;
+    }
+
+    if (!u.move_effects(attacking)) {
+        u.moves -= 100;
+        return false;
+    }
+
     bool displace = false;
     if (mondex != -1) {
         monster &critter = zombie(mondex);
@@ -11659,7 +11694,6 @@ bool game::plmove(int dx, int dy)
         }
     }
     // If not a monster, maybe there's an NPC there
-    int npcdex = npc_at( dest_loc );
     if (npcdex != -1) {
         npc &np = *active_npc[npcdex];
         bool force_attack = false;

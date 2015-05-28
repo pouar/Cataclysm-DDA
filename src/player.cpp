@@ -35,6 +35,8 @@
 #include "mutation.h"
 #include "ui.h"
 #include "trap.h"
+#include "map_iterator.h"
+#include <map>
 
 #ifdef SDLTILES
 #include "SDL2/SDL.h"
@@ -2345,6 +2347,12 @@ bool player::is_immune_effect( const efftype_id &effect ) const
     }
 
     return false;
+}
+
+int player::stability_roll() const
+{
+    int stability = (get_melee()) + get_str() + (get_per() / 3) + (get_dex() / 4);
+        return stability;
 }
 
 bool player::is_immune_damage( const damage_type dt ) const
@@ -5430,11 +5438,12 @@ dealt_damage_instance player::deal_damage(Creature* source, body_part bp, const 
             add_msg_player_or_npc(m_bad, _("%s grabs you!"), _("%s grabs <npcname>!"),
                                   source->disp_name().c_str());
             if (has_grab_break_tec() && get_grab_resist() > 0 && get_dex() > get_str() ?
-                dice(get_dex(), 10) : dice(get_str(), 10) > dice(source->get_dex(), 10)) {
+                rng(0, get_dex()) : rng( 0, get_str()) > rng( 0 , 10)) {
                 add_msg_player_or_npc(m_good, _("You break the grab!"),
                                       _("<npcname> breaks the grab!"));
             } else {
-                add_effect("grabbed", 1);
+                int prev_effect = get_effect_int("grabbed");
+                add_effect("grabbed", 2, bp_torso, false, prev_effect + 2);
             }
         }
     }
@@ -7237,7 +7246,7 @@ void player::hardcoded_effects(effect &it)
                 if (g->m.move_cost( dest ) == 0) {
                     g->m.make_rubble( dest, f_rubble_rock, true);
                 }
-                MonsterGroupResult spawn_details = MonsterGroupManager::GetResultFromGroup("GROUP_NETHER");
+                MonsterGroupResult spawn_details = MonsterGroupManager::GetResultFromGroup( mongroup_id( "GROUP_NETHER" ) );
                 g->summon_mon(spawn_details.name, dest);
                 if (g->u.sees( dest )) {
                     g->cancel_activity_query(_("A monster appears nearby!"));
@@ -7320,7 +7329,7 @@ void player::hardcoded_effects(effect &it)
                     if (g->m.move_cost(x, y) == 0) {
                         g->m.make_rubble( tripoint( x, y, posz() ), f_rubble_rock, true);
                     }
-                    MonsterGroupResult spawn_details = MonsterGroupManager::GetResultFromGroup("GROUP_NETHER");
+                    MonsterGroupResult spawn_details = MonsterGroupManager::GetResultFromGroup( mongroup_id( "GROUP_NETHER" ) );
                     g->summon_mon( spawn_details.name, dest );
                     if (g->u.sees(x, y)) {
                         g->cancel_activity_query(_("A monster appears nearby!"));
@@ -7513,8 +7522,15 @@ void player::hardcoded_effects(effect &it)
     } else if (id == "grabbed") {
         blocks_left -= 1;
         dodges_left = 0;
-        // Set ourselves up for removal
-        it.set_duration(0);
+        int zed_number = 0;
+        for( auto &dest : g->m.points_in_radius( pos(), 1, 0 ) ){
+            if (g->mon_at(dest) != -1){
+                zed_number ++;
+            }
+        }
+        if (zed_number > 0){
+            add_effect("grabbed", 2, bp_torso, false, (intense + zed_number) / 2); //If intensity isn't pass the cap, average it with # of zeds
+        }
     } else if (id == "impaled") {
         blocks_left -= 2;
         dodges_left = 0;

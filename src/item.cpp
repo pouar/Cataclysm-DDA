@@ -1720,6 +1720,10 @@ nc_color item::color(player *u) const
         } else {
             ret = c_red; // Book hasn't been identified yet: red
         }
+    } else if (is_bionic()) {
+        if (!u->has_bionic(type->id)) {
+            ret = c_green; // installable bionics show as green
+        }
     }
     return ret;
 }
@@ -2737,7 +2741,7 @@ int item::bash_resist() const
     // Average based on number of materials.
     resist /= mat_types.size();
 
-    return std::lround((resist * eff_thickness * adjustment) + l_padding + k_padding);
+    return lround((resist * eff_thickness * adjustment) + l_padding + k_padding);
 }
 
 int item::cut_resist() const
@@ -2779,7 +2783,7 @@ int item::cut_resist() const
     // Average based on number of materials.
     resist /= mat_types.size();
 
-    return std::lround((resist * eff_thickness * adjustment) + l_padding + k_padding);
+    return lround((resist * eff_thickness * adjustment) + l_padding + k_padding);
 }
 
 int item::acid_resist() const
@@ -2803,7 +2807,7 @@ int item::acid_resist() const
     // Average based on number of materials.
     resist /= mat_types.size();
 
-    return std::lround(resist);
+    return lround(resist);
 }
 
 bool item::is_two_handed(player *u)
