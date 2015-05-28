@@ -9575,7 +9575,7 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
             if (one_in(2)) {
                 add_spawn("mon_zombie", rng(1, 6), 4, 14);
             } else {
-                place_spawns("GROUP_DOMESTIC", 2, 10, 15, 12, 17, 1);
+                place_spawns(GROUP_DOMESTIC, 2, 10, 15, 12, 17, 1);
             }
         } else {
             dat.fill_groundcover();
@@ -9726,7 +9726,7 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
             if (one_in(3)) {
                 add_spawn("mon_zombie", rng(3, 6), 12, 12);
             } else {
-                place_spawns("GROUP_DOMESTIC", 2, 0, 0, 15, 15, 1);
+                place_spawns(GROUP_DOMESTIC, 2, 0, 0, 15, 15, 1);
             }
 
         } else {
