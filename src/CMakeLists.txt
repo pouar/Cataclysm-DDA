@@ -224,7 +224,6 @@ SET (CATACLYSM_DDA_HEADERS
     ${CMAKE_SOURCE_DIR}/src/lightmap.h
     ${CMAKE_SOURCE_DIR}/src/mutation.h
     ${CMAKE_SOURCE_DIR}/src/init.h
-    ${CMAKE_SOURCE_DIR}/src/wdirent.h
     ${CMAKE_SOURCE_DIR}/src/item.h
     ${CMAKE_SOURCE_DIR}/src/iuse.h
     ${CMAKE_SOURCE_DIR}/src/creature_tracker.h

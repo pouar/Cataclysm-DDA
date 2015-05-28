@@ -22,12 +22,7 @@
 #include "lightmap.h"
 
 //TODO replace these includes with filesystem.h
-#ifdef _MSC_VER
-#   include "wdirent.h"
-#   include <direct.h>
-#else
-#   include <dirent.h>
-#endif
+#include <dirent.h>
 
 #if (defined _WIN32 || defined WINDOWS)
 #   include "platform_win.h"

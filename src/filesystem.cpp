@@ -15,13 +15,8 @@
 // FILE I/O
 #include <sys/stat.h>
 
-#ifdef _MSC_VER
-#   include "wdirent.h"
-#   include <direct.h>
-#else
-#   include <dirent.h>
-#   include <unistd.h>
-#endif
+#include <dirent.h>
+#include <unistd.h>
 
 #if defined(_WIN32) || defined (__WIN32__)
 #   include "platform_win.h"

@@ -1454,7 +1454,6 @@ void map::draw_map(const oter_id terrain_type, const oter_id t_north, const oter
     mapgendata dat(t_north, t_east, t_south, t_west, t_neast, t_seast, t_nwest, t_swest, t_above, zlevel, rsettings, this);
 
     computer *tmpcomp = NULL;
-    bool terrain_type_found = true;
     const std::string function_key = terrain_type.t().id_mapgen;
 
 
@@ -9513,15 +9512,7 @@ $$$$-|-|=HH-|-HHHH-|####\n",
             }
         }
 
-    } else {
-        terrain_type_found = false;
-    }
-
-    // MSVC can't handle a single "if/else if" with this many clauses. Hack to
-    // break the clause in two so MSVC compiles work, until this file is refactored.
-    // "please, shoot me now" - refactorer
-    if (!terrain_type_found) {
-        if (terrain_type == "body_farm") {
+    } else if (terrain_type == "body_farm") {
 
         if (!one_in(10)) {
             dat.fill_groundcover();
@@ -11497,11 +11488,10 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
                  terrain_type.c_str(), otermap[terrain_type].name.c_str(), function_key.c_str() );
         fill_background(this, t_floor);
 
-    }}
+    }
     // THE END OF THE HUGE IF ELIF ELIF ELIF ELI FLIE FLIE FLIE FEL OMFG
 
     // WTF it is still going?...
-    // omg why are there two braces I'm so dizzy with vertigo
 
     // Now, fix sewers and subways so that they interconnect.
 
