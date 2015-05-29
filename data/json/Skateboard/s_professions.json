@@ -1,7 +1,7 @@
 [
 	{
         "type": "profession",
-        "ident": "unemployed",
+        "ident": "skateboarder",
         "name": "Skateboarder",
         "description": "A guy who skates. On a board.",
         "points": 0,
