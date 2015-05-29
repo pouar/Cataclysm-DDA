@@ -1278,7 +1278,10 @@ bool vehicle::fold_up() {
     if (can_be_folded) {
         bicycle.set_var( "weight", total_mass() * 1000 );
         bicycle.set_var( "volume", total_folded_volume() );
-        bicycle.set_var( "name", string_format(_("folded %s"), name.c_str()) );
+        if(name.compare("skateboard")==0)
+            bicycle.set_var( "name", string_format(_("%s"), name.c_str()) );
+        else
+            bicycle.set_var( "name", string_format(_("folded %s"), name.c_str()) );
         bicycle.set_var( "vehicle_name", name );
         // TODO: a better description?
         bicycle.set_var( "description", string_format(_("A folded %s."), name.c_str()) );
