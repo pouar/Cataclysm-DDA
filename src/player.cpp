@@ -1601,7 +1601,7 @@ void player::recalc_speed_bonus()
         mod_speed_bonus(-int((hunger - 100) / 10));
     }
 
-    mod_speed_bonus(stim > 40 ? 40 : stim);
+    mod_speed_bonus( stim > 10 ? 10 : stim / 4);
 
     for (auto maps : effects) {
         for (auto i : maps.second) {
@@ -2942,7 +2942,7 @@ void player::disp_info()
         int perpen = int(stim /  7);
         int intpen = int(stim /  6);
         // Since dexpen etc. are always less than 0, no need for + signs
-        stim_text << _("Speed") << " " << stim << "   " << _("Intelligence") << " " << intpen <<
+        stim_text << _("Speed") << " " << stim / 4 << "   " << _("Intelligence") << " " << intpen <<
             "   " << _("Perception") << " " << perpen << "   " << _("Dexterity") << " " << dexpen;
         effect_text.push_back(stim_text.str());
     }
@@ -3323,7 +3323,7 @@ Strength - 4;    Dexterity - 4;    Intelligence - 4;    Perception - 4"));
         line++;
     }
     if (stim != 0) {
-        pen = stim;
+        pen = std::min( 10, stim / 4 );
         if (pen > 0)
             mvwprintz(w_speed, line, 1, c_green, _("Stimulants          +%s%d%%"),
                       (pen < 10 ? " " : ""), pen);
@@ -3991,6 +3991,8 @@ void player::print_gun_mode( WINDOW *w, nc_color c )
     } else {
         if (weapon.get_gun_mode() == "MODE_BURST") {
             trim_and_print(w, getcury(w), getcurx(w), getmaxx(w) - 2, c, _("%s (Burst)"), weapname().c_str());
+        } else if( weapon.get_gun_mode() == "MODE_REACH" ) {
+            trim_and_print(w, getcury(w), getcurx(w), getmaxx(w) - 2, c, _("%s (Bayonet)"), weapname().c_str());
         } else {
             trim_and_print(w, getcury(w), getcurx(w), getmaxx(w) - 2, c, _("%s"), weapname().c_str());
         }
@@ -6075,17 +6077,28 @@ void player::regen()
 void player::update_stamina()
 {
     // Recover some stamina every turn.
-    if( stamina < get_stamina_max() && !has_effect("winded") ) {
+    if( !has_effect("winded") ) {
         // But mouth encumberance interferes.
         stamina += std::max( 1, 10 - (encumb(bp_mouth) / 10) );
         // TODO: recovering stamina causes hunger/thirst/fatigue.
+        // TODO: Tiredness slowing recovery
     }
 
-    // 2d4 bonus stamina from active stimpack stamina-boost.
-    if( stamina < get_stamina_max() && has_effect("stimpack") &&
-        get_effect_dur("stimpack") > 50 ) {
-        stamina += rng( 2, 8 );
+    // stim recovers stamina (or impairs recovery)
+    if( stim > 0 ) {
+        // TODO: Make stamina recovery with stims cost health
+        stamina += std::min( 5, stim / 20 );
+    } else if( stim < 0 ) {
+        // Affect it less near 0 and more near full
+        // Stamina maxes out around 1000, stims kill at -200
+        // At -100 stim fully counters regular regeneration at 500 stamina,
+        // halves at 250 stamina, cuts by 25% at 125 stamina
+        // At -50 stim fully counters at 1000, halves at 500
+        stamina += stim * stamina / 1000 / 5 ;
     }
+
+    // Cap at max
+    stamina = std::min( stamina,  get_stamina_max() );
 }
 
 void player::add_addiction(add_type type, int strength)
@@ -6204,17 +6217,22 @@ bool player::siphon(vehicle *veh, const itype_id &desired_liquid)
 }
 
 void player::cough(bool harmful, int loudness) {
-    if (!is_npc()) {
+    if( !is_npc() ) {
         add_msg(m_bad, _("You cough heavily."));
         sounds::sound(pos(), loudness, "");
     } else {
         sounds::sound(pos(), loudness, _("a hacking cough."));
     }
+
     moves -= 80;
-    if (harmful && !one_in(4)) {
-        apply_damage( nullptr, bp_torso, 1 );
+    if( harmful ) {
+        const int stam = stamina;
+        mod_stat( "stamina", -100 );
+        if( stam < 100 && x_in_y( 100 - stam, 100 ) ) {
+            apply_damage( nullptr, bp_torso, 1 );
+        }
     }
-    if (has_effect("sleep") && ((harmful && one_in(3)) || one_in(10)) ) {
+    if( has_effect("sleep") && ((harmful && one_in(3)) || one_in(10)) ) {
         wake_up();
     }
 }
@@ -6564,6 +6582,23 @@ void player::process_effects() {
             val = 0;
             if (it.activated(calendar::turn, "VOMIT", val, reduced, mod)) {
                 vomit();
+            }
+
+            // Handle stamina
+            val = it.get_mod("STAMINA", reduced);
+            if (val != 0) {
+                mod = 1;
+                if(it.activated(calendar::turn, "STAMINA", val, reduced, mod)) {
+                    stamina += bound_mod_to_vals( stamina, val,
+                                                  it.get_max_val("STAMINA", reduced),
+                                                  it.get_min_val("STAMINA", reduced) );
+                    if( stamina < 0 ) {
+                        // TODO: Make it drain fatigue and/or oxygen?
+                        stamina = 0;
+                    } else if( stamina > get_stamina_max() ) {
+                        stamina = get_stamina_max();
+                    }
+                }
             }
         }
     }
@@ -11968,10 +12003,10 @@ void player::read(int inventory_position)
         add_msg(m_warning, _("It's difficult to see fine details right now. Reading will take longer than usual."));
     }
 
-    if (tmp->intel > int_cur && !continuous) {
+    if (tmp->intel > get_int() && !continuous) {
         add_msg(m_warning, _("This book is too complex for you to easily understand. It will take longer to read."));
         // Lower int characters can read, at a speed penalty
-        time += (tmp->time * (tmp->intel - int_cur) * 100);
+        time += (tmp->time * (tmp->intel - get_int()) * 100);
     }
 
     activity = player_activity(ACT_READ, time, -1, inventory_position, "");
