@@ -19516,6 +19516,11 @@
 					"id": "amy_headband",
 					"fg": 33,
 					"rotates": false
+				},
+				{
+					"id": "threehandletrophy",
+					"fg": 34,
+					"rotates": false
 				}
 			]
 		}

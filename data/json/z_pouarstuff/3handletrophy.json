@@ -1,0 +1,17 @@
+[
+	{
+		"type":"GENERIC",
+		"id": "threehandletrophy",
+		"symbol": "Y",
+		"color": "yellow",
+		"name": "3 Handle Trophy",
+		"description": "YOU'RE WINNER",
+		"price": 1000000000,
+		"material": "gold",
+		"weight": 6175,
+		"volume": 12,
+		"bashing": 2,
+		"cutting": 0,
+		"to_hit": -3
+	} 
+]
