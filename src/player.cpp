@@ -5437,15 +5437,20 @@ dealt_damage_instance player::deal_damage(Creature* source, body_part bp, const 
         }
 
         if ( source->has_flag(MF_GRABS)) {
-            add_msg_player_or_npc(m_bad, _("%s grabs you!"), _("%s grabs <npcname>!"),
-                                  source->disp_name().c_str());
             if (has_grab_break_tec() && get_grab_resist() > 0 && get_dex() > get_str() ?
                 rng(0, get_dex()) : rng( 0, get_str()) > rng( 0 , 10)) {
-                add_msg_player_or_npc(m_good, _("You break the grab!"),
-                                      _("<npcname> breaks the grab!"));
+                if (has_effect("grabbed")){
+                    add_msg_if_player(m_info,_("You are being grabbed by %s, but you bat it away!"),
+                                      source->disp_name().c_str());
+                } else {add_msg_player_or_npc(m_info, _("You are being grabbed by %s, but you break its grab!"),
+                                    _("<npcname> are being grabbed by %s, but they break its grab!"),
+                                    source->disp_name().c_str());
+                }
             } else {
                 int prev_effect = get_effect_int("grabbed");
                 add_effect("grabbed", 2, bp_torso, false, prev_effect + 2);
+                add_msg_player_or_npc(m_bad, _("You are grabbed by %s!"), _("<npcname> is grabbed by %s!"),
+                                source->disp_name().c_str());
             }
         }
     }
@@ -14199,6 +14204,14 @@ bool player::can_hear( const tripoint &source, const int volume ) const
     if( is_deaf() ) {
         return false;
     }
+
+    // source is in-ear and at our square, we can hear it
+    if ( source == pos3() && volume == 0 ) {
+        return true;
+    }
+
+    // TODO: sound attenuation due to weather
+
     const int dist = rl_dist( source, pos3() );
     const float volume_multiplier = hearing_ability();
     return volume * volume_multiplier >= dist;
@@ -14237,6 +14250,10 @@ float player::hearing_ability() const
     if( has_effect( "deaf" ) ) {
         // Scale linearly up to 300
         volume_multiplier *= ( 300.0 - get_effect_dur( "deaf" ) ) / 300.0;
+    }
+
+    if( has_effect( "earphones" ) ) {
+        volume_multiplier *= .25;
     }
 
     return volume_multiplier;
@@ -14279,7 +14296,7 @@ void player::place_corpse()
     item body;
     body.make_corpse( GetMType( "mon_null" ), calendar::turn, name );
     for( auto itm : tmp ) {
-        g->m.add_item_or_charges( posx(), posy(), *itm );
+        g->m.add_item_or_charges( pos(), *itm );
     }
     for( auto & bio : my_bionics ) {
         if( item::type_is_defined( bio.id ) ) {
@@ -14296,7 +14313,7 @@ void player::place_corpse()
             body.contents.push_back( item( "bio_power_storage", calendar::turn ) );
         }
     }
-    g->m.add_item_or_charges( posx(), posy(), body );
+    g->m.add_item_or_charges( pos(), body );
 }
 
 bool player::sees_with_infrared( const Creature &critter ) const
