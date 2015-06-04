@@ -19521,6 +19521,11 @@
 					"id": "threehandletrophy",
 					"fg": 34,
 					"rotates": false
+				},
+				{
+					"id": "mon_sanic",
+					"fg": 35,
+					"rotates": false
 				}
 			]
 		}
