@@ -11,23 +11,37 @@
 		"symbol" : "[",
 		"description" : "A t-shirt with the Cannibal Corpse logo on it",
 		"snippet_category" : [
-			{ "id" : "cannibalcorpse",
-			"text" : "A t-shirt with the Cannibal Corpse logo on it"
+			{ 
+				"id" : "cannibalcorpse",
+				"text" : "A t-shirt with the Cannibal Corpse logo on it"
 			},
-			{ "id" : "butcheredatbirth",
-			"text" : "A t-shirt featuring the album art from Butchered At Birth, the 2nd album by Cannibal Corpse. The gory artwork shows a zombie dissecting a pregnant woman with another zombie butchering her unborn child and dead fetuses hanging from the ceiling on hooks and nooses."
+			{ 
+				"id" : "butcheredatbirth",
+				"text" : "A t-shirt featuring the album art from Butchered At Birth, the 2nd album by Cannibal Corpse. The gory artwork shows a zombie dissecting a pregnant woman with another zombie butchering her unborn child and dead fetuses hanging from the ceiling on hooks and nooses."
 			},
-			{ "id" : "theharvestfloor",
-			"text" : "A t-shirt featuring the album art from The Harvest Floor, the 5th album by Cattle Decapitation. The artwork shows a picture of a slaughterhouse with the general public being herded inside to meet their demise."
+			{ 
+				"id" : "theharvestfloor",
+				"text" : "A t-shirt featuring the album art from The Harvest Floor, the 5th album by Cattle Decapitation. The artwork shows a picture of a slaughterhouse with the general public being herded inside to meet their demise."
 			},
-			{ "id" : "thyartismurder",
-			"text" : "A t-shirt with the band Thy Art Is Murder's logo on it."
+			{ 
+				"id" : "thyartismurder",
+				"text" : "A t-shirt with the band Thy Art Is Murder's logo on it."
 			},
-			{ "id" : "whitechapel",
-			"text" : "A t-shirt with the band Whitechapel's logo on it."
+			{ 
+				"id" : "whitechapel",
+				"text" : "A t-shirt with the band Whitechapel's logo on it."
 			},
-			{ "id" : "mitchluckermemoriam",
-			"text" : "Made in memoriam of Mitch Lucker. 1984-2012. You Only Live Once. Has the Suicide Silence logo on it and a picture of Mitch Lucker screaming into the mic"
+			{
+				"id" : "mitchluckermemoriam",
+				"text" : "Made in memoriam of Mitch Lucker. 1984-2012. You Only Live Once. Has the Suicide Silence logo on it and a picture of Mitch Lucker screaming into the mic."
+			},
+			{
+				"id" : "ringsofsaturn",
+				"text" : "A t-shirt with the Rings Of Saturn logo on it."
+			},
+			{
+				"id" : "carnifexhellchoseme",
+				"text" : "A t-shirt featuring the album art of Hell Chose Me by Carnifex. The album cover depicts a zombified priest bearing an inverted cross on his chest and holding a cornucopia of goat heads."
 			}
 		],
 		"price" : 2000,
@@ -1149,7 +1163,7 @@
 		"luminance":0,
 		"hp":30,
 		"death_function":"NORMAL",
-		"description": "Cumon\nStep it\nup!::¡!",
+		"description": "Cumon\nStep it\nup!::??!",
 		"flags":["SEES", "HEARS", "SMELLS", "ANIMAL", "WARM", "FUR", "HIT_AND_RUN", "KEENNOSE", "BLEED", "ATTACKMON", "BONES", "FAT"],
 		"anger_triggers":["HURT", "FRIEND_ATTACKED", "FRIEND_DIED"],
 		"placate_triggers":["MEAT"],
