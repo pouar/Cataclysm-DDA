@@ -1814,6 +1814,8 @@ int player::run_cost(int base_cost, bool diag)
 }
 int player::peeself(bool ctrl)
 {
+    int action = 0;
+    int release = 0;
     if(ctrl == true)
     {
         if(!has_trait("DEBUG_BLADDER"))
@@ -1829,6 +1831,25 @@ int player::peeself(bool ctrl)
                 return 0;
             }
         }
+        action = menu(true,_("How much"),_("A little to relieve the pressure"),_("All of it like an infant"),NULL);
+    }
+    if(action==1)
+    {
+        if(!male)
+        {
+            add_msg(m_bad, _("You pee a little to relieve the pressure, bad idea since you can't stop the flow"));
+            ctrl = false;
+        }
+        else
+        {
+            add_msg(m_warning, _("You pee a little to relieve the pressure"));
+            release=1;
+        }
+    }
+    else if((male && one_in(5)) || (!male && one_in(10)))
+    {
+        add_msg(m_warning, _("You leak a little, but with sheer will you managed to stop the flow"));
+        release=1;
     }
     bool wetdiaper = false;
     bool leak = false;
@@ -1838,6 +1859,41 @@ int player::peeself(bool ctrl)
     bool inwater = false;
     if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp" || peeterid == "t_water_pool" || peeterid == "t_sewage" || peeterid == "t_lava")
         inwater = true;
+    if(release>0)
+    {
+        for(unsigned int i = 0;i<worn.size();i++)
+        {
+            if((worn[i].covers(bp_leg_l) || worn[i].covers(bp_leg_r)) && !worn[i].has_flag("SKIRT") && release>0)
+            {
+                worn[i].item_tags.insert("WETDIAPER");
+                wet=true;
+                if(worn[i].has_flag("DIAPER"))
+                {
+                    wetdiaper=true;
+                }
+                if(worn[i].type->peecap>release+worn[i].pee)
+                {
+                    worn[i].pee+=release;
+                    bladder-=release;
+                    release=0;
+                    break;
+                }
+                else
+                {
+                    bladder-=worn[i].type->peecap-worn[i].pee;
+                    release-=worn[i].type->peecap-worn[i].pee;
+                    worn[i].pee=worn[i].type->peecap;
+                    if(worn[i].has_flag("EVERDIAPER"))
+                    {
+                        bladder-=release;
+                        release=0;
+                        break;
+                    }
+                }
+            }
+        }
+        return 0;
+    }
     for(unsigned int i = 0;i<worn.size();i++)
     {
         if((worn[i].covers(bp_leg_l) || worn[i].covers(bp_leg_r)) && !worn[i].has_flag("SKIRT") && bladder>0)
@@ -2047,7 +2103,7 @@ int player::peeself(bool ctrl)
                     if(has_trait("INCONT"))
                     add_msg(m_bad, _("Everyone starts laughing at you and you can't figure out why, until you look down and get a horrified look on your face as you find out you peed yourself like a toddler."));
                     else
-                    add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Everyone starts laughing at you."));
+                    add_msg(m_bad, _("You pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Everyone starts laughing at you."));
                     return 0;
                 }
             }
@@ -2096,7 +2152,7 @@ int player::peeself(bool ctrl)
                     if(has_trait("INCONT"))
                     add_msg(m_bad, _("You pee yourself without control, but no one noticed as only the inside of your pants got stained"));
                     else
-                    add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Amazingly it didn't leak through your pants."));
+                    add_msg(m_bad, _("You pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Amazingly it didn't leak through your pants."));
                     return 0;
                 }
                 else if(wet==false)
@@ -2148,7 +2204,7 @@ int player::peeself(bool ctrl)
                     if(has_trait("INCONT"))
                     add_msg(m_bad, _("Everyone starts laughing at you and you can't figure out why, until you look down and get a horrified look on your face as you find out your diaper is leaking like hell."));
                     else
-                    add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Everyone starts laughing at you as your diapers leak all over the place."));
+                    add_msg(m_bad, _("You pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. Everyone starts laughing at you as your diapers leak all over the place."));
                     return 0;
                 }
             }
@@ -2180,7 +2236,7 @@ int player::peeself(bool ctrl)
                 else if(has_trait("INCONT"))
                     add_msg(m_bad, _("You pee yourself like a toddler without even noticing. And thanks to that diaper of yours no one else will either."));
                 else
-                    add_msg(m_bad, _("After your little potty dance performance you pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. At least with those diapers no one will notice."));
+                    add_msg(m_bad, _("You pause with a horrified look on your face as you wet yourself like a 3 year old who didn't make it. At least with those diapers no one will notice."));
                 return 0;
             }
         }
