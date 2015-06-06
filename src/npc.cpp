@@ -43,6 +43,14 @@ npc::npc()
  fatigue = 0;
  hunger = 0;
  thirst = 0;
+ bladder = 0;
+ bladdercap = 600;
+ bladdermict = 150;
+ bladderdance = 300;
+ bladderdesp = 450;
+ bladderlast = 595;
+ peerate = 0;
+ peesleeprate = 0;
  fetching_item = false;
  has_new_items = false;
  worst_item_value = 0;
