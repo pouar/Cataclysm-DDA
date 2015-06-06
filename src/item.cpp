@@ -939,7 +939,9 @@ std::string item::info(bool showtext, std::vector<iteminfo> &dump_ref) const
 
         dump->push_back(iteminfo("ARMOR", temp1.str()));
 
-        dump->push_back(iteminfo("ARMOR", _("Coverage: "), "<num>% ", get_coverage(), true, "", false));
+        dump->push_back(iteminfo("ARMOR", _("Coverage: "), "<num>% ", get_coverage(), true, "", true));
+        dump->push_back(iteminfo("ARMOR", _("Absorbancy: "), "<num> ml ", type->peecap, true, "", false));
+        dump->push_back(iteminfo("ARMOR", _("Usage: "), "<num> ml ", pee, true, "", true));
         dump->push_back(iteminfo("ARMOR", _("Warmth: "), "", get_warmth()));
         if (has_flag("FIT")) {
             dump->push_back(iteminfo("ARMOR", _("Encumberment: "), _("<num> (fits)"),

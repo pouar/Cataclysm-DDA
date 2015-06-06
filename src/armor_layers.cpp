@@ -68,6 +68,10 @@ std::vector<std::string> clothing_properties(item const &worn_item, int const wi
     props.push_back(string_format("[%s]", _("Properties")));
     props.push_back(name_and_value(space + _("Coverage:"),
                                    string_format("%3d", worn_item.get_coverage()), width));
+    props.push_back(name_and_value(space + _("Absorbancy:"),
+                                   string_format("%3d", worn_item.type->peecap), width));
+    props.push_back(name_and_value(space + _("Usage:"),
+                                   string_format("%3d", worn_item.pee), width));
     props.push_back(name_and_value(space + _("Encumbrance:"), string_format("%3d",
                                    (worn_item.has_flag("FIT")) ? std::max(0, (worn_item.get_encumber() - 10)) :
                                    worn_item.get_encumber()), width));
