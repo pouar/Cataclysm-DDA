@@ -307,13 +307,4 @@ void trap::finalize()
     tr_snake = trapfind("tr_snake");
     tr_chunkblower = trapfind("tr_chunkblower"),
     tr_glass_pit = trapfind("tr_glass_pit");
-
-    // Set ter_t.trap using ter_t.trap_id_str.
-    for( auto &elem : terlist ) {
-        if( elem.trap_id_str.empty() ) {
-            elem.trap = tr_null;
-        } else {
-            elem.trap = trap_str_id( elem.trap_id_str );
-        }
-    }
 }
