@@ -1846,7 +1846,7 @@ int player::peeself(bool ctrl)
             release=1;
         }
     }
-    else if((male && one_in(5)) || (!male && one_in(10)))
+    else if(!ctrl && ((male && one_in(5)) || (!male && one_in(10))))
     {
         add_msg(m_warning, _("You leak a little, but with sheer will you managed to stop the flow"));
         release=1;
