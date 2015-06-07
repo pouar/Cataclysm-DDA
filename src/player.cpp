@@ -1892,6 +1892,13 @@ int player::peeself(bool ctrl)
                 }
             }
         }
+        if(release > 0)
+        {
+            add_msg(m_bad, _("pee starts to dribble down your leg"));
+            if(!has_trait("DL"))
+                add_morale(MORALE_PEESELF, -1, -20);
+            bladder-=release;
+        }
         return 0;
     }
     for(unsigned int i = 0;i<worn.size();i++)
