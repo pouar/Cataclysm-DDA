@@ -30,7 +30,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":100,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -69,7 +68,6 @@
                         [ "child_items", 25 ]
                 ]
     },
-        "luminance":0,
         "hp":160,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -108,7 +106,6 @@
                         [ "child_items", 25 ]
                 ]
     },
-        "luminance":0,
         "hp":100,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -147,7 +144,6 @@
                         [ "child_items", 25 ]
                 ]
     },
-        "luminance":0,
         "hp":160,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -186,7 +182,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":100,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -225,7 +220,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":100,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -264,7 +258,6 @@
                         [ "child_items", 25 ]
                 ]
     },
-        "luminance":0,
         "hp":160,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -303,7 +296,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":100,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -342,7 +334,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":180,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -381,7 +372,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
     "hp":150,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -420,7 +410,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":150,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -459,7 +448,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":150,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -498,7 +486,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":150,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -537,7 +524,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":160,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -576,7 +562,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":150,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -615,7 +600,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-    "luminance":0,
         "hp":150,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -654,7 +638,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":180,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -693,7 +676,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":160,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -733,7 +715,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":150,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -772,7 +753,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":150,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -811,7 +791,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":100,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -850,7 +829,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":100,
         "special_freq":[0],
         "death_function":"BROKEN",
@@ -889,7 +867,6 @@
                         [ "child_items", 75 ]
                 ]
     },
-        "luminance":0,
         "hp":150,
         "special_freq":[0],
         "death_function":"BROKEN",

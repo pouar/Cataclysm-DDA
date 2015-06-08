@@ -687,7 +687,6 @@
 		"armor_cut":0,
 		"vision_day":40,
 		"item_chance":0,
-		"luminance":0,
 		"hp":60,
 		"special_freq":0,
 		"death_function":["NORMAL","GUILT"],
@@ -732,7 +731,6 @@
 		"armor_cut":0,
 		"vision_day":40,
 		"item_chance":0,
-		"luminance":0,
 		"hp":60,
 		"special_freq":0,
 		"death_function":["NORMAL","GUILT"],
@@ -777,7 +775,6 @@
 		"armor_cut":4,
 		"vision_day":40,
 		"item_chance":0,
-		"luminance":0,
 		"hp":60,
 		"special_freq":0,
 		"death_function":["NORMAL","GUILT"],
@@ -822,7 +819,6 @@
 		"armor_cut":8,
 		"vision_day":40,
 		"item_chance":0,
-		"luminance":0,
 		"hp":500,
 		"special_freq":0,
 		"death_function":["NORMAL"],
@@ -2040,7 +2036,6 @@
 				[ "child_items", 75 ],"diaper"
 			]
 		},
-		"luminance":0,
 		"hp":180,
 		"special_freq":[0],
 		"death_function":"BROKEN",
@@ -2077,7 +2072,6 @@
 				[ "child_items", 75 ],"diaper"
 			]
 		},
-		"luminance":0,
 		"hp":180,
 		"special_freq":[0],
 		"death_function":"BROKEN",
@@ -2114,7 +2108,6 @@
 				[ "child_items", 75 ],"diaper"
 			]
 		},
-		"luminance":0,
 		"hp":180,
 		"special_freq":[0],
 		"death_function":"BROKEN",
@@ -2151,7 +2144,6 @@
 				[ "child_items", 75 ],"diaper"
 			]
 		},
-		"luminance":0,
 		"hp":180,
 		"special_freq":[0],
 		"death_function":"BROKEN",
@@ -2259,7 +2251,7 @@
 		"default_faction":"nether",
 		"armor_bash":5,
 		"armor_cut":0,
-		"luminance":1,
+		"luminance":8,
 		"hp":1000,
 		"death_function":"NORMAL",
 		"special_attacks":[["SYGG_STING", 10],["FEAR_PARALYZE", 10],["BITE", 3],["LUNGE", 15],["LEAP", 15],["HOWL",10]],
@@ -2391,7 +2383,6 @@
 		"armor_bash":2,
 		"armor_cut":0,
 		"vision_day":40,
-		"luminance":0,
 		"hp":90,
 		"death_function":"NORMAL",
 		"death_drops": "diaper",
@@ -2539,7 +2530,6 @@
 		"armor_cut":0,
 		"vision_day":40,
 		"item_chance":0,
-		"luminance":0,
 		"hp":60,
 		"special_freq":0,
 		"death_function":["NORMAL","GUILT"],
