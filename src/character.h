@@ -20,6 +20,7 @@ enum vision_modes {
     FELINE_VISION,
     BIRD_EYE,
     URSINE_VISION,
+	EYEOFSAURON,
     NUM_VISION_MODES
 };
 
