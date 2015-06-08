@@ -246,7 +246,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         /** Removes a bionic from my_bionics[] */
         void remove_bionic(std::string const &b);
         /** Used by the player to perform surgery to remove bionics and possibly retrieve parts */
-        bool uninstall_bionic(std::string const &b_id);
+        bool uninstall_bionic(std::string const &b_id, int skill_level = -1);
         /** Adds the entered amount to the player's bionic power_level */
         void charge_power(int amount);
         /** Generates and handles the UI for player interaction with installed bionics */
@@ -288,7 +288,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         /** Returns the player's sight range */
         int sight_range( int light_level ) const override;
         /** Returns the player maximum vision range factoring in mutations, diseases, and other effects */
-        int  unimpaired_range();
+        int  unimpaired_range() const;
         /** Returns true if overmap tile is within player line-of-sight */
         bool overmap_los( const tripoint &omt, int sight_points );
         /** Returns the distance the player can see on the overmap */
@@ -434,7 +434,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         void fire_gun( const tripoint &target, long burst_size );
         /** Handles reach melee attacks */
         void reach_attack( const tripoint &target );
-
+        
         /** Activates any on-dodge effects and checks for dodge counter techniques */
         void dodge_hit(Creature *source, int hit_spread) override;
         /** Checks for valid block abilities and reduces damage accordingly. Returns true if the player blocks */
@@ -653,7 +653,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         /** Removes selected gunmod from the entered weapon */
         void remove_gunmod(item *weapon, unsigned id);
         /** Attempts to install bionics, returns false if the player cancels prior to installation */
-        bool install_bionics(const itype &type);
+        bool install_bionics(const itype &type, int skill_level = -1);
         /** Handles reading effects */
         void read(int pos);
         /** Completes book reading action. **/
@@ -672,12 +672,14 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         void wake_up();
         /** Checks to see if the player is using floor items to keep warm, and return the name of one such item if so */
         std::string is_snuggling();
-        /** Returns a value used for things like reading and sewing based on light level */
+        /** Returns a value from 1.0 to 5.0 that acts as a multiplier
+         * for the time taken to perform tasks that require detail vision,
+         * above 4.0 means these activities cannot be performed. */
         float fine_detail_vision_mod();
 
-        /** Used to determine player feedback on item use for the inventory code */
-        hint_rating rate_action_use(const item *it)
-        const; //rates usability lower for non-tools (books, etc.)
+        /** Used to determine player feedback on item use for the inventory code.
+         *  rates usability lower for non-tools (books, etc.) */
+        hint_rating rate_action_use(const item *it) const;
         hint_rating rate_action_wear(item *it);
         hint_rating rate_action_eat(item *it);
         hint_rating rate_action_read(item *it);

@@ -68,7 +68,7 @@ class monster : public Creature, public JsonSerializer, public JsonDeserializer
         }
         std::string get_material() const override
         {
-            return type->mat;
+            return type->mat[0];
         };
         int hp_percentage() const override;
 
@@ -193,6 +193,17 @@ class monster : public Creature, public JsonSerializer, public JsonDeserializer
          * @return true if we destroyed something, false otherwise.
          */
         bool bash_at( const tripoint &p );
+
+        /**
+         * Try to push away whatever occupies p, then step in.
+         * May recurse and try to make the creature at p push further.
+         *
+         * @param boost A bonus on the roll to represent a horde pushing from behind
+         * @param depth Number of recursions so far
+         *
+         * @return True if we managed to push something and took its place, false otherwise.
+         */
+        bool push_to( const tripoint &p, int boost, size_t depth );
 
         /** Returns innate monster bash skill, without calculating additional from helpers */
         int bash_skill();

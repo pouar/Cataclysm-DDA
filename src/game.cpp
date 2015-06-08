@@ -573,6 +573,7 @@ void game::setup()
     clear_zombies();
     coming_to_stairs.clear();
     active_npc.clear();
+    mission_npc.clear();
     factions.clear();
     mission::clear_all();
     items_dragged.clear();
@@ -740,6 +741,22 @@ void game::load_npcs()
             active_npc.push_back(temp);
         }
     }
+}
+
+//Pulls the NPCs that were dumped into the world map on save back into mission_npcs
+void game::load_mission_npcs()
+{
+    const int radius = int(MAPSIZE / 2) - 1;
+    // uses submap coordinates
+    std::vector<npc *> npcs = overmap_buffer.get_npcs_near_player(radius);
+    for( auto temp : npcs ) {
+        if (temp->companion_mission != ""){
+            mission_npc.push_back(temp);
+            overmap_buffer.hide_npc( temp->getID() );
+        }
+    }
+    active_npc.clear();
+    load_npcs();
 }
 
 void game::create_starting_npcs()
@@ -1271,7 +1288,7 @@ bool game::do_turn()
     sounds::process_sounds();
     // Update vision caches for monsters. If this turns out to be expensive,
     // consider a stripped down cache just for monsters.
-    m.build_map_cache( get_levz() );
+    m.build_map_cache( get_levz(), true );
     monmove();
     update_stair_monsters();
     u.process_turn();
@@ -1960,6 +1977,11 @@ input_context game::get_player_input(std::string &action)
         wPrint.endx = iEndX;
         wPrint.endy = iEndY;
 
+        visibility_variables cache;
+        m.update_visibility_cache( cache, u.posz() );
+        const level_cache &map_cache = m.get_cache_ref( u.posz() );
+        const auto &visibility_cache = map_cache.visibility_cache;
+
         inp_mngr.set_timeout(125);
         // Force at least one animation frame if the player is dead.
         while( handle_mouseview(ctxt, action) || uquit == QUIT_WATCH ) {
@@ -1974,25 +1996,28 @@ input_context game::get_player_input(std::string &action)
 
                 //Erase previous drops from w_terrain
                 for( auto &elem : wPrint.vdrops ) {
-                    m.drawsq( w_terrain, u, tripoint( elem.first + offset_x, elem.second + offset_y, get_levz() ),
-                              false, true, u.posx() + u.view_offset.x, u.posy() + u.view_offset.y );
+                    const tripoint location( elem.first + offset_x, elem.second + offset_y, get_levz() );
+                    const lit_level lighting = visibility_cache[location.x][location.y];
+                    wmove( w_terrain, location.y - offset_y, location.x - offset_x );
+                    if( !m.apply_vision_effects( w_terrain, lighting, cache ) ) {
+                        m.drawsq( w_terrain, u, location, false, true,
+                                  u.posx() + u.view_offset.x, u.posy() + u.view_offset.y,
+                                  lighting == LL_LOW, lighting == LL_BRIGHT );
+                    }
                 }
 
                 wPrint.vdrops.clear();
 
-                const int light_sight_range = u.sight_range( light_level() );
                 for (int i = 0; i < dropCount; i++) {
                     const int iRandX = rng(iStartX, iEndX - 1);
                     const int iRandY = rng(iStartY, iEndY - 1);
                     const int mapx = iRandX + offset_x;
                     const int mapy = iRandY + offset_y;
                     const tripoint mapp( mapx, mapy, u.posz() );
-                    const int distance = rl_dist( u.pos(), mapp );
 
-                    if( m.is_outside( mapp ) &&
-                        ( m.light_at( mapp ) > LL_LOW ||
-                          distance <= light_sight_range ) &&
-                        m.pl_sees( mapp, distance ) &&
+                    const lit_level lighting = visibility_cache[mapp.x][mapp.y];
+
+                    if( m.is_outside( mapp ) && m.get_visibility( lighting, cache ) == VIS_CLEAR &&
                         !critter_at(mapp) ) {
                         // Supress if a critter is there
                         wPrint.vdrops.push_back(std::make_pair(iRandX, iRandY));
@@ -2008,22 +2033,13 @@ input_context game::get_player_input(std::string &action)
                         //Erase previous text from w_terrain
                         if( elem.getStep() > 0 ) {
                             for( size_t i = 0; i < elem.getText().length(); ++i ) {
-                                if( u.sees( elem.getPosX() + i, elem.getPosY() ) ) {
-                                    m.drawsq( w_terrain, u,
-                                              tripoint( elem.getPosX() + i, elem.getPosY(), u.posz() + u.view_offset.z ),
-                                              false, true, u.posx() + u.view_offset.x, u.posy() + u.view_offset.y );
-                                } else {
-                                    const int iDY =
-                                        POSY + ( elem.getPosY() - ( u.posy() + u.view_offset.y ) );
-                                    const int iDX =
-                                        POSX + ( elem.getPosX() - ( u.posx() + u.view_offset.x ) );
-
-                                    if (u.has_effect("boomered")) {
-                                        mvwputch(w_terrain, iDY, iDX + i, c_magenta, '#');
-
-                                    } else {
-                                        mvwputch(w_terrain, iDY, iDX + i, c_black, ' ');
-                                    }
+                                const tripoint location( elem.getPosX() + i, elem.getPosY(), get_levz() );
+                                const lit_level lighting = visibility_cache[location.x][location.y];
+                                wmove( w_terrain, location.y - offset_y, location.x - offset_x );
+                                if( !m.apply_vision_effects( w_terrain, lighting, cache ) ) {
+                                    m.drawsq( w_terrain, u, location, false, true,
+                                              u.posx() + u.view_offset.x, u.posy() + u.view_offset.y,
+                                              lighting == LL_LOW, lighting == LL_BRIGHT );
                                 }
                             }
                         }
@@ -3337,6 +3353,7 @@ void game::load(std::string worldname, std::string name)
     u.load_zones(); // Load character world zones
     load_uistate(worldname);
 
+    load_mission_npcs(); // Pull mission_npcs back out of the overmap before update_map
     update_map(&u);
 
     // legacy, needs to be here as we access the map.
@@ -3392,6 +3409,14 @@ void game::load_world_modfiles(WORLDPTR world)
 //Saves all factions and missions and npcs.
 bool game::save_factions_missions_npcs()
 {
+    //Dump all of the NPCs from mission_npc into the world map to be saved
+    for( auto *elem : mission_npc ) {
+        elem->spawn_at(get_levx(), get_levy(), get_levz());
+        elem->setx(u.posx() + 3);
+        elem->sety(u.posy() + 3);
+        elem->setz( u.posz() );
+    }
+    
     std::string masterfile = world_generator->active_world->world_path + "/master.gsav";
     try {
         std::ofstream fout;
@@ -3660,9 +3685,9 @@ struct terrain {
     };
 };
 
-bool game::event_queued(event_type type)
+bool game::event_queued(event_type type) const
 {
-    for( auto &e : events ) {
+    for( const auto &e : events ) {
         if( e.type == type ) {
             return true;
         }
@@ -5415,39 +5440,15 @@ void game::hallucinate( const tripoint &center )
 
 float game::ground_natural_light_level() const
 {
-    float ret = (float)calendar::turn.sunlight();
-    ret += weather_data(weather).light_modifier;
-
-    return std::max(0.0f, ret);
-}
-
-float game::natural_light_level() const
-{
-    float ret = 0;
-
-    if (get_levz() >= 0) {
-        ret = (float)calendar::turn.sunlight();
-        ret += weather_data(weather).light_modifier;
-    }
-
-    return std::max(0.0f, ret);
-}
-
-unsigned char game::light_level()
-{
-    //already found the light level for now?
-    if (calendar::turn == latest_lightlevel_turn) {
+    // Already found the light level for now?
+    if( calendar::turn == latest_lightlevel_turn ) {
         return latest_lightlevel;
     }
 
-    int ret;
-    if (get_levz() < 0) { // Underground!
-        ret = 1;
-    } else {
-        ret = calendar::turn.sunlight();
-        ret -= weather_data(weather).sight_penalty;
-    }
-    for( auto &e : events ) {
+    float ret = (float)calendar::turn.sunlight();
+    ret += weather_data(weather).light_modifier;
+
+    for( const auto &e : events ) {
         // The EVENT_DIM event slowly dims the sky, then relights it
         // EVENT_DIM has an occurrence date of turn + 50, so the first 25 dim it
         if( e.type == EVENT_DIM ) {
@@ -5460,16 +5461,31 @@ unsigned char game::light_level()
             break;
         }
     }
-    if (ret < 8 && event_queued(EVENT_ARTIFACT_LIGHT)) {
-        ret = 8;
+    // Check whether the light level is under the threshld first because
+    // event_queued() is relatively expensive.
+    if( ret < 5.15 && event_queued(EVENT_ARTIFACT_LIGHT) ) {
+        ret = 5.15;
     }
-    if (ret < 1) {
-        ret = 1;
-    }
+
+    ret = std::max(LIGHT_AMBIENT_MINIMAL, ret);
 
     latest_lightlevel = ret;
     latest_lightlevel_turn = calendar::turn;
     return ret;
+}
+
+float game::natural_light_level() const
+{
+    if( get_levz() >= 0 ) {
+        return ground_natural_light_level();
+    }
+    return LIGHT_AMBIENT_MINIMAL;
+}
+
+unsigned char game::light_level() const
+{
+    const float light = natural_light_level();
+    return LIGHT_RANGE(light);
 }
 
 void game::reset_light_level()
@@ -6872,6 +6888,71 @@ monster *game::monster_at(const tripoint &p)
 void game::rebuild_mon_at_cache()
 {
     critter_tracker->rebuild_cache();
+}
+
+bool game::swap_critters( Creature &a, Creature &b )
+{
+    if( &a == &b ) {
+        // No need to do anything, but print a debugmsg anyway
+        debugmsg( "Tried to swap %s with itself", a.disp_name().c_str() );
+        return true;
+    }
+
+    // Simplify by "sorting" the arguments
+    // Only the first argument can be u
+    // If swapping player/npc with a monster, monster is second
+    bool a_first = a.is_player() ||
+                   ( a.is_npc() && !b.is_player() );
+    Creature &first =  a_first ? a : b;
+    Creature &second = a_first ? b : a;
+    // Possible options:
+    // both first and second are monsters
+    // second is a monster, first is a player or an npc
+    // first is a player, second is an npc
+    // both first and second are npcs
+    if( first.is_monster() ) {
+        monster *m1 = dynamic_cast< monster* >( &first );
+        monster *m2 = dynamic_cast< monster* >( &second );
+        if( m1 == nullptr || m2 == nullptr || m1 == m2 ) {
+            debugmsg( "Couldn't swap two monsters" );
+            return false;
+        }
+
+        critter_tracker->swap_positions( *m1, *m2 );
+        return true;
+    } else if( second.is_monster() ) {
+        // TODO: Remove the ugly casts when Creature::setpos exists
+        player *u_or_npc = dynamic_cast< player* >( &first );
+        monster *mon = dynamic_cast< monster* >( &second );
+        if( u_or_npc == nullptr || mon == nullptr ) {
+            debugmsg( "Couldn't swap the player or an npc with a monster" );
+            return false;
+        }
+
+        tripoint temp = mon->pos();
+        mon->setpos( u_or_npc->pos() );
+        u_or_npc->setpos( temp );
+        if( u_or_npc->is_player() ) {
+            update_map( u_or_npc );
+        }
+    } else {
+        // TODO: Also remove casts
+        player *u_or_npc = dynamic_cast< player* >( &first );
+        player *other_npc = dynamic_cast< player* >( &second );
+        if( u_or_npc == nullptr || other_npc == nullptr ) {
+            debugmsg( "Couldn't swap the player or an npc with an npc" );
+            return false;
+        }
+
+        tripoint temp = u_or_npc->pos();
+        u_or_npc->setpos( second.pos() );
+        other_npc->setpos( temp );
+        if( first.is_player() ) {
+            update_map( u_or_npc );
+        }
+    }
+
+    return true;
 }
 
 bool game::is_empty( const tripoint &p )
@@ -8636,6 +8717,9 @@ tripoint game::look_around( WINDOW *w_info, const tripoint &start_point,
 
     const int old_levz = get_levz();
 
+    visibility_variables cache;
+    m.update_visibility_cache( cache, old_levz );
+
     do {
         if (bNewWindow) {
             werase(w_info);
@@ -8708,28 +8792,32 @@ tripoint game::look_around( WINDOW *w_info, const tripoint &start_point,
 
         } else {
             //Look around
-            if (u.sees(lp)) {
+            switch( m.get_visibility(m.apparent_light_at(lp, cache), cache) ) {
+            case VIS_CLEAR:
                 print_all_tile_info( lp, w_info, 1, off, false);
-
-            } else if (u.sight_impaired() &&
-                       m.light_at( lp ) == LL_BRIGHT &&
-                       rl_dist( u.pos(), lp) < u.unimpaired_range() &&
-                       m.sees( u.pos(), lp, u.unimpaired_range() ) ) {
-                if (u.has_effect("boomered")) {
-                    mvwputch_inv(w_terrain, POSY + (ly - u.posy()), POSX + (lx - u.posx()), c_pink, '#');
-
-                } else if (u.has_effect("darkness")) {
-                    mvwputch_inv(w_terrain, POSY + (ly - u.posy()), POSX + (lx - u.posx()), c_dkgray, '#');
-
-                } else {
-                    mvwputch_inv(w_terrain, POSY + (ly - u.posy()), POSX + (lx - u.posx()), c_ltgray, '#');
-                }
-
+                break;
+            case VIS_BOOMER:
+                mvwputch_inv(w_terrain, POSY, POSX, c_pink, '#');
+                //~ Describing what you can see when you're boomered.
+                mvwprintw(w_info, 1, 1, _("A bright pink blur."));
+                break;
+            case VIS_BOOMER_DARK:
+                mvwputch_inv(w_terrain, POSY, POSX, c_pink, '#');
+                //~ Describing what you can see when you're boomered.
+                mvwprintw(w_info, 1, 1, _("A pink blur."));
+                break;
+            case VIS_DARK:
+                mvwputch_inv(w_terrain, POSY, POSX, c_dkgray, '#');
+                mvwprintw(w_info, 1, 1, _("Darkness."));
+                break;
+            case VIS_LIT:
+                mvwputch_inv(w_terrain, POSY, POSX, c_ltgray, '#');
                 mvwprintw(w_info, 1, 1, _("Bright light."));
-
-            } else {
+                break;
+            case VIS_HIDDEN:
                 mvwputch(w_terrain, POSY, POSX, c_white, 'x');
                 mvwprintw(w_info, 1, 1, _("Unseen."));
+                break;
             }
 
             if (fast_scroll) {
@@ -8754,8 +8842,8 @@ tripoint game::look_around( WINDOW *w_info, const tripoint &start_point,
 
                     auto zlev_sound = sounds::sound_at( tmp );
                     if( !zlev_sound.empty() ) {
-                        mvwprintw( w_info, ++off, 1,
-                                   tmp.z > lp.z ?  _("You heard %s from above.") : _("You heard %s from below."),
+                        mvwprintw( w_info, ++off, 1, tmp.z > lp.z ?
+                                   _("You heard %s from above.") : _("You heard %s from below."),
                                    zlev_sound.c_str() );
                     }
                 }
@@ -12806,23 +12894,22 @@ void game::vertical_move(int movez, bool force)
     }
 
     // Find the corresponding staircase
-    int stairx = -1, stairy = -1;
     bool rope_ladder = false;
 
-    const int omtilesz=SEEX * 2;
+    const int omtilesz = SEEX * 2;
     real_coords rc( m.getabs(u.posx(), u.posy()) );
     point omtile_align_start(
         m.getlocal(rc.begin_om_pos())
     );
 
+    tripoint stairs( -1, -1, z_after );
     bool actually_moved = true;
     if (force) {
-        stairx = u.posx();
-        stairy = u.posy();
+        stairs = u.pos();
+        stairs.z = z_after;
     } else { // We need to find the stairs.
+        tripoint dest( -1, -1, z_after );
         int best = 999;
-        bool danger_lava = false;
-        tripoint dest( 0, 0, z_after );
         int &i = dest.x;
         int &j = dest.y;
         for( i = omtile_align_start.x; i <= omtile_align_start.x + omtilesz; i++ ) {
@@ -12832,23 +12919,26 @@ void game::vertical_move(int movez, bool force)
                      (movez == 1 && (maybetmp.has_flag("GOES_DOWN", dest) ||
                                      maybetmp.ter(dest) == t_manhole_cover)) ||
                      ((movez == 2 || movez == -2) && maybetmp.ter(dest) == t_elevator))) {
-                    stairx = i;
-                    stairy = j;
+                    stairs = dest;
                     best = rl_dist(u.pos(), dest);
-                }
-                // Magic number used as double-shifting "best" added a bit of lag
-                if (rl_dist(u.pos(), dest) <= 3 && (maybetmp.ter(dest) == t_lava)) {
-                    danger_lava = true;
                 }
             }
         }
 
-        if (danger_lava && !query_yn(_("There is a LOT of heat coming out of there.  Descend anyway?")) ) {
-            actually_moved = false;
-        }
-        if (stairx == -1 || stairy == -1) { // No stairs found!
-            if (movez < 0) {
-                if (maybetmp.move_cost(u.pos()) == 0) {
+        if( stairs.x == -1 || stairs.y == -1 ) { // No stairs found!
+            stairs = u.pos();
+            stairs.z = z_after;
+            // Check the destination area for lava.
+            if( maybetmp.ter(stairs) == t_lava ){
+                if( movez < 0 &&
+                    !query_yn(_("There is a LOT of heat coming out of there.  Descend anyway?")) ) {
+                    actually_moved = false;
+                } else if( movez > 0 &&
+                           !query_yn(_("There is a LOT of heat coming out of there.  Ascend anyway?")) ){
+                    actually_moved = false;
+                }
+            } else if (movez < 0) {
+                if (maybetmp.move_cost(stairs) == 0) {
                     popup(_("Halfway down, the way down becomes blocked off."));
                     actually_moved = false;
                 } else if (u.has_trait("WEB_RAPPEL")) {
@@ -12910,8 +13000,6 @@ void game::vertical_move(int movez, bool force)
                     actually_moved = false;
                 }
             }
-            stairx = u.posx();
-            stairy = u.posy();
         }
     }
 
@@ -12997,15 +13085,13 @@ void game::vertical_move(int movez, bool force)
         m.load( get_levx(), get_levy(), z_after, true );
     }
 
-    u.setx( stairx );
-    u.sety( stairy );
-    u.setz( get_levz() );
+    u.setpos( stairs );
     if (rope_ladder) {
         m.ter_set(u.pos(), t_rope_up);
     }
-    if (m.ter(stairx, stairy) == t_manhole_cover) {
-        m.spawn_item(stairx + rng(-1, 1), stairy + rng(-1, 1), "manhole_cover");
-        m.ter_set(stairx, stairy, t_manhole);
+    if (m.ter(stairs.x, stairs.y) == t_manhole_cover) {
+        m.spawn_item(stairs.x + rng(-1, 1), stairs.y + rng(-1, 1), "manhole_cover");
+        m.ter_set(stairs.x, stairs.y, t_manhole);
     }
 
     m.spawn_monsters( true );
@@ -13674,12 +13760,12 @@ bool game::spread_fungus( const tripoint &p )
                 converted = true;
             }
         } else if (m.has_flag("FLAT", x, y)) {
-            if (m.has_flag("INDOORS", x, y)) {
+            if( m.has_flag( TFLAG_INDOORS, x, y ) ) {
                 if (x_in_y(growth * 10, 500)) {
                     m.ter_set(x, y, t_fungus_floor_in);
                     converted = true;
                 }
-            } else if (m.has_flag("SUPPORTS_ROOF", x, y)) {
+            } else if( m.has_flag( TFLAG_SUPPORTS_ROOF, x, y ) ) {
                 if (x_in_y(growth * 10, 1000)) {
                     m.ter_set(x, y, t_fungus_floor_sup);
                     converted = true;
@@ -13744,12 +13830,12 @@ bool game::spread_fungus( const tripoint &p )
                         m.ter_set(i, j, t_fungus);
                         converted = true;
                     } else if (m.has_flag("FLAT", i, j)) {
-                        if (m.has_flag("INDOORS", i, j)) {
+                        if( m.has_flag( TFLAG_INDOORS, i, j ) ) {
                             if (one_in(5)) {
                                 m.ter_set(i, j, t_fungus_floor_in);
                                 converted = true;
                             }
-                        } else if (m.has_flag("SUPPORTS_ROOF", i, j)) {
+                        } else if( m.has_flag( TFLAG_SUPPORTS_ROOF, i, j ) ) {
                             if (one_in(10)) {
                                 m.ter_set(i, j, t_fungus_floor_sup);
                                 converted = true;

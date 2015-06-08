@@ -2703,7 +2703,6 @@ int iuse::sew(player *p, item *it, bool, const tripoint& )
         p->add_msg_if_player(m_info, _("You can't do that while underwater."));
         return 0;
     }
-    //minimum LL_LOW of LL_DARK + (ELFA_NV or atomic_light)
     if (p->fine_detail_vision_mod() > 4) {
         add_msg(m_info, _("You can't see to sew!"));
         return 0;
@@ -2731,7 +2730,6 @@ int iuse::sew_advanced(player *p, item *it, bool, const tripoint& )
         return 0;
     }
 
-    // Minimum LL_LOW of LL_DARK + (ELFA_NV or atomic_light)
     if( p->fine_detail_vision_mod() > 4 ) {
         add_msg(m_info, _("You can't see to sew!"));
         return 0;
