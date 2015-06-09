@@ -90,3 +90,6 @@ tools/djb2sum
 # OSX
 Cataclysm.app
 data/osx/AppIcon.icns
+
+# Jetbrains CLion
+.idea/

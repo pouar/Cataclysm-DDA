@@ -921,7 +921,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         {
             position.z = z;
         }
-        inline void setpos( const tripoint &p )
+        inline void setpos( const tripoint &p ) override
         {
             position = p;
         }
