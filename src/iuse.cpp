@@ -7958,7 +7958,8 @@ bool einkpc_download_memory_card(player *p, item *eink, item *mc)
 
         p->add_msg_if_player(m_good, string_format(
                                  ngettext("You transfered %d new photo to the laptop's hdd.",
-                                          "You transfered %d new photos to the laptop's hdd.", new_photos)).c_str());
+                                          "You transfered %d new photos to the laptop's hdd.", new_photos),
+                                                   new_photos).c_str());
 
         const int old_photos = eink->get_var( "EIPC_PHOTOS", 0 );
         eink->set_var( "EIPC_PHOTOS", old_photos + new_photos);
@@ -7972,7 +7973,8 @@ bool einkpc_download_memory_card(player *p, item *eink, item *mc)
 
         p->add_msg_if_player(m_good, string_format(
                                  ngettext("You transfered %d new song to the laptop's hdd.",
-                                          "You transfered %d new songs to the laptop's hdd.", new_songs)).c_str());
+                                          "You transfered %d new songs to the laptop's hdd.", new_songs),
+                                                   new_songs).c_str());
 
         const int old_songs = eink->get_var( "EIPC_MUSIC", 0 );
         eink->set_var( "EIPC_MUSIC", old_songs + new_songs);
