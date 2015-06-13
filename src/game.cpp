@@ -2945,7 +2945,6 @@ bool game::handle_action()
             MAPBUFFER.reset();
             overmap_buffer.clear();
             setup();
-            MAPBUFFER.load( world_generator->active_world->world_name );
             load( world_generator->active_world->world_name, base64_encode(u.name) );
             return false;
 
@@ -3696,7 +3695,6 @@ bool game::event_queued(event_type type) const
     return false;
 }
 
-#include "savegame.h"
 void game::debug()
 {
     int action = menu(true, // cancelable
@@ -10634,7 +10632,7 @@ std::vector<tripoint> game::pl_target_ui( tripoint &p, int range, item *relevant
     } else if (last_target >= 0 && last_target_was_npc && size_t(last_target) < active_npc.size()) {
         last_target_critter = active_npc[last_target];
     }
-    auto mon_targets = u.get_visible_creatures( range );
+    auto mon_targets = u.get_targetable_creatures( range );
     std::sort(mon_targets.begin(), mon_targets.end(), compare_by_dist_attitude { u } );
     int passtarget = -1;
     for (size_t i = 0; i < mon_targets.size(); i++) {
