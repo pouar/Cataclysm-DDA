@@ -9405,6 +9405,20 @@ int game::list_items(const int iLastState)
 	addcategory = false;
     }
 
+    // reload filter/priority settings on the first invocation, if they were active
+    if (!uistate.list_item_init) {
+        if (uistate.list_item_filter_active) {
+            sFilter = uistate.list_item_filter;
+        }
+        if (uistate.list_item_downvote_active) {
+            list_item_downvote = uistate.list_item_downvote;
+        }
+        if (uistate.list_item_priority_active) {
+            list_item_upvote = uistate.list_item_priority;
+        }
+        uistate.list_item_init = true;
+    }
+
     //this stores the items found, along with the coordinates
     std::vector<map_item_stack> ground_items_radius = find_nearby_items(iRadius);
     std::vector<map_item_stack> ground_items = ground_items_radius;
@@ -9467,12 +9481,18 @@ int game::list_items(const int iLastState)
                 reset = true;
                 refilter = true;
                 addcategory = !sort_radius;
+                if ( sFilter != "" ) {
+                    uistate.list_item_filter_active = true;
+                } else {
+                    uistate.list_item_filter_active = false;
+                }
             } else if (action == "RESET_FILTER") {
                 sFilter = "";
                 filtered_items = ground_items;
                 iLastActive = tripoint_min;
                 reset = true;
                 refilter = true;
+                uistate.list_item_filter_active = false;
                 addcategory = !sort_radius;
             } else if (action == "EXAMINE" && filtered_items.size()) {
                 std::vector<iteminfo> vThisItem, vDummy;
@@ -9490,12 +9510,22 @@ int game::list_items(const int iLastState)
                 refilter = true;
                 reset = true;
                 addcategory = !sort_radius;
+                if ( list_item_upvote != "" ) {
+                    uistate.list_item_priority_active = true;
+                } else {
+                    uistate.list_item_priority_active = false;
+                }
             } else if (action == "PRIORITY_DECREASE") {
                 std::string temp = ask_item_priority_low(w_item_info, iInfoHeight);
                 list_item_downvote = temp;
                 refilter = true;
                 reset = true;
                 addcategory = !sort_radius;
+                if ( list_item_downvote != "" ) {
+                    uistate.list_item_downvote_active = true;
+                } else {
+                    uistate.list_item_downvote_active = false;
+                }
             } else if (action == "SORT") {
                 if ( sort_radius ) {
                     sort_radius = false;
@@ -12845,24 +12875,57 @@ void game::vertical_move(int movez, bool force)
         u.moves -= 100;
         return;
     }
+
     // Force means we're going down, even if there's no staircase, etc.
-    // This happens with sinkholes and the like.
-    if (!force && ((movez == -1 && !m.has_flag("GOES_DOWN", u.pos())) ||
-                   (movez == 1 && !m.has_flag("GOES_UP", u.pos())))) {
-        if (movez == -1) {
-            add_msg(m_info, _("You can't go down here!"));
-        } else {
-            add_msg(m_info, _("You can't go up here!"));
+    bool climbing = false;
+    int move_cost = 100;
+    tripoint stairs( u.posx(), u.posy(), u.posz() + movez );
+    if( m.has_zlevels() && !force && movez == 1 && !m.has_flag( "GOES_UP", u.pos() ) ) {
+        // Climbing
+        if( !m.valid_move( u.pos(), stairs, false, true ) ) {
+            add_msg( m_info, _("You can't climb here - there's a ceiling above your head") );
+            return;
         }
-        return;
+
+        const int cost = u.climbing_cost( u.pos(), stairs );
+        if( cost == 0 ) {
+            add_msg( m_info, _("You can't climb here - you need walls and/or furniture to brace against") );
+            return;
+        }
+
+        std::vector<tripoint> pts;
+        for( const auto &pt : m.points_in_radius( stairs, 1 ) ) {
+            if( m.move_cost( pt ) > 0 && !m.has_flag( TFLAG_NO_FLOOR, pt ) ) {
+                pts.push_back( pt );
+            }
+        }
+
+        if( cost > 0 && !pts.empty() ) {
+            climbing = true;
+            move_cost = cost;
+            // TODO: Allow picking this instead of forcing a random one
+            stairs = pts[rng( 0, pts.size() - 1 )];
+        } else {
+            add_msg( m_info, _("You can't climb here - there is no terrain above you that would support your weight") );
+            return;
+        }
+        // TODO: Make it an extended action
     }
 
-    if (force) {
+    if( !force && movez == -1 && !m.has_flag( "GOES_DOWN", u.pos() ) ) {
+        add_msg(m_info, _("You can't go down here!"));
+        return;
+    } else if( !climbing && !force && movez == 1 && !m.has_flag( "GOES_UP", u.pos() ) ) {
+        add_msg(m_info, _("You can't go up here!"));
+        return;
+    }    
+
+    if( force ) {
         // Let go of a grabbed cart.
         u.grab_point.x = 0;
         u.grab_point.y = 0;
         u.grab_point.z = 0;
-    } else if (u.grab_point.x != 0 || u.grab_point.y != 0) {
+    } else if( u.grab_point.x != 0 || u.grab_point.y != 0 || u.grab_point.z != 0 ) {
         // TODO: Warp the cart along with you if you're on an elevator
         add_msg(m_info, _("You can't drag things up and down stairs."));
         return;
@@ -12901,12 +12964,10 @@ void game::vertical_move(int movez, bool force)
         m.getlocal(rc.begin_om_pos())
     );
 
-    tripoint stairs( -1, -1, z_after );
     bool actually_moved = true;
-    if (force) {
-        stairs = u.pos();
-        stairs.z = z_after;
-    } else { // We need to find the stairs.
+    if( !force && !climbing ) { // We need to find the stairs.
+        stairs.x = -1;
+        stairs.y = -1;
         tripoint dest( -1, -1, z_after );
         int best = 999;
         int &i = dest.x;
@@ -13075,7 +13136,7 @@ void game::vertical_move(int movez, bool force)
         }
     }
 
-    u.moves -= 100;
+    u.moves -= move_cost;
     if( !m.has_zlevels() ) {
         m.clear_vehicle_cache( z_before );
         m.access_cache( z_before ).vehicle_list.clear();
@@ -13094,23 +13155,6 @@ void game::vertical_move(int movez, bool force)
     }
 
     m.spawn_monsters( true );
-
-    if (force) { // Basically, we fell.
-        if ((u.has_trait("WINGS_BIRD")) || ((one_in(2)) && (u.has_trait("WINGS_BUTTERFLY")))) {
-            add_msg(_("You flap your wings and flutter down gracefully."));
-        } else if (u.has_trait("WINGS_DRAGON")) {
-            add_msg(_("You spread your wings and glide down safely."));
-        } else {
-            int dam = int((u.str_max / 4) + rng(5, 10)) * rng(1, 3);//The bigger they are
-            dam -= rng(u.get_dodge(), u.get_dodge() * 3);
-            if (dam <= 0) {
-                add_msg(_("You fall expertly and take no damage."));
-            } else {
-                add_msg(m_bad, _("You fall heavily, taking %d damage."), dam);
-                u.hurtall(dam, nullptr);
-            }
-        }
-    }
 
     // Upon force movement, traps can not be avoided.
     m.creature_on_trap( u, !force );

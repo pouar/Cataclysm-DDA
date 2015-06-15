@@ -32,8 +32,8 @@ public:
     int bladderset          ( player*, item*, bool, const tripoint& );
     int caff                ( player*, item*, bool, const tripoint& );
     int atomic_caff         ( player*, item*, bool, const tripoint& );
-    int alcohol             ( player*, item*, bool, const tripoint& );
     int alcohol_weak        ( player*, item*, bool, const tripoint& );
+    int alcohol_medium      ( player*, item*, bool, const tripoint& );
     int alcohol_strong      ( player*, item*, bool, const tripoint& );
     int xanax               ( player*, item*, bool, const tripoint& );
     int smoking             ( player*, item*, bool, const tripoint& );

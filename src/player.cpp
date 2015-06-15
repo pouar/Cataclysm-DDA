@@ -5729,8 +5729,9 @@ int player::impact( const int force, const tripoint &p )
         // Armor simply helps way less
         armor_eff *= 30.0f / effective_force;
         if( mod < 1.0f ) {
-            // Landing helps only with the last 30 damage
-            const float scaled_damage = ( 30.0f * mod ) + effective_force - 30.0f;
+            // Everything past 30 damage gets a worse modifier
+            const float scaled_mod = std::pow( mod, 30.0f / effective_force );
+            const float scaled_damage = ( 30.0f * mod ) + scaled_mod * ( effective_force - 30.0f );
             mod = scaled_damage / effective_force;
         }
     }
@@ -8634,6 +8635,9 @@ void player::suffer()
             rads_max = static_cast<int>( rads );
             if( x_in_y( rads - rads_max, 1 ) ) {
                 rads_max++;
+            }
+            if( int(calendar::turn) % 30 == 0 && has_bionic("bio_geiger") && localRadiation > 0 ) {
+                add_msg(m_warning, _("You feel anomalous sensation coming from your radiation sensors."));
             }
         }
         radiation += rng( 0, rads_max );
@@ -12875,17 +12879,7 @@ int player::encumb(body_part bp, double &layers, int &armorenc) const
             if( worn[i].is_power_armor() && is_wearing_active_power_armor ) {
                 armorenc += std::max( 0, worn[i].get_encumber() - 40);
             } else {
-                int newenc = worn[i].get_encumber();
-                // Fitted clothes will reduce either encumbrance or layering.
-                if( worn[i].has_flag( "FIT" ) ) {
-                    if( newenc > 0 ) {
-                        newenc = std::max( 0, newenc - 10 );
-                    } else if (layer[level] > 0) {
-                        layer[level] -= 5;
-                    }
-                }
-
-                armorenc += newenc;
+                armorenc += worn[i].get_encumber();
             }
         }
     }
@@ -13901,7 +13895,23 @@ tripoint player::adjacent_tile()
         return ret[ rng( 0, ret.size() - 1 ) ];   // return a random valid adjacent tile
     }
 
-    return pos3(); // or return player position if no valid adjacent tiles
+    return pos(); // or return player position if no valid adjacent tiles
+}
+
+int player::climbing_cost( const tripoint &from, const tripoint &to ) const
+{
+    if( !g->m.valid_move( from, to, false, true ) ) {
+        return 0;
+    }
+
+    const int diff = g->m.climb_difficulty( from );
+
+    if( diff > 5 ) {
+        return 0;
+    }
+
+    return 50 + diff * 100;
+    // TODO: All sorts of mutations, equipment weight etc.
 }
 
 // --- Library functions ---
