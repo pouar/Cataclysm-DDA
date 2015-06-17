@@ -1844,6 +1844,8 @@ int player::peeself(bool ctrl)
             }
         }
         action = menu(true,_("How much"),_("A little to relieve the pressure"),_("All of it like an infant"),NULL);
+        if(action<1)
+            return 0;
     }
     if(action==1)
     {
