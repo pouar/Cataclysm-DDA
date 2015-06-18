@@ -2540,5 +2540,12 @@
 		"fear_triggers":["FIRE"],
 		"placate_triggers" : [],
 		"death_drops": "mon_amy_death_drops"
+	},
+	{
+		"type" : "mutation",
+		"id" : "SLIT",
+		"name" : "Slit",
+		"points" : -1,
+		"description" : "Instead of a penis you have a slit making it harder to \"hold it in\""
 	}
 ] 

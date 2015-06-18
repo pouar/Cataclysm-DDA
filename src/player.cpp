@@ -1849,7 +1849,7 @@ int player::peeself(bool ctrl)
     }
     if(action==1)
     {
-        if(!male)
+        if(!male || has_trait("SLIT"))
         {
             add_msg(m_bad, _("You pee a little to relieve the pressure, bad idea since you can't stop the flow"));
             ctrl = false;
@@ -1860,7 +1860,7 @@ int player::peeself(bool ctrl)
             release=1;
         }
     }
-    else if(!ctrl && ((male && one_in(5)) || (!male && one_in(10))))
+    else if(!ctrl && ((male && !has_trait("SLIT") && one_in(5)) || ((!male || has_trait("SLIT")) && one_in(10))))
     {
         add_msg(m_warning, _("You leak a little, but with sheer will you managed to stop the flow"));
         release=1;
