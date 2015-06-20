@@ -13661,7 +13661,7 @@ void mx_military(map &m, const tripoint &)
                 m.add_spawn("mon_zombie_soldier", 1, x, y);
             } else if (one_in(25)) {
                 if(one_in(2)) {
-                        add_spawn("mon_doom_former_human", 1, x, y);
+                        m.add_spawn("mon_doom_former_human", 1, x, y);
                     }
                 else if (one_in(2)) {
                     m.add_spawn("mon_zombie_bio_op", 1, x, y);
@@ -14089,7 +14089,7 @@ void mx_fumarole(map &m, const tripoint &)
 
 void mx_portal_in(map &m, const tripoint &abs_sub)
 {
-    std::string monids[5] = {"mon_gelatin", "mon_flaming_eye", "mon_kreck", "mon_gracke", "mon_blank","mon_doom_imp", "mon_doom_cacodemon", "mon_doom_demon", "mon_doom_lost_soul", "mon_doom_former_human"};
+    std::string monids[10] = {"mon_gelatin", "mon_flaming_eye", "mon_kreck", "mon_gracke", "mon_blank","mon_doom_imp", "mon_doom_cacodemon", "mon_doom_demon", "mon_doom_lost_soul", "mon_doom_former_human"};
     int x = rng(5, SEEX * 2 - 6), y = rng(5, SEEY * 2 - 6);
     m.add_field({x, y, abs_sub.z}, fd_fatigue, 3, 0);
     for (int i = x - 5; i <= x + 5; i++) {
