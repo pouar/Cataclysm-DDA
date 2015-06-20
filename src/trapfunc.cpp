@@ -749,9 +749,9 @@ void trapfunc::pit_glass( Creature *c, const tripoint &p )
             int dodge = n->get_dodge();
             int damage = pit_effectiveness( p ) * rng( 15, 35 );
             if( ( n->has_trait( "WINGS_BIRD" ) ) || ( ( one_in( 2 ) ) &&
-                    ( n->has_trait( "WINGS_DRAGON" ) ) ) ) {
+                    ( n->has_trait( "WINGS_BUTTERFLY" ) ) ) ) {
                 n->add_msg_if_player( _( "You flap your wings and flutter down gracefully." ) );
-            } else if( ( n->has_trait( "WINGS_BIRD" ) ) ) {
+            } else if( ( n->has_trait( "WINGS_DRAGON" ) ) ) {
                 n->add_msg_if_player( _( "You spread your wings and glide down safely." ) );
             } else if( 0 == damage || rng( 5, 30 ) < dodge ) {
                 n->add_msg_if_player( _( "You avoid the glass shards within." ) );
@@ -958,6 +958,8 @@ void trapfunc::ledge( Creature *c, const tripoint &p )
             g->vertical_move( -1, true );
             if( g->u.has_trait("WINGS_BIRD") || ( one_in( 2 ) && g->u.has_trait("WINGS_BUTTERFLY") ) ) {
                 add_msg( _("You flap your wings and flutter down gracefully.") );
+            } else if( g->u.has_trait("WINGS_DRAGON") ) {
+                add_msg( _("You spread your wings and glide down safely.") );
             } else {
                 g->u.impact( 20, p );
             }
