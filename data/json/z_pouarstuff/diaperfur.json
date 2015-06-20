@@ -2547,5 +2547,15 @@
 		"name" : "Slit",
 		"points" : -1,
 		"description" : "Instead of a penis you have a slit making it harder to \"hold it in\""
+	},
+	{
+		"type": "region_overlay",
+		"id": "diaperfur_overlay",         "//": "unique identifier for this overlay",
+		"regions": [ "all" ],                 "//": "A list of regions to which this overlay should be applied",
+		"city": {
+			"shops": {                        "//": "weighted list for park overmap terrains",
+				"s_abdl": 15
+			}
+		}
 	}
-] 
+]

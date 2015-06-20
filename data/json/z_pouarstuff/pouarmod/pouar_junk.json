@@ -1162,5 +1162,19 @@
 		"anger_triggers":["HURT", "FRIEND_ATTACKED", "FRIEND_DIED"],
 		"placate_triggers":["MEAT"],
 		"categories":["WILDLIFE"]
+	},
+	{
+		"type": "region_overlay",
+		"id": "pouarjunk_overlay",         "//": "unique identifier for this overlay",
+		"regions": [ "all" ],                 "//": "A list of regions to which this overlay should be applied",
+		"city": {
+			"parks": {
+				"public_bath": 1,
+				"monolith_of_inhumanity": 1
+			},
+			"shops": {                        "//": "weighted list for park overmap terrains",
+				"gallery_of_suicide": 1
+			}
+		}
 	}
 ]
