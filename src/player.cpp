@@ -6831,31 +6831,14 @@ void player::hardcoded_effects(effect &it)
                                               _("<npcname> vomits thousands of live spores!") );
 
                 moves = -500;
-                int sporex, sporey;
                 for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {
                         if (i == 0 && j == 0) {
                             continue;
                         }
-                        sporex = posx() + i;
-                        sporey = posy() + j;
-                        tripoint sporep( sporex, sporey, posz() );
-                        if (g->m.move_cost(sporex, sporey) > 0) {
-                            const int zid = g->mon_at( sporep );
-                            if (zid >= 0) {  // Spores hit a monster
-                                if (g->u.sees(sporex, sporey) &&
-                                      !g->zombie(zid).type->in_species("FUNGUS")) {
-                                    add_msg(_("The %s is covered in tiny spores!"),
-                                               g->zombie(zid).name().c_str());
-                                }
-                                monster &critter = g->zombie( zid );
-                                if( !critter.make_fungus() ) {
-                                    critter.die( this ); // Counts as kill by player
-                                }
-                            } else if (one_in(4) && g->num_zombies() <= 1000){
-                                g->summon_mon("mon_spore", tripoint(sporex, sporey, posz()));
-                            }
-                        }
+
+                        tripoint sporep( posx() + i, posy() + j, posz() );
+                        g->m.fungalize( sporep, this, 0.25 );
                     }
                 }
             // We're fucked
@@ -10860,7 +10843,7 @@ public:
     virtual ~ma_style_callback() { }
 };
 
-void player::pick_style() // Style selection menu
+bool player::pick_style() // Style selection menu
 {
     //Create menu
     // Entries:
@@ -10901,6 +10884,8 @@ void player::pick_style() // Style selection menu
         }
         else if ( selection == 1 ) {
             keep_hands_free = !keep_hands_free;
+        } else {
+            return false;
         }
     }
     else {
@@ -10927,10 +10912,11 @@ void player::pick_style() // Style selection menu
             style_selected = matype_id( "style_none" );
         else if (selection == 1)
             keep_hands_free = !keep_hands_free;
-
-        //else
-        //all other means -> don't change, keep current.
+        else
+            return false;
     }
+
+    return true;
 }
 
 hint_rating player::rate_action_wear(item *it)
@@ -11830,8 +11816,14 @@ activate your weapon."), gun->tname().c_str(), _(mod->location.c_str()));
         return;
     } else if (used->is_gun()) {
         std::vector<item> &mods = used->contents;
+        unsigned imodcount = 0;
+        for( auto &gm : mods ){
+            if( gm.has_flag("IRREMOVABLE") ){
+                imodcount++;
+            }
+        }
         // Get weapon mod names.
-        if (mods.empty()) {
+        if (mods.empty() || mods.size() == imodcount ) {
             add_msg(m_info, _("Your %s doesn't appear to be modded."), used->tname().c_str());
             return;
         }
@@ -11847,7 +11839,11 @@ activate your weapon."), gun->tname().c_str(), _(mod->location.c_str()));
         kmenu.selected = 0;
         kmenu.text = _("Remove which modification?");
         for (size_t i = 0; i < mods.size(); i++) {
-            kmenu.addentry( i, true, -1, mods[i].tname() );
+            if( mods[i].has_flag("IRREMOVABLE") ){
+                //kmenu.addentry( i, true, -1, "[i]"+mods[i].tname() );
+            } else {
+                kmenu.addentry( i, true, -1, mods[i].tname() );
+            }
         }
         kmenu.addentry( mods.size(), true, 'r', _("Remove all") );
         kmenu.addentry( mods.size() + 1, true, 'q', _("Cancel") );
@@ -11856,11 +11852,18 @@ activate your weapon."), gun->tname().c_str(), _(mod->location.c_str()));
 
         if (choice < int(mods.size())) {
             const std::string mod = used->contents[choice].tname();
-            remove_gunmod(used, unsigned(choice));
-            add_msg(_("You remove your %s from your %s."), mod.c_str(), used->tname().c_str());
+
+            if( used->contents[choice].has_flag("IRREMOVABLE") ){
+                add_msg(_("You cannot remove integrated mods.") );
+            } else{
+                remove_gunmod(used, unsigned(choice));
+                add_msg(_("You remove your %s from your %s."), mod.c_str(), used->tname().c_str());
+            }
         } else if (choice == int(mods.size())) {
             for (int i = used->contents.size() - 1; i >= 0; i--) {
-                remove_gunmod(used, i);
+                if( !used->contents[i].has_flag("IRREMOVABLE") ){
+                    remove_gunmod(used, i);
+                }
             }
             add_msg(_("You remove all the modifications from your %s."), used->tname().c_str());
         } else {
@@ -14485,35 +14488,14 @@ std::vector<std::string> player::get_overlay_ids() const {
 void player::spores()
 {
     sounds::sound( pos(), 10, _("Pouf!")); //~spore-release sound
-    int sporex, sporey;
-    int mondex;
     for (int i = -1; i <= 1; i++) {
         for (int j = -1; j <= 1; j++) {
             if (i == 0 && j == 0) {
                 continue;
             }
-            sporex = posx() + i;
-            sporey = posy() + j;
-            tripoint sporep( sporex, sporey, posz() );
-            mondex = g->mon_at( sporep );
-            if (g->m.move_cost(sporex, sporey) > 0) {
-                if (mondex != -1) { // Spores hit a monster
-                    if (g->u.sees(sporex, sporey) &&
-                        !g->zombie(mondex).type->in_species("FUNGUS")) {
-                        add_msg(_("The %s is covered in tiny spores!"),
-                                g->zombie(mondex).name().c_str());
-                    }
-                    monster &critter = g->zombie( mondex );
-                    if( !critter.make_fungus() ) {
-                        critter.die( this );
-                    }
-                } else if (one_in(3) && g->num_zombies() <= 1000) { // Spawn a spore
-                    if (g->summon_mon( "mon_spore", sporep )) {
-                        monster *spore = g->monster_at( sporep );
-                        spore->friendly = -1;
-                    }
-                }
-            }
+
+            tripoint sporep( posx() + i, posy() + j, posz() );
+            g->m.fungalize( sporep, this, 0.25 );
         }
     }
 }
