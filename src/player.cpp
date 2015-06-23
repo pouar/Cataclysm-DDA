@@ -4245,7 +4245,7 @@ void player::disp_status(WINDOW *w, WINDOW *w2)
     else if (morale_cur > -100) morale_str = "):";
     else if (morale_cur > -200) morale_str = "D:";
     else                        morale_str = "D8";
-    mvwprintz(w, sideStyle ? 0 : 3, sideStyle ? 11 : 10, col_morale, morale_str);
+    mvwprintz(w, sideStyle ? 0 : 3, sideStyle ? 11 : 9, col_morale, morale_str);
 
     vehicle *veh = g->remoteveh();
     if( veh == nullptr && in_vehicle ) {
@@ -4299,18 +4299,21 @@ void player::disp_status(WINDOW *w, WINDOW *w2)
     mvwprintz(w, speedoy, speedox + cruisex, c_ltgreen, "%4d", int(veh->cruise_velocity * conv));
 
   if (veh->velocity != 0) {
-   const int offset_from_screen_edge = sideStyle ? 11 : 3;
+   const int offset_from_screen_edge = sideStyle ? 13 : 8;
    nc_color col_indc = veh->skidding? c_red : c_green;
    int dfm = veh->face.dir() - veh->move.dir();
-   wmove(w, sideStyle ? 5 : 3, getmaxx(w) - offset_from_screen_edge);
-   wprintz(w, col_indc, dfm <  0 ? "L" : ".");
-   wprintz(w, col_indc, dfm == 0 ? "0" : ".");
-   wprintz(w, col_indc, dfm >  0 ? "R" : ".");
+   wmove(w, sideStyle ? 4 : 3, getmaxx(w) - offset_from_screen_edge);
+   if (dfm == 0)
+     wprintz(w, col_indc, "^");
+   else if (dfm < 0)
+     wprintz(w, col_indc, "<");
+   else
+     wprintz(w, col_indc, ">");
   }
 
   if( sideStyle ) {
       // Make sure this is left-aligned.
-      mvwprintz(w, speedoy, getmaxx(w) - 7, c_white, "%s", "St");
+      mvwprintz(w, speedoy, getmaxx(w) - 9, c_white, "%s", _("Stm "));
       print_stamina_bar(w);
   }
  } else {  // Not in vehicle
@@ -4342,18 +4345,18 @@ void player::disp_status(WINDOW *w, WINDOW *w2)
   if (spd_bonus > 0)
    col_spd = c_green;
 
-    int x  = sideStyle ? 19 : 13;
+    int x  = sideStyle ? 18 : 12;
     int y  = sideStyle ?  0 :  3;
-    int dx = sideStyle ?  0 :  6;
+    int dx = sideStyle ?  0 :  7;
     int dy = sideStyle ?  1 :  0;
-    mvwprintz( w, y + dy * 0, x + dx * 0, col_str, _("Str%2d"), str_cur );
-    mvwprintz( w, y + dy * 1, x + dx * 1, col_dex, _("Dex%2d"), dex_cur );
-    mvwprintz( w, y + dy * 2, x + dx * 2, col_int, _("Int%2d"), int_cur );
-    mvwprintz( w, y + dy * 3, x + dx * 3, col_per, _("Per%2d"), per_cur );
+    mvwprintz( w, y + dy * 0, x + dx * 0, col_str, _("Str %d"), str_cur );
+    mvwprintz( w, y + dy * 1, x + dx * 1, col_dex, _("Dex %d"), dex_cur );
+    mvwprintz( w, y + dy * 2, x + dx * 2, col_int, _("Int %d"), int_cur );
+    mvwprintz( w, y + dy * 3, x + dx * 3, col_per, _("Per %d"), per_cur );
 
-    int spdx = sideStyle ?  0 : x + dx * 4;
+    int spdx = sideStyle ?  0 : x + dx * 4 + 1;
     int spdy = sideStyle ?  5 : y + dy * 4;
-    mvwprintz(w, spdy, spdx, col_spd, _("Spd%3d"), get_speed());
+    mvwprintz(w, spdy, spdx, col_spd, _("Spd %d"), get_speed());
     if (this->weight_carried() > this->weight_capacity()) {
         col_time = h_black;
     }
@@ -4364,11 +4367,11 @@ void player::disp_status(WINDOW *w, WINDOW *w2)
             col_time = c_dkgray_red;
         }
     }
-    wprintz(w, col_time, " %3d", movecounter);
+    wprintz(w, col_time, " %d", movecounter);
 
-    wprintz(w, c_white, " %5s", _(move_mode.c_str()));
+    wprintz(w, c_white, " %s", move_mode == "walk" ? _("W") : _("R"));
     if( sideStyle ) {
-        wprintz(w, c_white, " St");
+        mvwprintz(w, spdy, x + dx * 4 - 3, c_white, _("Stm "));
         print_stamina_bar(w);
     }
  }
@@ -11839,9 +11842,7 @@ activate your weapon."), gun->tname().c_str(), _(mod->location.c_str()));
         kmenu.selected = 0;
         kmenu.text = _("Remove which modification?");
         for (size_t i = 0; i < mods.size(); i++) {
-            if( mods[i].has_flag("IRREMOVABLE") ){
-                //kmenu.addentry( i, true, -1, "[i]"+mods[i].tname() );
-            } else {
+            if( !mods[i].has_flag("IRREMOVABLE") ){
                 kmenu.addentry( i, true, -1, mods[i].tname() );
             }
         }
@@ -11852,13 +11853,8 @@ activate your weapon."), gun->tname().c_str(), _(mod->location.c_str()));
 
         if (choice < int(mods.size())) {
             const std::string mod = used->contents[choice].tname();
-
-            if( used->contents[choice].has_flag("IRREMOVABLE") ){
-                add_msg(_("You cannot remove integrated mods.") );
-            } else{
-                remove_gunmod(used, unsigned(choice));
-                add_msg(_("You remove your %s from your %s."), mod.c_str(), used->tname().c_str());
-            }
+            remove_gunmod(used, unsigned(choice));
+            add_msg(_("You remove your %s from your %s."), mod.c_str(), used->tname().c_str());
         } else if (choice == int(mods.size())) {
             for (int i = used->contents.size() - 1; i >= 0; i--) {
                 if( !used->contents[i].has_flag("IRREMOVABLE") ){
@@ -12730,12 +12726,12 @@ float player::fine_detail_vision_mod()
         (has_effect("boomered") && !has_trait("PER_SLIME_OK")) ) {
         return 5.0;
     }
+    // Scale linearly as light level approaches LIGHT_AMBIENT_LIT.
     // If we're actually a source of light, assume we can direct it where we need it.
-    // Scale linearly own_light approaches LIGHT_AMBIENT_LIT.
-    // but also enforce a monimum of 1.0, and drop by one as a bonus.
-    float own_light = std::max( 1.0, LIGHT_AMBIENT_LIT - active_light() );
+    // Therefore give a hefty bonus relative to ambient light.
+    float own_light = std::max( 1.0, LIGHT_AMBIENT_LIT - active_light() - 2 );
 
-    // Same calculation as above, but with a result 1 lower.
+    // Same calculation as above, but with a result 3 lower.
     float ambient_light = std::max( 1.0, LIGHT_AMBIENT_LIT - g->m.ambient_light_at( pos() ) + 1.0 );
 
     return std::min( own_light, ambient_light );
