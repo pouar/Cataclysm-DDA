@@ -211,6 +211,10 @@ void ammo_effects( const tripoint &p, const std::set<std::string> &effects )
         g->explosion( p, 4, 0, true );
     }
 
+    if( effects.count( "FIREBOOM" ) > 0 ) {
+        g->explosion( p, 2, 0, true, true, 16);
+    }
+    
     if( effects.count( "FLARE" ) > 0 ) {
         g->m.add_field( p, fd_fire, 1, 0 );
     }

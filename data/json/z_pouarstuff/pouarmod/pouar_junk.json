@@ -941,7 +941,7 @@
 		"dispersion" : 0,
 		"recoil" : 0,
 		"count" : 200,
-		"effects" : ["STREAM_BIG","INCENDIARY","NAPALM", "NEVER_MISFIRES", "FLARE", "NEVER_JAMS"]
+		"effects" : ["STREAM_BIG","INCENDIARY","FIREBOOM", "NEVER_MISFIRES", "FLARE", "NEVER_JAMS"]
 	},
 	{
 		"id": "fireboom",
@@ -952,7 +952,7 @@
 		"description": "pseudo-item",
 		"price": 970000,
 		"material": ["null", "null"],
-		"flags": ["STREAM_BIG","INCENDIARY","NAPALM", "NEVER_MISFIRES", "FLARE", "NEVER_JAMS"],
+		"flags": ["STREAM_BIG","INCENDIARY","FIREBOOM", "NEVER_MISFIRES", "FLARE", "NEVER_JAMS"],
 		"skill": "launcher",
 		"ammo": "fireboom_ammo",
 		"weight": 0,
