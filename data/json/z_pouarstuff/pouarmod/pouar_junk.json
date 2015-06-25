@@ -1176,5 +1176,10 @@
 				"gallery_of_suicide": 1
 			}
 		}
+	},
+	{
+		"type" : "snippet",
+		"category" : "flier",
+		"text" : "A petition reading \"The acts of a few rich white men prove that the American Flag is a symbol of greed and corruption, and with those stars, colors, and stripes, it is obvious it was designed with greed and corruption in mind. Take it down.\""
 	}
 ]
