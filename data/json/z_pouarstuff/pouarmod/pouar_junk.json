@@ -1157,7 +1157,7 @@
 		"vision_night":5,
 		"hp":30,
 		"death_function":"NORMAL",
-		"description": "Cumon\nStep it\nup!::??!",
+		"description": "Cumon\nStep it\nup!::¡!",
 		"flags":["SEES", "HEARS", "SMELLS", "ANIMAL", "WARM", "FUR", "HIT_AND_RUN", "KEENNOSE", "BLEED", "ATTACKMON", "BONES", "FAT"],
 		"anger_triggers":["HURT", "FRIEND_ATTACKED", "FRIEND_DIED"],
 		"placate_triggers":["MEAT"],
