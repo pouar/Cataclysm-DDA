@@ -6038,7 +6038,7 @@ struct pair_greater_cmp
     }
 };
 
-void game::do_blast( const tripoint &p, const int power, const bool fire )
+void game::do_blast( const tripoint &p, const int power, const bool fire,float damagemultiplier )
 {
     const float tile_dist = 1.0f;
     const float diag_dist = trigdist ? 1.41f * tile_dist : 1.0f * tile_dist;
@@ -6151,7 +6151,7 @@ void game::do_blast( const tripoint &p, const int power, const bool fire )
     draw_custom_explosion( u.pos(), explosion_colors );
 
     for( const tripoint &pt : closed ) {
-        const float force = power * std::pow( distance_factor, dist_map.at( pt ) );
+        const float force = (power * std::pow( distance_factor, dist_map.at( pt ) )) * damagemultiplier;
         if( force < 1.0f ) {
             // Too weak to matter
             continue;
@@ -6207,7 +6207,7 @@ void game::do_blast( const tripoint &p, const int power, const bool fire )
     }
 }
 
-void game::explosion( const tripoint &p, int power, int shrapnel, bool fire, bool blast )
+void game::explosion( const tripoint &p, int power, int shrapnel, bool fire, bool blast,float damagemultiplier )
 {
     const int radius = int(sqrt(double(power / 4)));
     const int noise = power * (fire ? 2 : 10);
@@ -6221,7 +6221,7 @@ void game::explosion( const tripoint &p, int power, int shrapnel, bool fire, boo
         sounds::sound( p, 3, _("a loud pop!"), false, "explosion", "small" );
     }
     if( blast ) {
-        do_blast( p, power, fire );
+        do_blast( p, power, fire, damagemultiplier);
     }
 
     // The rest of the function is shrapnel

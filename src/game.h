@@ -163,7 +163,7 @@ class game
         void add_event(event_type type, int on_turn, int faction_id, tripoint where);
         bool event_queued(event_type type) const;
         /** Create explosion at p of intensity (power) with (shrapnel) chunks of shrapnel. */
-        void explosion( const tripoint &p, int power, int shrapnel, bool fire, bool blast = true );
+        void explosion( const tripoint &p, int power, int shrapnel, bool fire, bool blast = true, float damagemultiplier = 1 );
         /** Triggers a flashbang explosion at p. */
         void flashbang( const tripoint &p, bool player_immune = false );
         /** Moves the player vertically. If force == true then they are falling. */
@@ -450,7 +450,7 @@ class game
         void open_gate( const tripoint &p, const ter_id handle_type );
 
         // Helper because explosion was getting too big.
-        void do_blast( const tripoint &p, const int power, const bool fire );
+        void do_blast( const tripoint &p, const int power, const bool fire, float damagemultiplier = 1 );
 
         // Knockback functions: knock target at t along a line, either calculated
         // from source position s using force parameter or passed as an argument;
