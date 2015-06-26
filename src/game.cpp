@@ -1206,8 +1206,9 @@ bool game::do_turn()
     }
 
     process_activity();
-	for( size_t i = 0; i < u.worn.size(); ++i ) {
-		if(u.worn[i].has_flag("SUCKING")) {
+    auto iter = u.worn.begin();
+	for( size_t i = 0; i < u.worn.size(); ++i,++iter ) {
+		if(iter->has_flag("SUCKING")) {
 			u.add_morale( MORALE_SUCKING_PACIFIER, 1, 60);
 		}
 	}
@@ -12510,11 +12511,12 @@ bool game::plmove(int dx, int dy)
         if (one_in(20) && u.has_artifact_with(AEP_MOVEMENT_NOISE)) {
             sounds::sound(u.pos(), 40, _("You emit a rattling sound."));
         }
-    for( size_t i = 0; i < u.worn.size(); ++i ) {
-        if (u.worn[i].has_flag("CRINKLE")) {
-        sounds::sound(u.pos(), 40, _("your diaper crinkling."));
+        auto iter = u.worn.begin();
+        for( size_t i = 0; i < u.worn.size(); ++i, ++iter ) {
+            if (iter->has_flag("CRINKLE")) {
+            sounds::sound(u.pos(), 40, _("your diaper crinkling."));
+            }
         }
-    }
         // If we moved out of the nonant, we need update our map data
         if (m.has_flag("SWIMMABLE", x, y) && u.has_effect("onfire")) {
             add_msg(_("The water puts out the flames!"));

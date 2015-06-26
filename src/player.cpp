@@ -637,11 +637,12 @@ void player::apply_persistent_morale()
     int bonus = false;
     bool bonuspee = false;
     int bonusbladder = 0;
-    for(unsigned int i = 0;i<worn.size();i++)
+    auto iter = worn.begin();
+    for(unsigned int i = 0;i<worn.size();i++, iter++)
     {
-        if(worn[i].has_flag("DIAPER"))
+        if(iter->has_flag("DIAPER"))
             bonus=true;
-        if(worn[i].pee>0)
+        if(iter->pee>0)
             bonuspee=true;
     }
     if(!has_trait("INCONT"))
@@ -1875,29 +1876,30 @@ int player::peeself(bool ctrl)
         inwater = true;
     if(release>0)
     {
-        for(unsigned int i = 0;i<worn.size();i++)
+        auto iter = worn.begin();
+        for(unsigned int i = 0;i<worn.size();i++,iter++)
         {
-            if((worn[i].covers(bp_leg_l) || worn[i].covers(bp_leg_r)) && !worn[i].has_flag("SKIRT") && release>0)
+            if((iter->covers(bp_leg_l) || iter->covers(bp_leg_r)) && !iter->has_flag("SKIRT") && release>0)
             {
-                worn[i].item_tags.insert("WETDIAPER");
+                iter->item_tags.insert("WETDIAPER");
                 wet=true;
-                if(worn[i].has_flag("DIAPER"))
+                if(iter->has_flag("DIAPER"))
                 {
                     wetdiaper=true;
                 }
-                if(worn[i].type->peecap>release+worn[i].pee)
+                if(iter->type->peecap>release+iter->pee)
                 {
-                    worn[i].pee+=release;
+                    iter->pee+=release;
                     bladder-=release;
                     release=0;
                     break;
                 }
                 else
                 {
-                    bladder-=worn[i].type->peecap-worn[i].pee;
-                    release-=worn[i].type->peecap-worn[i].pee;
-                    worn[i].pee=worn[i].type->peecap;
-                    if(worn[i].has_flag("EVERDIAPER"))
+                    bladder-=iter->type->peecap-iter->pee;
+                    release-=iter->type->peecap-iter->pee;
+                    iter->pee=iter->type->peecap;
+                    if(iter->has_flag("EVERDIAPER"))
                     {
                         bladder-=release;
                         release=0;
@@ -1915,27 +1917,28 @@ int player::peeself(bool ctrl)
         }
         return 0;
     }
-    for(unsigned int i = 0;i<worn.size();i++)
+    auto iter = worn.begin();
+    for(unsigned int i = 0;i<worn.size();i++,iter++)
     {
-        if((worn[i].covers(bp_leg_l) || worn[i].covers(bp_leg_r)) && !worn[i].has_flag("SKIRT") && bladder>0)
+        if((iter->covers(bp_leg_l) || iter->covers(bp_leg_r)) && !iter->has_flag("SKIRT") && bladder>0)
         {
-            worn[i].item_tags.insert("WETDIAPER");
+            iter->item_tags.insert("WETDIAPER");
             wet=true;
-            if(worn[i].has_flag("DIAPER"))
+            if(iter->has_flag("DIAPER"))
             {
                 wetdiaper=true;
             }
-            if(worn[i].type->peecap>bladder+worn[i].pee)
+            if(iter->type->peecap>bladder+iter->pee)
             {
-                worn[i].pee+=bladder;
+                iter->pee+=bladder;
                 bladder=0;
                 break;
             }
             else
             {
-                bladder-=worn[i].type->peecap-worn[i].pee;
-                worn[i].pee=worn[i].type->peecap;
-                if(worn[i].has_flag("EVERDIAPER"))
+                bladder-=iter->type->peecap-iter->pee;
+                iter->pee=iter->type->peecap;
+                if(iter->has_flag("EVERDIAPER"))
                 {
                     bladder=0;
                     break;
@@ -2274,11 +2277,12 @@ void player::pee()
             add_msg(m_critical, _("Message from bladder:You can't tell me what to do!"));
             return;
         }
-        for(unsigned int i = 0;i<worn.size();i++)
+        auto iter = worn.begin();
+        for(unsigned int i = 0;i<worn.size();i++,iter++)
         {
-            if((worn[i].covers(bp_leg_l)) || (worn[i].covers(bp_leg_r)))
+            if((iter->covers(bp_leg_l)) || (iter->covers(bp_leg_r)))
             {
-                if(worn[i].has_flag("DIAPERLOCKED"))
+                if(iter->has_flag("DIAPERLOCKED"))
                 {
                     if(bladder >= bladdermict)
                     {

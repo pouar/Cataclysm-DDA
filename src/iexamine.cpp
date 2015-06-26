@@ -817,11 +817,12 @@ void iexamine::washer(player *p, map *m, const tripoint &examp)
             break;
         }
         case 2: {
-            for(unsigned int i = 0;i<p->worn.size();i++)
+            auto iter = p->worn.begin();
+            for(unsigned int i = 0;i<p->worn.size();i++, iter++)
             {
-                    p->worn[i].pee=0;
-                    if(p->worn[i].has_flag("WETDIAPER"))
-                        p->worn[i].item_tags.erase("WETDIAPER");
+                    iter->pee=0;
+                    if(iter->has_flag("WETDIAPER"))
+                        iter->item_tags.erase("WETDIAPER");
             }
             std::vector<item *> f_inv = p->all_items_with_flag("WETDIAPER");
             for( auto &ptr : f_inv ) {
@@ -2492,11 +2493,12 @@ void iexamine::water_source(player *p, map *m, const tripoint &examp)
             break;
         }
         case 2: {
-            for(unsigned int i = 0;i<p->worn.size();i++)
+            auto iter = p->worn.begin();
+            for(unsigned int i = 0;i<p->worn.size();i++, iter++)
             {
-                p->worn[i].pee=0;
-                if(p->worn[i].has_flag("WETDIAPER"))
-                    p->worn[i].item_tags.erase("WETDIAPER");
+                iter->pee=0;
+                if(iter->has_flag("WETDIAPER"))
+                    iter->item_tags.erase("WETDIAPER");
             }
             std::vector<item *> f_inv = p->all_items_with_flag("WETDIAPER");
             for( auto &ptr : f_inv ) {
@@ -2550,11 +2552,12 @@ void iexamine::swater_source(player *p, map *m, const tripoint &examp)
             break;
         }
         case 2: {
-            for(unsigned int i = 0;i<p->worn.size();i++)
+            auto iter = p->worn.begin();
+            for(unsigned int i = 0;i<p->worn.size();i++, iter++)
             {
-                p->worn[i].pee=0;
-                if(p->worn[i].has_flag("WETDIAPER"))
-                    p->worn[i].item_tags.erase("WETDIAPER");
+                iter->pee=0;
+                if(iter->has_flag("WETDIAPER"))
+                    iter->item_tags.erase("WETDIAPER");
             }
             std::vector<item *> f_inv = p->all_items_with_flag("WETDIAPER");
             for( auto &ptr : f_inv ) {
