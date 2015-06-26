@@ -474,6 +474,9 @@ void Item_factory::check_definitions() const
             if( type->gun->skill_used == nullptr ) {
                 msg << string_format("uses no skill") << "\n";
             }
+            if( type->item_tags.count( "BURST_ONLY" ) > 0 && type->item_tags.count( "MODE_BURST" ) < 1 ) {
+                msg << string_format("has BURST_ONLY but no MODE_BURST") << "\n";
+            }
             for( auto &gm : type->gun->default_mods ){
                 if( !has_template( gm ) ){
                     msg << string_format("invalid default mod.") << "\n";
@@ -859,6 +862,7 @@ void Item_factory::load( islot_gunmod &slot, JsonObject &jo )
     slot.acceptible_ammo_types = jo.get_tags( "acceptable_ammo" );
     slot.skill_used = Skill::skill( jo.get_string( "skill", "gun" ) );
     slot.req_skill = jo.get_int( "skill_required", 0 );
+    slot.ups_charges = jo.get_int( "ups_charges", 0 );
 }
 
 void Item_factory::load_gunmod(JsonObject &jo)
