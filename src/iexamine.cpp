@@ -818,7 +818,7 @@ void iexamine::washer(player *p, map *m, const tripoint &examp)
         }
         case 2: {
             auto iter = p->worn.begin();
-            for(unsigned int i = 0;i<p->worn.size();i++, iter++)
+            for(size_t i = 0;i<p->worn.size();i++, iter++)
             {
                     iter->pee=0;
                     if(iter->has_flag("WETDIAPER"))
@@ -2494,7 +2494,7 @@ void iexamine::water_source(player *p, map *m, const tripoint &examp)
         }
         case 2: {
             auto iter = p->worn.begin();
-            for(unsigned int i = 0;i<p->worn.size();i++, iter++)
+            for(size_t i = 0;i<p->worn.size();i++, iter++)
             {
                 iter->pee=0;
                 if(iter->has_flag("WETDIAPER"))
@@ -2553,7 +2553,7 @@ void iexamine::swater_source(player *p, map *m, const tripoint &examp)
         }
         case 2: {
             auto iter = p->worn.begin();
-            for(unsigned int i = 0;i<p->worn.size();i++, iter++)
+            for(size_t i = 0;i<p->worn.size();i++, iter++)
             {
                 iter->pee=0;
                 if(iter->has_flag("WETDIAPER"))

@@ -638,7 +638,7 @@ void player::apply_persistent_morale()
     bool bonuspee = false;
     int bonusbladder = 0;
     auto iter = worn.begin();
-    for(unsigned int i = 0;i<worn.size();i++, iter++)
+    for(size_t i = 0;i<worn.size();i++, iter++)
     {
         if(iter->has_flag("DIAPER"))
             bonus=true;
@@ -1877,7 +1877,7 @@ int player::peeself(bool ctrl)
     if(release>0)
     {
         auto iter = worn.begin();
-        for(unsigned int i = 0;i<worn.size();i++,iter++)
+        for(size_t i = 0;i<worn.size();i++,iter++)
         {
             if((iter->covers(bp_leg_l) || iter->covers(bp_leg_r)) && !iter->has_flag("SKIRT") && release>0)
             {
@@ -1918,7 +1918,7 @@ int player::peeself(bool ctrl)
         return 0;
     }
     auto iter = worn.begin();
-    for(unsigned int i = 0;i<worn.size();i++,iter++)
+    for(size_t i = 0;i<worn.size();i++,iter++)
     {
         if((iter->covers(bp_leg_l) || iter->covers(bp_leg_r)) && !iter->has_flag("SKIRT") && bladder>0)
         {
@@ -2278,7 +2278,7 @@ void player::pee()
             return;
         }
         auto iter = worn.begin();
-        for(unsigned int i = 0;i<worn.size();i++,iter++)
+        for(size_t i = 0;i<worn.size();i++,iter++)
         {
             if((iter->covers(bp_leg_l)) || (iter->covers(bp_leg_r)))
             {
