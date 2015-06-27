@@ -13,30 +13,15 @@ local tab = "    "
 -- Generic helpers to generate C++ source code chunks for use in our lua binding.
 ---------------------------------------------------------------------------------
 
--- Convert a given type such as "int", "bool" etc to a lua type, such
--- as LUA_TNUMBER etc, needed for typechecking mostly.
-function member_type_to_lua_type(member_type)
-    if member_type == "int" or member_type == "float" then
-        return "LUA_TNUMBER"
-    elseif member_type == "string" or member_type == "cstring" then
-        return "LUA_TSTRING"
-    elseif member_type == "bool" then
-        return "LUA_TBOOLEAN"
-    else
-        for class_name, _ in pairs(classes) do
-            if class_name == member_type then
-                return "LUA_TUSERDATA"
-            end
-        end
-    end
-end
-
 -- Convert a given type such as "string" to the corresponding C++
--- type string, e.g. "std::string"
+-- type string, e.g. "std::string". For types wrapped in LuaReference/LuaValue/LuaEnum, it
+-- returns the wrapped type, e.g. "LuaValue<ter_t>"
 function member_type_to_cpp_type(member_type)
     if member_type == "bool" then return "bool"
     elseif member_type == "cstring" then return "const char*"
     elseif member_type == "string" then return "std::string"
+    elseif member_type == "int" then return "int"
+    elseif member_type == "float" then return "float"
     else
         for class_name, class in pairs(classes) do
             if class_name == member_type then
@@ -52,14 +37,18 @@ function member_type_to_cpp_type(member_type)
                 return "LuaEnum<" .. member_type .. ">"
             end
         end
+
+        error("'"..member_type.."' is not a build-in type and is not defined in class_definitions.lua")
     end
-    
-    return member_type
 end
 
 -- Loads an instance of class_name (which must be the first thing on the stack) into a local
 -- variable, named "<class_name>_instance". Only use for classes (not enums/primitives).
 function load_instance(class_name)
+    if not classes[class_name] then
+        error("'"..class_name.."' is not defined in class_definitions.lua")
+    end
+
     local instance_name = class_name .. "_instance"
     local wrapper_type = ""
     if classes[class_name].by_value then
@@ -81,21 +70,6 @@ end
 function push_lua_value(in_variable, value_type)
     return "LuaType<" .. member_type_to_cpp_type(value_type) .. ">::push(L, " .. in_variable .. ");"
 end
-
---[[
-        text = text .. indentation .. value_type .. "** userdata" .. parameter_index .. " = ("..value_type.."**) lua_newuserdata(L, sizeof("..value_type.."*));"
-        text = text .. indentation .. "*userdata" .. parameter_index .. " = "..in_variable..";"
-        text = text .. indentation .. value_type .. "parameter_in_registry_" .. parameter_index .. " = luah_store_in_registry(L, -1);"..br
-        text = text .. indentation .. 'luah_setmetatable(L, "'..value_type..'_metatable");'..br
-function cleanup_lua_parameter(value_type, parameter_index, indentation)
-    local text = ""
-    if member_type_to_lua_type(value_type) == "LUA_TUSERDATA" then
-        text = text .. indentation .. "luah_remove_from_registry(L, parameter_in_registry_" .. parameter_index .. ");"..br
-        text = text .. indentation .. 'luah_setmetatable(L, "outdated_metatable");'..br
-    end
-    return text
-end
-]]
 
 -- Generates a getter function for a specific class and member variable.
 function generate_getter(class_name, member_name, member_type, cpp_name)
