@@ -1203,7 +1203,12 @@
       ["robe", 10],
       ["eboshi", 1],
       ["kariginu", 1],
-      ["kimono", 5]
+      ["kimono", 5],
+      ["diaper",10],
+      ["pullup",10],
+      ["pullon",10],
+      ["v_pullon",10],
+      ["pink_diaper",10]
     ]
   },{
     "type" : "item_group",
@@ -3421,7 +3426,12 @@
     "id" : "female_underwear_bottom",
     "items":[
       ["panties", 70],
-      ["boy_shorts", 50]
+      ["boy_shorts", 50],
+      ["diaper",10],
+      ["pullup",10],
+      ["pullon",10],
+      ["v_pullon",10],
+      ["pink_diaper",10]
     ]
   },{
     "type" : "item_group",
@@ -3435,7 +3445,13 @@
     "items":[
       ["boxer_shorts", 70],
       ["briefs", 30],
-      ["boxer_briefs", 50]
+      ["boxer_briefs", 50],
+      ["panties", 70],
+      ["boy_shorts", 50],
+      ["diaper",10],
+      ["pullup",10],
+      ["pullon",10],
+      ["v_pullon",10]
     ]
   },{
     "type" : "item_group",
@@ -3579,7 +3595,12 @@
       ["robe", 5],
       ["eboshi", 1],
       ["kariginu", 1],
-      ["kimono", 3]
+      ["kimono", 3],
+      ["diaper",10],
+      ["pullup",10],
+      ["pullon",10],
+      ["v_pullon",10],
+      ["pink_diaper",10]
     ]
   },{
     "type" : "item_group",
@@ -3626,7 +3647,12 @@
       ["shavingkit", 30],
       ["elec_hairtrimmer", 15],
       ["razor_blade", 5],
-      ["kilt", 5]
+      ["kilt", 5],
+      ["diaper",10],
+      ["pullup",10],
+      ["pullon",10],
+      ["v_pullon",10],
+      ["pink_diaper",10]
     ]
   },{
     "type" : "item_group",
@@ -4590,7 +4616,12 @@
       ["leather_belt", 70],
       ["briefs", 90],
       ["socks", 70],
-      ["sneakers", 70]
+      ["sneakers", 70],
+      ["diaper",10],
+      ["pullup",10],
+      ["pullon",10],
+      ["v_pullon",10],
+      ["pink_diaper",10]
     ]
   },{
     "type" : "item_group",
@@ -9915,7 +9946,12 @@
       ["bra", 20],
       ["undershirt", 40],
       ["boxer_shorts", 30],
-      ["briefs", 30]
+      ["briefs", 30],
+      ["diaper",10],
+      ["pullup",10],
+      ["pullon",10],
+      ["v_pullon",10],
+      ["pink_diaper",10]
     ]
   },{
     "type" : "item_group",
@@ -9956,7 +9992,12 @@
       ["mil_mess_kit", 50],
       ["flashlight", 50],
       ["mag_comic", 20],
-      ["mag_guns", 20]
+      ["mag_guns", 20],
+      ["diaper",10],
+      ["pullup",10],
+      ["pullon",10],
+      ["v_pullon",10],
+      ["pink_diaper",10]
     ]
   },{
     "type" : "item_group",
