@@ -635,16 +635,35 @@
   "time": 5000,
   "reversible": false,
   "autolearn": true,
-  "qualities":[
-    {"id":"HAMMER","level":1,"amount":1}
-  ], "components": [
+  "qualities":[{"id":"HAMMER","level":1,"amount":1}],
+  "components": [
     [
       [ "stick", 1 ],
       [ "2x4", 1 ]
     ],
+    [ [ "rock", 1 ] ],
     [
-      [ "rock", 1 ]
-    ],
+      [ "string_6", 2 ],
+      [ "sinew", 40 ],
+      [ "thread", 40 ],
+      [ "plant_fibre", 40 ],
+      [ "withered", 2 ]
+    ]
+  ]
+},{
+  "type" : "recipe",
+  "result": "makeshift_hammer",
+  "category": "CC_OTHER",
+  "subcategory": "CSC_OTHER_TOOLS",
+  "skill_used": "survival",
+  "difficulty": 0,
+  "time": 5000,
+  "reversible": false,
+  "autolearn": true,
+  "qualities":[{"id":"HAMMER","level":1,"amount":1}],
+  "components": [
+    [[ "stick", 1 ], [ "2x4", 1 ]],
+    [[ "steel_chunk", 1 ], [ "steel_lump", 1 ]],
     [
       [ "string_6", 2 ],
       [ "sinew", 40 ],
@@ -1471,6 +1490,45 @@
   ]
 },{
   "type" : "recipe",
+  "result": "v_curtain_item",
+  "category": "CC_OTHER",
+  "subcategory": "CSC_OTHER_PARTS",
+  "skill_used": "fabrication",
+  "skills_required": ["mechanics",1],
+  "difficulty": 2,
+  "time": 2000,
+  "reversible": false,
+  "autolearn": true,
+  "qualities":[
+    {"id":"HAMMER","level":2,"amount":1},
+    {"id":"SAW_M","level":1,"amount":1},
+    {"id":"WRENCH","level":1,"amount":1},
+	{"id":"CUT","level":1,"amount":1}
+  ],  
+  "tools": [
+    [
+      [ "needle_bone", 15 ],
+      [ "needle_wood", 15 ],
+      [ "sewing_kit", 15 ],
+      [ "tailors_kit", 15 ]
+    ]
+  ],
+  "components": [
+	[
+      [ "pipe", 1 ]
+    ],
+    [
+      [ "sheet", 2 ]
+    ],
+    [
+      [ "wire", 4 ]
+    ],
+	[
+	  [ "string_36", 2 ]
+	]
+  ]
+},{
+  "type" : "recipe",
   "result": "w_table",
   "category": "CC_OTHER",
   "subcategory": "CSC_OTHER_PARTS",
@@ -2263,6 +2321,30 @@
   "components": [
     [
       [ "pipe", 4 ]
+    ]
+  ]
+},{
+  "type" : "recipe",
+  "result": "foldwoodframe",
+  "category": "CC_OTHER",
+  "subcategory": "CSC_OTHER_PARTS",
+  "skill_used": "fabrication",
+  "difficulty": 2,
+  "time": 9000,
+  "reversible": true,
+  "autolearn": true,
+  "qualities":[
+    {"id":"HAMMER","level":1,"amount":1},
+    {"id":"CUT","level":1,"amount":1}
+  ], "components": [
+    [
+      [ "2x4", 5 ]
+    ],
+    [
+      [ "stick", 2]
+    ],
+    [
+      [ "nail", 20 ]
     ]
   ]
 },{
