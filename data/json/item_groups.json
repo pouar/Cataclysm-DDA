@@ -10248,5 +10248,12 @@
       ["joint", 10],
       ["cell_phone", 50]
     ]
+  },
+  {
+    "type" : "item_group",
+    "id" : "corpse",
+    "items":[
+      ["corpse", 100]
+    ]
   }
 ]
