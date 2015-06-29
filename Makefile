@@ -135,8 +135,8 @@ ifdef RELEASE
   ifeq ($(NATIVE), osx)
     CXXFLAGS += -O3
   else
-    CXXFLAGS += -march=native -O2 -flto=$(JOBS) -finline-functions -fpredictive-commoning -ftree-partial-pre -fgcse-after-reload -fgcse-las -fmerge-all-constants -fira-hoist-pressure -fivopts
-    LDFLAGS += -s  -march=native -O2 -flto=$(JOBS) -finline-functions -fpredictive-commoning -ftree-partial-pre -fgcse-after-reload -fgcse-las -fmerge-all-constants -fira-hoist-pressure -fivopts
+    CXXFLAGS += -march=native -O2 -flto=$(JOBS) -finline-functions -fpredictive-commoning -ftree-partial-pre -fgcse-after-reload -fgcse-las -fmerge-all-constants -fira-hoist-pressure -fivopts -freorder-blocks-and-partition
+    LDFLAGS += -s  -march=native -O2 -flto=$(JOBS) -finline-functions -fpredictive-commoning -ftree-partial-pre -fgcse-after-reload -fgcse-las -fmerge-all-constants -fira-hoist-pressure -fivopts -freorder-blocks-and-partition
   endif
   # OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
   # Strip symbols, generates smaller executable.
