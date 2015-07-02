@@ -130,20 +130,12 @@ std::vector<std::string> clothing_flags_description(item const &worn_item)
         description_stack.push_back(_("An adult diaper that can be used as a toilet"));
         if(worn_item.pee>0)
         {
-            if(worn_item.pee>=worn_item.type->peecap)
-            {
-				if(worn_item.has_flag("EVERDIAPER"))
-					description_stack.push_back(_("Even though it's not leaking, it looks and feels like it should badly."));
-				else
-					description_stack.push_back(_("Urine is visibly leaking down the legs."));
-			}
+            if(worn_item.pee>=worn_item.type->peecap && !worn_item.has_flag("EVERDIAPER"))
+                description_stack.push_back(_("This diaper squishes and drips with every move."));
+            else if(worn_item.pee>=worn_item.type->peecap*.90 && !worn_item.has_flag("EVERDIAPER"))
+                description_stack.push_back(_("This diaper might not hold much longer."));
             else if(worn_item.pee>=worn_item.type->peecap*.75)
-			{
-				if(worn_item.has_flag("EVERDIAPER"))
-					description_stack.push_back(_("it is visibly soaked and yellow with urine."));
-				else
-					description_stack.push_back(_("it is visibly soaked and yellow with urine, you might want to change before it leaks."));
-			}
+                description_stack.push_back(_("This diaper squishes with every move."));
             else if(worn_item.pee>=worn_item.type->peecap*.25)
                 description_stack.push_back(_("It has been used. but it can hold more."));
             else
