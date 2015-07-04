@@ -104,7 +104,8 @@ LUA_BINARY = lua
 LOCALIZE = 1
 
 
-# tiles object directories are because gcc gets confused
+# tiles object directories are because gcc gets confused # Appears that the default value of $LD is unsuitable on most systems
+
 # when preprocessor defines change, but the source doesn't
 ODIR = obj
 ODIRTILES = obj/tiles
@@ -116,12 +117,17 @@ JOBS:=$(shell if nproc; then echo -n '';elif [ -a /proc/cpuinfo ] ; then grep -c
 MAKEFLAGS+=-j$(JOBS)
 
 OS  = $(shell uname -s)
+
+# Expand at reference time to avoid recursive reference
+OS_COMPILER := $(CXX)
+# Appears that the default value of $LD is unsuitable on most systems
+OS_LINKER := $(CXX)
 ifdef CCACHE
-  CXX = ccache $(CROSS)g++
-  LD  = ccache $(CROSS)g++
+  CXX = ccache $(CROSS)$(OS_COMPILER)
+  LD  = ccache $(CROSS)$(OS_LINKER)
 else
-  CXX = $(CROSS)g++
-  LD  = $(CROSS)g++
+  CXX = $(CROSS)$(OS_COMPILER)
+  LD  = $(CROSS)$(OS_LINKER)
 endif
 RC  = $(CROSS)windres
 
@@ -442,8 +448,7 @@ all: version $(TARGET) $(L10N)
 	@
 
 $(TARGET): $(ODIR) $(DDIR) $(OBJS)
-	$(LD) $(W32FLAGS) -o $(TARGET) $(DEFINES) \
-          $(OBJS) $(LDFLAGS)
+	$(LD) $(W32FLAGS) -o $(TARGET) $(OBJS) $(LDFLAGS)
 
 cataclysm.a: $(ODIR) $(DDIR) $(OBJS)
 	ar rcs cataclysm.a $(filter-out $(ODIR)/main.o,$(OBJS))
