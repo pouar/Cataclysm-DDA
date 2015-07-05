@@ -21000,6 +21000,11 @@
 					"id": "money_bundle",
 					"fg": 37,
 					"rotates": false
+				},
+				{
+					"id": "mag_cooking",
+					"fg": 38,
+					"rotates": false
 				}
 			]
 		}

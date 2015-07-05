@@ -108,7 +108,7 @@
     "vision_day":40,
     "hp":4,
     "death_function":"NORMAL",
-    "description":"A mallard duck, often seen around rivers and other bodies of water.  It feeds primarily on insects, seeds, roots, and, pre-cataclysm, bread scraps.",
+    "description":"Quhzk. That's whats the ducks says.",
     "flags":["SEES", "HEARS", "SMELLS", "ANIMAL", "WARM", "FLIES", "BONES", "FEATHER", "FAT"],
     "fear_triggers":["SOUND", "PLAYER_CLOSE"],
     "categories":["WILDLIFE"]
