@@ -8261,7 +8261,7 @@
     {
         "type" : "ARMOR",
         "id" : "american_flag",
-        "name" : "American flag",
+        "name" : "Empire of Florida flag",
         "weight" : 3404,
         "color" : "light_red",
         "covers" : ["TORSO", "ARMS", "HANDS", "LEGS", "FEET"],
@@ -8269,7 +8269,7 @@
         "storage" : 0,
         "symbol" : "[",
         "coverage" : 60,
-        "description" : "A large American flag made to fly in even the worst conditions.",
+        "description" : "I swear to govern the fuck out of this piece of shit state! Now lemme hear your guns!",
         "price" : 5000,
         "material" : ["cotton", "null"],
         "volume" : 8,

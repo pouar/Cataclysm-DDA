@@ -3066,8 +3066,8 @@
     {
         "type":"GENERIC",
         "id" : "money_bundle",
-        "name" : "money bundle",
-        "description" : "A bundle holding many 20 dollar bills, pretty useless now though.",
+        "name" : "Empire of Florida $666 bills",
+        "description" : "I promise to every Floridian that you will all be rich, because we're gonna print some more money. Why didn't anybody ever think of this before?",
         "weight" : 20,
         "to_hit" : -3,
         "color" : "green",

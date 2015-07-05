@@ -20990,6 +20990,16 @@
 					"id": "mon_sanic",
 					"fg": 35,
 					"rotates": false
+				},
+				{
+					"id": "american_flag",
+					"fg": 36,
+					"rotates": false
+				},
+				{
+					"id": "money_bundle",
+					"fg": 37,
+					"rotates": false
 				}
 			]
 		}
