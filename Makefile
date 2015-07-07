@@ -141,8 +141,8 @@ ifdef RELEASE
   ifeq ($(NATIVE), osx)
     CXXFLAGS += -O3
   else
-    CXXFLAGS += -march=native -O2 -flto=$(JOBS) -finline-functions -fpredictive-commoning -ftree-partial-pre -fgcse-after-reload -fgcse-las -fmerge-all-constants -fira-hoist-pressure -fivopts -freorder-blocks-and-partition
-    LDFLAGS += -s  -march=native -O2 -flto=$(JOBS) -finline-functions -fpredictive-commoning -ftree-partial-pre -fgcse-after-reload -fgcse-las -fmerge-all-constants -fira-hoist-pressure -fivopts -freorder-blocks-and-partition
+    CXXFLAGS += -march=native -O2 -flto=$(JOBS) -finline-functions -fpredictive-commoning -ftree-partial-pre -fgcse-after-reload -fgcse-las -fmerge-all-constants -fira-hoist-pressure -fivopts -freorder-blocks-and-partition --param large-function-growth=0 --param inline-unit-growth=0 --param large-stack-frame-growth=0 --param max-inline-recursive-depth-auto=1000 --param max-inline-recursive-depth=1000
+    LDFLAGS += -s  -march=native -O2 -flto=$(JOBS) -finline-functions -fpredictive-commoning -ftree-partial-pre -fgcse-after-reload -fgcse-las -fmerge-all-constants -fira-hoist-pressure -fivopts -freorder-blocks-and-partition --param large-function-growth=0 --param inline-unit-growth=0 --param large-stack-frame-growth=0 --param max-inline-recursive-depth-auto=1000 --param max-inline-recursive-depth=1000
   endif
   # OTHERS += -mmmx -m3dnow -msse -msse2 -msse3 -mfpmath=sse -mtune=native
   # Strip symbols, generates smaller executable.
