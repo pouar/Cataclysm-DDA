@@ -1407,7 +1407,7 @@ item::sound_data item::gun_noise( bool const burst ) const
         gunsound = _("tz-CRACKck!");
         noise = 24;
     } else if( ammo_used == "gasoline" || ammo_used == "66mm" ||
-               ammo_used == "84x246mm" || ammo_used == "m235" || ammo_used == "fireboom_ammo" ) {
+               ammo_used == "84x246mm" || ammo_used == "m235" || ammo_used == "fireboom_ammo" || ammo_used == "firebreath_ammo" ) {
         gunsound = _("Fwoosh!");
         noise = 4;
     }
