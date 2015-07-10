@@ -4484,7 +4484,6 @@ std::string player::get_category_dream(const std::string &cat, int strength) con
 {
     std::string message;
     std::vector<dream> valid_dreams;
-    dream selected_dream;
     //Pull the list of dreams
     for (auto &i : dreams) {
         //Pick only the ones matching our desired category and strength
@@ -4496,11 +4495,8 @@ std::string player::get_category_dream(const std::string &cat, int strength) con
     if( valid_dreams.empty() ) {
         return "";
     }
-    int index = rng(0, valid_dreams.size() - 1); // Randomly select a dream from the valid list
-    selected_dream = valid_dreams[index];
-    index = rng(0, selected_dream.messages.size() - 1); // Randomly selected a message from the chosen dream
-    message = selected_dream.messages[index];
-    return message;
+    const dream& selected_dream = random_entry( valid_dreams );
+    return random_entry( selected_dream.messages );
 }
 
 bool player::in_climate_control()
@@ -4573,77 +4569,6 @@ bool player::has_active_optcloak() const
         }
     }
     return false;
-}
-
-void player::add_bionic( std::string const &b )
-{
-    if( has_bionic( b ) ) {
-        debugmsg( "Tried to install bionic %s that is already installed!", b.c_str() );
-        return;
-    }
-    char newinv = ' ';
-    for( auto &inv_char : inv_chars ) {
-        if( bionic_by_invlet( inv_char ) == nullptr ) {
-            newinv = inv_char;
-            break;
-        }
-    }
-    my_bionics.push_back( bionic( b, newinv ) );
-    if ( b == "bio_tools" || b == "bio_ears" ) {
-        activate_bionic(my_bionics.size() -1);
-    }
-    recalc_sight_limits();
-}
-
-void player::remove_bionic(std::string const &b) {
-    std::vector<bionic> new_my_bionics;
-    for(auto &i : my_bionics) {
-        if (b == i.id) {
-            continue;
-        }
-
-        // Ears and earplugs go together like peanut butter and jelly.
-        // Therefore, removing one, should remove the other.
-        if ((b == "bio_ears" && i.id == "bio_earplugs") ||
-            (b == "bio_earplugs" && i.id == "bio_ears")) {
-            continue;
-        }
-
-        new_my_bionics.push_back(bionic(i.id, i.invlet));
-    }
-    my_bionics = new_my_bionics;
-    recalc_sight_limits();
-}
-
-int player::num_bionics() const
-{
-    return my_bionics.size();
-}
-
-bionic& player::bionic_at_index(int i)
-{
-    return my_bionics[i];
-}
-
-bionic* player::bionic_by_invlet(char ch) {
-    for( auto &elem : my_bionics ) {
-        if( elem.invlet == ch ) {
-            return &elem;
-        }
-    }
-    return 0;
-}
-
-// Returns true if a bionic was removed.
-bool player::remove_random_bionic() {
-    const int numb = num_bionics();
-    if (numb) {
-        int rem = rng(0, num_bionics() - 1);
-        const auto bionic = my_bionics[rem];
-        remove_bionic(bionic.id);
-        recalc_sight_limits();
-    }
-    return numb;
 }
 
 void player::charge_power(int amount)
@@ -5328,13 +5253,12 @@ dealt_damage_instance player::deal_damage(Creature* source, body_part bp, const 
         } else if (snakes >= 2) {
             add_msg(m_warning, _("Some snakes sprout from your body!"));
         }
-        for (int i = 0; i < snakes; i++) {
-            int index = rng(0, valid.size() - 1);
-            if (g->summon_mon("mon_shadow_snake", valid[index])) {
-                monster *snake = g->monster_at(valid[index]);
+        for (int i = 0; i < snakes && !valid.empty(); i++) {
+            const tripoint target = random_entry_removed( valid );
+            if (g->summon_mon("mon_shadow_snake", target)) {
+                monster *snake = g->monster_at( target );
                 snake->friendly = -1;
             }
-            valid.erase(valid.begin() + index);
         }
     }
 
@@ -5351,13 +5275,12 @@ dealt_damage_instance player::deal_damage(Creature* source, body_part bp, const 
         }
         add_msg(m_warning, _("Slime is torn from you, and moves on its own!"));
         int numslime = 1;
-        for (int i = 0; i < numslime; i++) {
-            int index = rng(0, valid.size() - 1);
-            if (g->summon_mon("mon_player_blob", valid[index])) {
-                monster *slime = g->monster_at(valid[index]);
+        for (int i = 0; i < numslime && !valid.empty(); i++) {
+            const tripoint target = random_entry_removed( valid );
+            if (g->summon_mon("mon_player_blob", target)) {
+                monster *slime = g->monster_at( target );
                 slime->friendly = -1;
             }
-            valid.erase(valid.begin() + index);
         }
     }
 
@@ -10273,13 +10196,12 @@ bool player::eat(item *eaten, it_comest *comest)
                 }
             }
             int numslime = 1;
-            for (int i = 0; i < numslime; i++) {
-                int index = rng(0, valid.size() - 1);
-                if (g->summon_mon("mon_player_blob", valid[index])) {
-                    monster *slime = g->monster_at(valid[index]);
+            for (int i = 0; i < numslime && !valid.empty(); i++) {
+                const tripoint target = random_entry_removed( valid );
+                if (g->summon_mon("mon_player_blob", target)) {
+                    monster *slime = g->monster_at( target );
                     slime->friendly = -1;
                 }
-                valid.erase(valid.begin() + index);
             }
             hunger += 40;
             thirst += 40;
@@ -13899,11 +13821,7 @@ tripoint player::adjacent_tile()
         }
     }
 
-    if( !ret.empty() ) {
-        return ret[ rng( 0, ret.size() - 1 ) ];   // return a random valid adjacent tile
-    }
-
-    return pos(); // or return player position if no valid adjacent tiles
+    return random_entry( ret, pos() ); // player position if no valid adjacent tiles
 }
 
 int player::climbing_cost( const tripoint &from, const tripoint &to ) const
@@ -14440,15 +14358,14 @@ void player::place_corpse()
             body.put_in( item( bio.id, calendar::turn ) );
         }
     }
-    int pow = max_power_level;
-    while( pow >= 100 ) {
-        if( pow >= 250 ) {
-            pow -= 250;
-            body.contents.push_back( item( "bio_power_storage_mkII", calendar::turn ) );
-        } else {
-            pow -= 100;
-            body.contents.push_back( item( "bio_power_storage", calendar::turn ) );
-        }
+
+    // Restore amount of installed pseudo-modules of Power Storage Units
+    std::pair<int, int> storage_modules = amount_of_storage_bionics();
+    for (int i = 0; i <= storage_modules.first; ++i) {
+        body.contents.push_back( item( "bio_power_storage", calendar::turn ) );
+    }
+    for (int i = 0; i <= storage_modules.second; ++i) {
+        body.contents.push_back( item( "bio_power_storage_mkII", calendar::turn ) );
     }
     g->m.add_item_or_charges( pos(), body );
 }
