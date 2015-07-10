@@ -385,8 +385,6 @@
 						"f": "f_rack"
 					},
 					"add": [
-						{ "item": "plushie", "x": 1, "y": 3 },
-						{ "item": "plushie", "x": 1, "y": 4},
 						{ "item": "plushie", "x": 9, "y": 7 },
 						{ "item": "plushie", "x": 9, "y": 8 },
 						{ "item": "plushie", "x": 9, "y": 9 },
@@ -472,6 +470,8 @@
 						{ "item": "us_pullon_pack", "x": 22, "y": 11 },
 						{ "item": "us_pullon_pack", "x": 22, "y": 11 },
 						{ "item": "us_pullon_pack", "x": 22, "y": 11 },
+						{ "item": "giant_diaper", "x": 1, "y": 4 },
+						{ "item": "giant_diaper", "x": 1, "y": 4 },
 						{ "item": "bladderset", "x": 1, "y": 3 }
 					],
 					"place_items": [
@@ -2557,5 +2557,30 @@
 				"s_abdl": 15
 			}
 		}
+	},
+	{
+		"type" : "ARMOR",
+		"id" : "giant_diaper",
+		"name" : "giant poofy diaper",
+		"weight" : 5000,
+		"color" : "white",
+		"covers" : ["LEGS"],
+		"to_hit" : 0,
+		"storage" : 0,
+		"symbol" : "[",
+		"description" : "A rediculously big diaper that was supposed to only exist in art and cartoons. The kind that's so thick it reaches a few inches above your ankles yet somehow doesn't stop you from moving.",
+		"price" : 0,
+		"material" : ["cotton", "null"],
+		"volume" : 40,
+		"cutting" : 0,
+		"warmth" : 75,
+		"phase" : "solid",
+		"environmental_protection" : 0,
+		"encumbrance" : 60,
+		"bashing" : -20,
+		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT","SUPER_FANCY"],
+		"coverage" : 30,
+		"peecap": 40000,
+		"material_thickness" : 508
 	}
 ]
