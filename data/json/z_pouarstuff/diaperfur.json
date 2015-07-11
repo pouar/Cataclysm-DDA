@@ -2578,7 +2578,7 @@
 		"environmental_protection" : 0,
 		"encumbrance" : 60,
 		"bashing" : -20,
-		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT","SUPER_FANCY"],
+		"flags" : ["VARSIZE","SKINTIGHT","DIAPER","FIT","SUPER_FANCY","EVERDIAPER"],
 		"coverage" : 30,
 		"peecap": 40000,
 		"material_thickness" : 508
