@@ -646,7 +646,7 @@
 						"f": "f_glass_fridge",
 						"D": "f_displaycase"
 					},
-					"place_groups": [
+					"place_items": [
 						{ "item": "corpse", "chance": 45, "x": [ 2,2 ], "y": [ 1,1 ] },
 						{ "item": "corpse", "chance": 45, "x": [ 2,2 ], "y": [ 3,3 ] },
 						{ "item": "corpse", "chance": 45, "x": [ 2,2 ], "y": [ 5,5 ] },
