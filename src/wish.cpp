@@ -380,7 +380,6 @@ void game::wishmonster( const tripoint &p )
         wmenu.query();
         if ( wmenu.ret >= 0 ) {
             monster mon = monster( GetMType(wmenu.ret)->id );
-            mon.reset_last_load();
             if (cb->friendly) {
                 mon.friendly = -1;
             }
@@ -392,7 +391,7 @@ void game::wishmonster( const tripoint &p )
                 std::vector<tripoint> spawn_points = closest_tripoints_first( cb->group, spawn );
                 for( auto spawn_point : spawn_points ) {
                     mon.spawn( spawn_point );
-                    add_zombie(mon);
+                    add_zombie(mon, true);
                 }
                 cb->msg = _("Monster spawned, choose another or 'q' to quit.");
                 uistate.wishmonster_selected = wmenu.ret;
