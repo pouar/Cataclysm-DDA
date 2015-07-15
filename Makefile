@@ -364,42 +364,36 @@ ifdef TILES
     ODIR = $(ODIRTILES)
   endif
 else
-  # Link to ncurses if we're using a non-tiles, Linux build
   ifeq ($(TARGETSYSTEM),LINUX)
-    ifeq ($(LOCALIZE),1)
-      ifeq ($(OS), Darwin)
-        LDFLAGS += -lncurses
-      else
-        ifeq ($(NATIVE), osx)
-            LDFLAGS += -lncurses
-        else
-          ifeq ($(BSD), 1)
-            LDFLAGS += -lncurses -lintl -liconv
-          else
-            LDFLAGS += $(shell ncursesw5-config --libs)
-            CXXFLAGS += $(shell ncursesw5-config --cflags)
-          endif
-        endif
-      endif
-    else
-      LDFLAGS += -lncurses
+    ifneq ($(shell which ncursesw5-config 2>/dev/null),)
+      HAVE_NCURSESW5CONFIG = 1
     endif
   endif
-  
-  ifeq ($(TARGETSYSTEM),CYGWIN)
-    ifeq ($(LOCALIZE),1)
-      LDFLAGS += $(shell ncursesw5-config --libs)
-      CXXFLAGS += $(shell ncursesw5-config --cflags)
-      
-      # Work around Cygwin not including gettext support in glibc
-      LDFLAGS += -lgdi32 -lwinmm -limm32 -loleaut32 -lversion  -luuid -lcomctl32 -lwebp -lharfbuzz -lglib-2.0 -lws2_32 -lole32 -lintl -liconv
-    endif
+
+  # Link to ncurses if we're using a non-tiles, Linux build
+  ifeq ($(HAVE_NCURSESW5CONFIG),1)
+    CXXFLAGS += $(shell ncursesw5-config --cflags)
+    LDFLAGS += $(shell ncursesw5-config --libs)
+  else
+    LDFLAGS += -lncurses
+  endif
+endif
+
+ifeq ($(TARGETSYSTEM),CYGWIN)
+  ifeq ($(LOCALIZE),1)
+    # Work around Cygwin not including gettext support in glibc
+    LDFLAGS += -lgdi32 -lwinmm -limm32 -loleaut32 -lversion  -luuid -lcomctl32 -lwebp -lharfbuzz -lglib-2.0 -lws2_32 -lole32 -lintl -liconv
   endif
 endif
 
 # BSDs have backtrace() and friends in a separate library
 ifeq ($(BSD), 1)
   LDFLAGS += -lexecinfo
+
+ # And similarly, their libcs don't have gettext built in
+  ifeq ($(LOCALIZE),1)
+    LDFLAGS += -lintl -liconv
+  endif
 endif
 
 # Global settings for Windows targets (at end)
@@ -653,10 +647,10 @@ etags: $(SOURCES) $(HEADERS)
 	etags $(SOURCES) $(HEADERS)
 	find data -name "*.json" -print0 | xargs -0 -L 50 etags --append
 
-tests: cataclysm.a
+tests: version cataclysm.a
 	$(MAKE) -C tests
 
-check: cataclysm.a
+check: version cataclysm.a
 	$(MAKE) -C tests check
 
 clean-tests:

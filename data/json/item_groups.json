@@ -427,6 +427,7 @@
       ["chips3", 65],
       ["pizza_veggy", 8],
       ["pizza_meat", 8],
+      ["pizza_cheese", 8],
       ["cheeseburger", 8],
       ["hamburger", 8],
       ["fish_fried", 8],
@@ -613,6 +614,7 @@
       ["beer", 60],
       ["pizza_meat", 8],
       ["pizza_veggy", 8],
+      ["pizza_cheese", 8],
       ["cheeseburger", 8],
       ["hamburger", 8],
       ["fish_fried", 8],
@@ -1361,6 +1363,7 @@
       ["frozen_burrito", 60],
       ["dried_salad", 6],
       ["pizza_veggy", 8],
+      ["pizza_cheese", 8],
       ["pizza_meat", 8],
       ["cheeseburger", 8],
       ["hamburger", 8],
@@ -1377,6 +1380,7 @@
       ["fruit_leather", 15],
       ["protein_shake", 10],
       ["pie", 20],
+      ["pie_veggy", 18],
       ["pie_meat", 18]
     ]
   },{
@@ -1398,9 +1402,11 @@
       ["sandwich_pbj", 30],
       ["sandwich_pbh", 30],
       ["pizza_veggy", 8],
+      ["pizza_cheese", 8],
       ["pizza_meat", 8],
       ["pie", 20],
       ["pie_meat", 20],
+      ["pie_veggy", 20],
       ["chips", 65],
       ["candy", 80],
       ["candy2", 80],
@@ -1462,6 +1468,7 @@
       ["sandwich_pbj", 30],
       ["sandwich_pbh", 30],
       ["pizza_veggy", 8],
+      ["pizza_cheese", 8],
       ["pizza_meat", 8],
       ["hamburger", 40],
       ["fish_fried", 8],
@@ -1486,6 +1493,7 @@
       ["tea_raw", 10],
       ["pie", 20],
       ["pie_meat", 20],
+      ["pie_veggy", 20],
       ["chips", 65],
       ["chips2", 50],
       ["chips3", 45],
@@ -10329,6 +10337,7 @@
       ["juice",       31],
       ["pie",         40],
       ["pie_meat",    28],
+      ["pie_veggy",   15],
       ["yoghurt",     30]
     ]
   },{
