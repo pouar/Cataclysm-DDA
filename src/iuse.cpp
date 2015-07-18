@@ -9625,3 +9625,4 @@ int iuse::weather_tool(player *p, item *it, bool, const tripoint& )
 
     return 0;
 }
+
