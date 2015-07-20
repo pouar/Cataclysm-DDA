@@ -1,3 +1,4 @@
+# vim: set expandtab tabstop=4 softtabstop=2 shiftwidth=2:
 # Platforms:
 # Linux/Cygwin native
 #   (don't need to do anything)
@@ -277,13 +278,16 @@ ifdef MAPSIZE
     CXXFLAGS += -DMAPSIZE=$(MAPSIZE)
 endif
 
+PKG_CONFIG = $(CROSS)pkg-config
+SDL2_CONFIG = $(CROSS)sdl2-config
+
 ifdef SOUND
   ifndef TILES
     $(error "SOUND=1 only works with TILES=1")
   endif
-  CXXFLAGS += $(shell pkg-config --cflags SDL2_mixer)
+  CXXFLAGS += $(shell $(PKG_CONFIG) --cflags SDL2_mixer)
   CXXFLAGS += -DSDL_SOUND
-  LDFLAGS += $(shell pkg-config --libs SDL2_mixer)
+  LDFLAGS += $(shell $(PKG_CONFIG) --libs SDL2_mixer)
   LDFLAGS += -lvorbisfile -lvorbis -logg
 endif
 
@@ -293,12 +297,12 @@ ifdef LUA
     LDFLAGS += -llua
   else
     # On unix-like systems, use pkg-config to find lua
-    LDFLAGS += $(shell pkg-config --silence-errors --libs lua5.2)
-    CXXFLAGS += $(shell pkg-config --silence-errors --cflags lua5.2)
-    LDFLAGS += $(shell pkg-config --silence-errors --libs lua-5.2)
-    CXXFLAGS += $(shell pkg-config --silence-errors --cflags lua-5.2)
-    LDFLAGS += $(shell pkg-config --silence-errors --libs lua)
-    CXXFLAGS += $(shell pkg-config --silence-errors --cflags lua)
+    LDFLAGS += $(shell $(PKG_CONFIG) --silence-errors --libs lua5.2)
+    CXXFLAGS += $(shell $(PKG_CONFIG) --silence-errors --cflags lua5.2)
+    LDFLAGS += $(shell $(PKG_CONFIG) --silence-errors --libs lua-5.2)
+    CXXFLAGS += $(shell $(PKG_CONFIG) --silence-errors --cflags lua-5.2)
+    LDFLAGS += $(shell $(PKG_CONFIG) --silence-errors --libs lua)
+    CXXFLAGS += $(shell $(PKG_CONFIG) --silence-errors --cflags lua)
   endif
 
   CXXFLAGS += -DLUA
@@ -334,20 +338,26 @@ ifdef TILES
       CXXFLAGS += $(shell sdl2-config --cflags) \
 		  -I$(shell dirname $(shell sdl2-config --cflags | sed 's/-I\(.[^ ]*\) .*/\1/'))
       LDFLAGS += -framework Cocoa $(shell sdl2-config --libs) -lSDL2_ttf
-      ifdef TILES
-        LDFLAGS += -lSDL2_image
-      endif
-    endif
-  else # not osx
-    LDFLAGS += -lSDL2 -lSDL2_ttf
-    ifdef TILES
       LDFLAGS += -lSDL2_image
     endif
+  else # not osx
+    CXXFLAGS += $(shell $(SDL2_CONFIG) --cflags)
+
+    ifdef STATIC
+      LDFLAGS += $(shell $(SDL2_CONFIG) --static-libs)
+    else
+      LDFLAGS += $(shell $(SDL2_CONFIG) --libs)
+    endif
+
+    LDFLAGS += -lSDL2_ttf -lSDL2_image
+
+    # We don't use SDL_main -- we have proper main()/WinMain()
+    CXXFLAGS := $(filter-out -Dmain=SDL_main,$(CXXFLAGS))
+    LDFLAGS := $(filter-out -lSDL2main,$(LDFLAGS))
   endif
-  ifdef TILES
-    DEFINES += -DSDLTILES
-  endif
-  DEFINES += -DTILES
+
+  DEFINES += -DSDLTILES -DTILES
+
   ifeq ($(TARGETSYSTEM),WINDOWS)
     ifndef DYNAMIC_LINKING
       # These differ depending on what SDL2 is configured to use.
@@ -428,13 +438,13 @@ endif
 
 ifeq ($(TARGETSYSTEM), LINUX)
   ifneq ($(PREFIX),)
-    DEFINES += -DPREFIX="$(PREFIX)"
+    DEFINES += -DPREFIX="$(PREFIX)" -DDATA_DIR_PREFIX
   endif
 endif
 
 ifeq ($(TARGETSYSTEM), CYGWIN)
   ifneq ($(PREFIX),)
-    DEFINES += -DPREFIX="$(PREFIX)"
+    DEFINES += -DPREFIX="$(PREFIX)" -DDATA_DIR_PREFIX
   endif
 endif
 
