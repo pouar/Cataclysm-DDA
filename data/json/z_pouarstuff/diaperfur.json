@@ -297,6 +297,7 @@
 			["abdl_booties", 90],
 			["babydoll_nightie",90],
 			["adult_footy_pjs", 90],
+			["adult_hood_sleeper", 90],
 			["toddlerdress", 90]
 		]
 	},
@@ -2582,5 +2583,29 @@
 		"coverage" : 30,
 		"peecap": 40000,
 		"material_thickness" : 508
+	},
+	{
+		"type" : "ARMOR",
+		"id" : "adult_hood_sleeper",
+		"name" : "adult sleeper",
+		"weight" : 900,
+		"color" : "light_gray",
+		"covers" : ["TORSO", "ARMS", "LEGS", "FEET", "HANDS"],
+		"to_hit" : 0,
+		"storage" : 0,
+		"symbol" : "[",
+		"description" : "A cute padded sleeper with a hood",
+		"price" : 4000,
+		"material" : ["cotton", "null"],
+		"volume" : 28,
+		"cutting" : 0,
+		"warmth" : 70,
+		"phase" : "solid",
+		"environmental_protection" : 1,
+		"encumbrance" : 35,
+		"bashing" : -5,
+		"flags" : ["VARSIZE", "HOOD"],
+		"coverage" : 100,
+		"material_thickness" : 4
 	}
 ]
