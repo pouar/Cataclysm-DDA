@@ -466,6 +466,10 @@ void player::activate_mutation( const std::string &mut )
         }
         tdata.powered = false;
         return;
+    } else if( mut == "SELFAWARE" ) {
+        print_health();
+        tdata.powered = false;
+        return;
     } else if (mut == "FIREBREATH"){
         item tmp_item = weapon;
         weapon = item("firebreath", 1);
@@ -486,7 +490,6 @@ void player::activate_mutation( const std::string &mut )
         g->refresh_all();
         g->plfire(false);
         weapon = tmp_item;
-        tdata.powered = false;
         return;
     }
 }
