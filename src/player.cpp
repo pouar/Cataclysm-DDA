@@ -430,7 +430,7 @@ void player::reset_stats()
     }
 
     // Hit-related effects
-    mod_hit_bonus( mabuff_tohit_bonus() + weapon.type->m_to_hit - (encumb(bp_torso) / 10) );
+    mod_hit_bonus( mabuff_tohit_bonus() + weapon.type->m_to_hit );
 
     // Apply static martial arts buffs
     ma_static_effects();
@@ -3487,7 +3487,7 @@ Strength - 4;    Dexterity - 4;    Intelligence - 4;    Perception - 4"));
                     mvwprintz(w_stats, 3, 1, h_ltgray, _("Dexterity:"));
 
                     mvwprintz(w_stats, 6, 1, c_magenta, _("Melee to-hit bonus:"));
-                    mvwprintz(w_stats, 6, 22, c_magenta, "%+3d", base_to_hit(false));
+                    mvwprintz(w_stats, 6, 22, c_magenta, "%+3d", get_hit_base());
                     mvwprintz(w_stats, 7, 1, c_magenta, _("Ranged penalty:"));
                     mvwprintz(w_stats, 7, 21, c_magenta, "%+4d", -(abs(ranged_dex_mod())));
                     if (throw_dex_mod(false) <= 0) {
@@ -3579,7 +3579,8 @@ Strength - 4;    Dexterity - 4;    Intelligence - 4;    Perception - 4"));
             werase(w_info);
             std::string s;
             if (line == 0) {
-                s += string_format( _("Melee skill %+d; "), - (encumb( bp_torso ) / 10));
+                const int melee_roll_pen = std::max( -( encumb( bp_torso ) / 10 ) * 10, -80 );
+                s += string_format( _("Melee attack rolls %+d%%; "), melee_roll_pen );
                 s += dodge_skill_text( - (encumb( bp_torso ) / 10));
                 s += swim_cost_text( (encumb( bp_torso ) / 10) * ( 80 - skillLevel( "swimming" ) * 3 ) );
                 s += melee_cost_text( encumb( bp_torso ) );
@@ -5340,6 +5341,7 @@ dealt_damage_instance player::deal_damage(Creature* source, body_part bp, const 
         break;
     case bp_mouth: // Fall through to head damage
     case bp_head:
+        break;
     default:
         debugmsg("Wacky body part hit!");
     }
@@ -5414,10 +5416,25 @@ void player::mod_pain(int npain) {
     if (has_trait("PAINRESIST_TROGLO") && npain > 1) {
         npain = npain * 4 / rng(6,9);
     }
-    if (!is_npc() && ((npain >= 1) && (rng(0, pain) >= 10))) {
-        g->cancel_activity_query(_("Ouch, you were hurt!"));
-        if (in_sleep_state()) {
-            wake_up();
+    int felt_pain = pain - pkill + npain;
+    // Only trigger the "you felt it" effects if we are going to feel it.
+    if (felt_pain > 0) {
+        // Putting the threshold at 2 here to avoid most basic "ache" style
+        // effects from constantly asking you to stop crafting.
+        if (!is_npc() && felt_pain >= 2) {
+            g->cancel_activity_query(_("Ouch, something hurts!"));
+        }
+        // Only a large pain burst will actually wake people while sleeping.
+        if(in_sleep_state()) {
+            int pain_thresh = rng(3, 5);
+            if (has_trait("HEAVYSLEEPER")) {
+                pain_thresh += 2;
+            } else if (has_trait("HEAVYSLEEPER2")) {
+                pain_thresh += 5;
+            }
+            if (felt_pain >= pain_thresh) {
+                wake_up();
+            }
         }
     }
     Creature::mod_pain(npain);
@@ -7899,6 +7916,12 @@ void player::hardcoded_effects(effect &it)
                 if( !hibernating && has_trait("WAKEFUL3") ) {
                     const int roll = (one_in(recovery_chance) ? 1.0 : 0.0);
                     delta += (2.0 + roll) / 2.0;
+                }
+
+                // Untreated pain causes a flat penalty to fatigue reduction
+                delta -= float(pain - pkill) / 60;
+                if (delta < 0) {
+                    delta = 0;
                 }
 
                 fatigue -= static_cast<int>(round(delta));

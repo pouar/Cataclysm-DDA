@@ -1599,77 +1599,32 @@ int game::inventory_item_menu(int pos, int iStartX, int iWidth, int position)
         const hint_rating rate_drop_item = u.weapon.has_flag("NO_UNWIELD") ? HINT_CANT : HINT_GOOD;
 
         int max_text_length = 0;
-        int length = 0;
         vMenu.push_back(iteminfo("MENU", "", "iOffsetX", iOffsetX));
         vMenu.push_back(iteminfo("MENU", "", "iOffsetY", 0));
-        length = utf8_width(_("<a>ctivate"));
-        if (length > max_text_length) {
-            max_text_length = length;
+
+        std::vector< std::tuple<std::string,std::string,std::string,double> >
+            menuItems {
+                std::make_tuple("MENU", "a", _("<a>ctivate"), u.rate_action_use(&oThisItem)),
+                std::make_tuple("MENU", "R", _("<R>ead"), u.rate_action_read(&oThisItem)),
+                std::make_tuple("MENU", "E", _("<E>at"), u.rate_action_eat(&oThisItem)),
+                std::make_tuple("MENU", "W", _("<W>ear"), u.rate_action_wear(&oThisItem)),
+                std::make_tuple("MENU", "w", _("<w>ield"), -999),
+                std::make_tuple("MENU", "t", _("<t>hrow"), -999),
+                std::make_tuple("MENU", "T", _("<T>ake off"), u.rate_action_takeoff(&oThisItem)),
+                std::make_tuple("MENU", "d", _("<d>rop"), rate_drop_item),
+                std::make_tuple("MENU", "U", _("<U>nload"), u.rate_action_unload( oThisItem )),
+                std::make_tuple("MENU", "r", _("<r>eload"), u.rate_action_reload(&oThisItem)),
+                std::make_tuple("MENU", "D", _("<D>isassemble"), u.rate_action_disassemble(&oThisItem)),
+                std::make_tuple("MENU", "=", _("<=> reassign"),-999)
+            };
+
+        for (auto &i: menuItems){
+            vMenu.push_back(iteminfo(std::get<0>(i), std::get<1>(i), std::get<2>(i), std::get<3>(i)));
+            max_text_length = std::max(max_text_length, utf8_width(std::get<2>(i).c_str()));
         }
-        vMenu.push_back(iteminfo("MENU", "a", _("<a>ctivate"), u.rate_action_use(&oThisItem)));
-        length = utf8_width(_("<R>ead"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
-        vMenu.push_back(iteminfo("MENU", "R", _("<R>ead"), u.rate_action_read(&oThisItem)));
-        length = utf8_width(_("<E>at"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
-        vMenu.push_back(iteminfo("MENU", "E", _("<E>at"), u.rate_action_eat(&oThisItem)));
-        length = utf8_width(_("<W>ear"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
-        vMenu.push_back(iteminfo("MENU", "W", _("<W>ear"), u.rate_action_wear(&oThisItem)));
-        length = utf8_width(_("<w>ield"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
-        vMenu.push_back(iteminfo("MENU", "w", _("<w>ield")));
-        length = utf8_width(_("<t>hrow"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
-        vMenu.push_back(iteminfo("MENU", "t", _("<t>hrow")));
-        length = utf8_width(_("<T>ake off"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
-        vMenu.push_back(iteminfo("MENU", "T", _("<T>ake off"), u.rate_action_takeoff(&oThisItem)));
-        length = utf8_width(_("<d>rop"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
-        vMenu.push_back(iteminfo("MENU", "d", _("<d>rop"), rate_drop_item));
-        length = utf8_width(_("<U>nload"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
-        vMenu.push_back(iteminfo("MENU", "U", _("<U>nload"), u.rate_action_unload( oThisItem )));
-        length = utf8_width(_("<r>eload"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
-        vMenu.push_back(iteminfo("MENU", "r", _("<r>eload"), u.rate_action_reload(&oThisItem)));
-        length = utf8_width(_("<D>isassemble"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
-        vMenu.push_back(iteminfo("MENU", "D", _("<D>isassemble"), u.rate_action_disassemble(&oThisItem)));
-        length = utf8_width(_("<=> reassign"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
-        vMenu.push_back(iteminfo("MENU", "=", _("<=> reassign")));
-        length = utf8_width(_("<-> Autopickup"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
-        length = utf8_width(_("<+> Autopickup"));
-        if (length > max_text_length) {
-            max_text_length = length;
-        }
+
+        max_text_length = std::max(max_text_length, utf8_width(_("<-> Autopickup")));
+        max_text_length = std::max(max_text_length, utf8_width(_("<+> Autopickup")));
         vMenu.push_back(iteminfo("MENU", (bHPR) ? "-" : "+",
                                  (bHPR) ? _("<-> Autopickup") : _("<+> Autopickup"), (bHPR) ? HINT_IFFY : HINT_GOOD));
 
@@ -2231,97 +2186,97 @@ bool game::handle_action()
     int mouse_action_x = -1;
     int mouse_action_y = -1;
 
-    // do not allow mouse actions while dead
-    if(!u.is_dead_state()) {
-        if (act == ACTION_NULL) {
-            if (action == "SELECT" || action == "SEC_SELECT") {
-                // Mouse button click
-                if (veh_ctrl) {
-                    // No mouse use in vehicle
-                    return false;
-                }
+// do not allow mouse actions while dead
+    if( !u.is_dead_state() &&
+        act == ACTION_NULL &&
+        (action == "SELECT" || action == "SEC_SELECT")
+      ) {
+        // Mouse button click
+        if (veh_ctrl) {
+            // No mouse use in vehicle
+            return false;
+        }
 
-                int mx, my;
-                if (!ctxt.get_coordinates(w_terrain, mx, my) || !u.sees(mx, my)) {
-                    // Not clicked in visible terrain
-                    return false;
-                }
+        int mx, my;
+        if (!ctxt.get_coordinates(w_terrain, mx, my) || !u.sees(mx, my)) {
+            // Not clicked in visible terrain
+            return false;
+        }
 
-                if (action == "SELECT") {
-                    bool new_destination = true;
-                    if (!destination_preview.empty()) {
-                        auto &final_destination = destination_preview.back();
-                        if (final_destination.x == mx && final_destination.y == my) {
-                            // Second click
-                            new_destination = false;
-                            u.set_destination(destination_preview);
-                            destination_preview.clear();
-                            act = u.get_next_auto_move_direction();
-                            if (act == ACTION_NULL) {
-                                // Something went wrong
-                                u.clear_destination();
-                                return false;
-                            }
-                        }
-                    }
-
-                    if (new_destination) {
-                        destination_preview = m.route( u.pos3(), tripoint( mx, my, u.posz() ), 0, 1000 );
-                        return false;
-                    }
-                } else if (action == "SEC_SELECT") {
-                    // Right mouse button
-
-                    bool had_destination_to_clear = !destination_preview.empty();
-                    u.clear_destination();
+        if (action == "SELECT") {
+            bool new_destination = true;
+            if (!destination_preview.empty()) {
+                auto &final_destination = destination_preview.back();
+                if (final_destination.x == mx && final_destination.y == my) {
+                    // Second click
+                    new_destination = false;
+                    u.set_destination(destination_preview);
                     destination_preview.clear();
-
-                    if (had_destination_to_clear) {
+                    act = u.get_next_auto_move_direction();
+                    if (act == ACTION_NULL) {
+                        // Something went wrong
+                        u.clear_destination();
                         return false;
                     }
+                }
+            }
 
-                    mouse_action_x = mx;
-                    mouse_action_y = my;
-                    int mouse_selected_mondex = mon_at( { mx, my, get_levz() } );
-                    if (mouse_selected_mondex != -1) {
-                        monster &critter = critter_tracker->find(mouse_selected_mondex);
-                        if (!u.sees(critter)) {
-                            add_msg(_("Nothing relevant here."));
-                            return false;
-                        }
+            if (new_destination) {
+                destination_preview = m.route( u.pos3(), tripoint( mx, my, u.posz() ), 0, 1000 );
+                return false;
+            }
+        } else if (action == "SEC_SELECT") {
+            // Right mouse button
 
-                        if (!u.weapon.is_gun()) {
-                            add_msg(m_info, _("You are not wielding a ranged weapon."));
-                            return false;
-                        }
+            bool had_destination_to_clear = !destination_preview.empty();
+            u.clear_destination();
+            destination_preview.clear();
 
-                        //TODO: Add weapon range check. This requires weapon to be reloaded.
+            if (had_destination_to_clear) {
+                return false;
+            }
 
-                        act = ACTION_FIRE;
-                    } else if (std::abs(mx - u.posx()) <= 1 && std::abs(my - u.posy()) <= 1 &&
-                               m.close_door( tripoint( mx, my, u.posz() ), !m.is_outside(u.pos3()), true)) {
-                        // Can only close doors when adjacent to it.
-                        act = ACTION_CLOSE;
+            mouse_action_x = mx;
+            mouse_action_y = my;
+            int mouse_selected_mondex = mon_at( { mx, my, get_levz() } );
+            if (mouse_selected_mondex != -1) {
+                monster &critter = critter_tracker->find(mouse_selected_mondex);
+                if (!u.sees(critter)) {
+                    add_msg(_("Nothing relevant here."));
+                    return false;
+                }
+
+                if (!u.weapon.is_gun()) {
+                    add_msg(m_info, _("You are not wielding a ranged weapon."));
+                    return false;
+                }
+
+                //TODO: Add weapon range check. This requires weapon to be reloaded.
+
+                act = ACTION_FIRE;
+            } else if (std::abs(mx - u.posx()) <= 1 && std::abs(my - u.posy()) <= 1 &&
+                       m.close_door( tripoint( mx, my, u.posz() ), !m.is_outside(u.pos3()), true)) {
+                // Can only close doors when adjacent to it.
+                act = ACTION_CLOSE;
+            } else {
+                int dx = abs(u.posx() - mx);
+                int dy = abs(u.posy() - my);
+                if (dx < 2 && dy < 2) {
+                    if (dy == 0 && dx == 0) {
+                        // Clicked on self
+                        act = ACTION_PICKUP;
                     } else {
-                        int dx = abs(u.posx() - mx);
-                        int dy = abs(u.posy() - my);
-                        if (dx < 2 && dy < 2) {
-                            if (dy == 0 && dx == 0) {
-                                // Clicked on self
-                                act = ACTION_PICKUP;
-                            } else {
-                                // Clicked adjacent tile
-                                act = ACTION_EXAMINE;
-                            }
-                        } else {
-                            add_msg(_("Nothing relevant here."));
-                            return false;
-                        }
+                        // Clicked adjacent tile
+                        act = ACTION_EXAMINE;
                     }
+                } else {
+                    add_msg(_("Nothing relevant here."));
+                    return false;
                 }
             }
         }
     }
+
 
     if( act == ACTION_NULL ) {
         // No auto-move action, no mouse clicks.
@@ -3523,25 +3478,16 @@ bool game::save_player_data()
 bool game::save()
 {
     try {
-        if( !save_player_data() ) {
+        if ( !save_player_data() ||
+             !save_factions_missions_npcs() ||
+             !save_artifacts() ||
+             !save_maps() ||
+             !save_auto_pickup(true) || // Save character auto pickup rules
+             !save_uistate()){
             return false;
+        } else {
+            return true;
         }
-        if (!save_factions_missions_npcs()) {
-            return false;
-        }
-        if (!save_artifacts()) {
-            return false;
-        }
-        if (!save_maps()) {
-            return false;
-        }
-        if (!save_auto_pickup(true)) { // Save character auto pickup rules
-            return false;
-        }
-        if (!save_uistate()) {
-            return false;
-        }
-        return true;
     } catch (std::ios::failure &err) {
         popup(_("Failed to save game data"));
         return false;
@@ -4996,11 +4942,7 @@ void game::draw_sidebar()
 
 bool game::isBetween(int test, int down, int up)
 {
-    if (test > down && test < up) {
-        return true;
-    } else {
-        return false;
-    }
+    return test > down && test < up;
 }
 
 void game::draw_critter( const Creature &critter, const tripoint &center )
@@ -5060,7 +5002,8 @@ void game::draw_ter( const tripoint &center, const bool looking, const bool draw
         for (realx = posx - POSX; realx <= posx + POSX; realx++) {
             for (realy = posy - POSY; realy <= posy + POSY; realy++) {
                 if (scent(tmp) != 0) {
-                    int tempx = posx - realx, tempy = posy - realy;
+                    int tempx = posx - realx;
+                    int tempy = posy - realy;
                     if (!(isBetween(tempx, -2, 2) && isBetween(tempy, -2, 2))) {
                         if (mon_at(tmp) != -1) {
                             mvwputch(w_terrain, realy + POSY - posy,
@@ -5304,19 +5247,17 @@ void game::draw_minimap()
                 }
 
                 if (symbolIndex > -1) {
-
                     int symbolStart = 0;
                     if (colorIndex > -1 && !symbolFirst) {
                         symbolStart = colorIndex + 1;
                     }
-
                     ter_sym = note_text.substr(symbolStart, symbolIndex - symbolStart).c_str()[0];
-
                 }
 
                 if (colorIndex > -1) {
 
                     int colorStart = 0;
+
                     if (symbolIndex > -1 && symbolFirst) {
                         colorStart = symbolIndex + 1;
                     }
@@ -5324,59 +5265,40 @@ void game::draw_minimap()
                     std::string sym = note_text.substr(colorStart, colorIndex - colorStart);
 
                     if (sym.length() == 2) {
-
                         if (sym.compare("br") == 0) {
                             ter_color = c_brown;
-                        }
-                        if (sym.compare("lg") == 0) {
+                        } else if (sym.compare("lg") == 0) {
                             ter_color = c_ltgray;
-                        }
-                        if (sym.compare("dg") == 0) {
+                        } else if (sym.compare("dg") == 0) {
                             ter_color = c_dkgray;
                         }
-
                     } else {
-
                         char colorID = sym.c_str()[0];
-
                         if (colorID == 'r') {
                             ter_color = c_ltred;
-                        }
-                        if (colorID == 'R') {
+                        } else if (colorID == 'R') {
                             ter_color = c_red;
-                        }
-                        if (colorID == 'g') {
+                        } else if (colorID == 'g') {
                             ter_color = c_ltgreen;
-                        }
-                        if (colorID == 'G') {
+                        } else if (colorID == 'G') {
                             ter_color = c_green;
-                        }
-                        if (colorID == 'b') {
+                        } else if (colorID == 'b') {
                             ter_color = c_ltblue;
-                        }
-                        if (colorID == 'B') {
+                        } else if (colorID == 'B') {
                             ter_color = c_blue;
-                        }
-                        if (colorID == 'W') {
+                        } else if (colorID == 'W') {
                             ter_color = c_white;
-                        }
-                        if (colorID == 'C') {
+                        } else if (colorID == 'C') {
                             ter_color = c_cyan;
-                        }
-                        if (colorID == 'c') {
+                        } else if (colorID == 'c') {
                             ter_color = c_ltcyan;
-                        }
-                        if (colorID == 'P') {
+                        } else if (colorID == 'P') {
                             ter_color = c_pink;
-                        }
-                        if (colorID == 'm') {
+                        } else if (colorID == 'm') {
                             ter_color = c_magenta;
                         }
-
                     }
-
                 }
-
             } else if (!seen) {
                 ter_sym = ' ';
                 ter_color = c_black;
@@ -5750,19 +5672,15 @@ int game::mon_info(WINDOW *w)
             if (!new_seen_mon.empty()) {
                 monster &critter = critter_tracker->find(new_seen_mon.back());
                 cancel_activity_query(_("%s spotted!"), critter.name().c_str());
-                if (u.has_trait("M_DEFENDER")) {
-                    if (critter.type->in_species("PLANT")) {
-                        add_msg(m_warning, _("We have detected a %s."), critter.name().c_str());
-                        if (!u.has_effect("adrenaline_mycus")){
-                            u.add_effect("adrenaline_mycus", 300);
-                        } else {
-                            if (u.get_effect_int("adrenaline_mycus") == 1) {
-                                // Triffids present.  We ain't got TIME to adrenaline comedown!
-                                u.add_effect("adrenaline_mycus", 150);
-                                u.mod_pain(3); // Does take it out of you, though
-                                add_msg(m_info, _("Our fibers strain with renewed wrath!"));
-                            }
-                        }
+                if (u.has_trait("M_DEFENDER") && critter.type->in_species("PLANT")) {
+                    add_msg(m_warning, _("We have detected a %s."), critter.name().c_str());
+                    if (!u.has_effect("adrenaline_mycus")){
+                        u.add_effect("adrenaline_mycus", 300);
+                    } else if (u.get_effect_int("adrenaline_mycus") == 1) {
+                        // Triffids present.  We ain't got TIME to adrenaline comedown!
+                        u.add_effect("adrenaline_mycus", 150);
+                        u.mod_pain(3); // Does take it out of you, though
+                        add_msg(m_info, _("Our fibers strain with renewed wrath!"));
                     }
                 }
             } else {
@@ -6017,16 +5935,16 @@ void game::monmove()
             m.creature_in_field( critter );
         }
 
-        if (!critter.is_dead()) {
-            if (u.has_active_bionic("bio_alarm") && u.power_level >= 25 &&
-                rl_dist( u.pos(), critter.pos() ) <= 5) {
+        if (!critter.is_dead() &&
+            u.has_active_bionic("bio_alarm") &&
+            u.power_level >= 25 &&
+            rl_dist( u.pos(), critter.pos() ) <= 5) {
                 u.charge_power(-25);
                 add_msg(m_warning, _("Your motion alarm goes off!"));
                 cancel_activity_query(_("Your motion alarm goes off!"));
                 if (u.in_sleep_state()) {
                     u.wake_up();
                 }
-            }
         }
     }
 
@@ -6048,18 +5966,17 @@ void game::monmove()
     }
 
     // Now, do active NPCs.
-    for( auto &elem : active_npc ) {
-        npc &np = *elem;
-        if( np.is_dead() ) {
+    for( auto np : active_npc ) {
+        if( np->is_dead() ) {
             continue;
         }
         int turns = 0;
-        m.creature_in_field( *elem );
-        np.process_turn();
-        while( !np.is_dead() && !np.in_sleep_state() && np.moves > 0 && turns < 10 ) {
-            int moves = np.moves;
-            np.move();
-            if( moves == np.moves ) {
+        m.creature_in_field( *np );
+        np->process_turn();
+        while( !np->is_dead() && !np->in_sleep_state() && np->moves > 0 && turns < 10 ) {
+            int moves = np->moves;
+            np->move();
+            if( moves == np->moves ) {
                 // Count every time we exit npc::move() without spending any moves.
                 turns++;
             }
@@ -6067,15 +5984,15 @@ void game::monmove()
         // If we spun too long trying to decide what to do (without spending moves),
         // Invoke cranial detonation to prevent an infinite loop.
         if( turns == 10 ) {
-            add_msg( _( "%s's brain explodes!" ), np.name.c_str() );
-            np.die( nullptr );
+            add_msg( _( "%s's brain explodes!" ), np->name.c_str() );
+            np->die( nullptr );
         }
 
-        if( !np.is_dead() ) {
-            np.process_active_items();
-            np.update_needs();
-            np.regen();
-            np.update_stamina();
+        if( !np->is_dead() ) {
+            np->process_active_items();
+            np->update_needs();
+            np->regen();
+            np->update_stamina();
         }
     }
     cleanup_dead();
@@ -6158,14 +6075,14 @@ void game::do_blast( const tripoint &p, const int power, const bool fire,float d
             if( z_offset[i] == 0 ) {
                 // Horizontal - no floor bashing
                 m.smash_items( dest, force );
-                m.bash( dest, bash_force, true, false, nullptr, false );
+                m.bash( dest, bash_force, true, false, false );
             } else if( z_offset[i] > 0 ) {
                 // Should actually bash through the floor first, but that's not really possible yet
-                m.bash( dest, bash_force, true, false, nullptr, true );
+                m.bash( dest, bash_force, true, false, true );
             } else if( !m.valid_move( pt, dest, false, true ) ) {
                 // Only bash through floor if it doesn't exist
                 // Bash the current tile's floor, not the one's below
-                m.bash( pt, bash_force, true, false, nullptr, true );
+                m.bash( pt, bash_force, true, false, true );
             }
 
             float next_dist = distance;
@@ -6354,10 +6271,10 @@ void game::flashbang( const tripoint &p, bool player_immune)
     for( size_t i = 0; i < num_zombies(); i++ ) {
         monster &critter = critter_tracker->find(i);
         dist = rl_dist( critter.pos3(), p );
-        if( dist <= 4 ) {
-            critter.add_effect("stunned", 10 - dist);
-        }
         if( dist <= 8 ) {
+            if( dist <= 4 ) {
+                critter.add_effect("stunned", 10 - dist);
+            }
             if( critter.has_flag(MF_SEES) && m.sees( critter.pos3(), p, 8 ) ) {
                 critter.add_effect("blind", 18 - dist);
             }
@@ -6545,29 +6462,17 @@ void game::knockback( std::vector<tripoint> &traj, int force, int stun, int dam_
                                     targ->name.c_str(), force_remaining);
                     }
                     add_msg(_("%s took %d damage! (before armor)"), targ->name.c_str(), dam_mult * force_remaining);
-                    if (one_in(2)) {
-                        targ->deal_damage( nullptr, bp_arm_l, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        targ->deal_damage( nullptr, bp_arm_r, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        targ->deal_damage( nullptr, bp_leg_l, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        targ->deal_damage( nullptr, bp_leg_r, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        targ->deal_damage( nullptr, bp_torso, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        targ->deal_damage( nullptr, bp_head, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        targ->deal_damage( nullptr, bp_hand_l, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        targ->deal_damage( nullptr, bp_hand_r, damage_instance( DT_BASH, force_remaining * dam_mult ) );
+                    body_part bps[] = {
+                        bp_head,
+                        bp_arm_l, bp_arm_r,
+                        bp_hand_l, bp_hand_r,
+                        bp_torso,
+                        bp_leg_l, bp_leg_r
+                    };
+                    for (auto &bp : bps) {
+                        if (one_in(2)) {
+                            targ->deal_damage( nullptr, bp, damage_instance( DT_BASH, force_remaining * dam_mult ) );
+                        }
                     }
                     targ->check_dead_state();
                 }
@@ -6642,29 +6547,17 @@ void game::knockback( std::vector<tripoint> &traj, int force, int stun, int dam_
                                 force_remaining);
                     }
                     u.add_effect("stunned", force_remaining);
-                    if (one_in(2)) {
-                        u.deal_damage( nullptr, bp_arm_l, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        u.deal_damage( nullptr, bp_arm_r, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        u.deal_damage( nullptr, bp_leg_l, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        u.deal_damage( nullptr, bp_leg_r, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        u.deal_damage( nullptr, bp_torso, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        u.deal_damage( nullptr, bp_head, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        u.deal_damage( nullptr, bp_hand_l, damage_instance( DT_BASH, force_remaining * dam_mult ) );
-                    }
-                    if (one_in(2)) {
-                        u.deal_damage( nullptr, bp_hand_r, damage_instance( DT_BASH, force_remaining * dam_mult ) );
+                    body_part bps[] = {
+                        bp_head,
+                        bp_arm_l, bp_arm_r,
+                        bp_hand_l, bp_hand_r,
+                        bp_torso,
+                        bp_leg_l, bp_leg_r
+                    };
+                    for (auto &bp : bps) {
+                        if (one_in(2)) {
+                            u.deal_damage( nullptr, bp, damage_instance( DT_BASH, force_remaining * dam_mult ) );
+                        }
                     }
                     u.check_dead_state();
                 }
@@ -7403,7 +7296,7 @@ void game::smash()
         }
     }
 
-    didit = m.bash( smashp, smashskill, false, false, nullptr, smash_floor ).first;
+    didit = m.bash( smashp, smashskill, false, false, smash_floor ).did_bash;
     if (didit) {
         u.handle_melee_wear();
         u.moves -= move_cost;
@@ -11189,11 +11082,10 @@ void game::butcher()
     size_t salvage_index = corpses.size();
     if( salvage_tool_index != INT_MIN ) {
         for( size_t i = 0; i < items.size(); i++ ) {
-            if( !items[i].is_corpse() ) {
-                if( salvage_iuse->valid_to_cut_up( &items[i] ) ) {
+            if( !items[i].is_corpse() &&
+                salvage_iuse->valid_to_cut_up( &items[i] ) ) {
                     corpses.push_back(i);
                     has_item = true;
-                }
             }
         }
     }
@@ -12967,7 +12859,7 @@ void game::fling_creature(Creature *c, const int &dir, float flvel, bool control
         if( force > 0 ) {
             int dmg = c->impact( force, c->pos() );
             // TODO: Make landing damage the floor
-            m.bash( c->pos(), dmg / 4, false, false, nullptr, false );
+            m.bash( c->pos(), dmg / 4, false, false, false );
         }
     } else {
         c->underwater = true;
@@ -13292,8 +13184,7 @@ void game::vertical_move(int movez, bool force)
                     !otermap[ter2].has_flag(known_down) ) {
                     overmap_buffer.set_seen(cursx, cursy, z_after, true);
                     overmap_buffer.add_note(cursx, cursy, z_after, _(">:W;AUTO: goes down"));
-                }
-                if( movez == -1 && otermap[ter].has_flag(known_down) &&
+                } else if ( movez == -1 && otermap[ter].has_flag(known_down) &&
                     !otermap[ter2].has_flag(known_up) ) {
                     overmap_buffer.set_seen(cursx, cursy, z_after, true);
                     overmap_buffer.add_note(cursx, cursy, z_after, _("<:W;AUTO: goes up"));
@@ -14663,7 +14554,7 @@ void game::add_artifact_messages(std::vector<art_effect_passive> effects)
                                    (net_per > 0 ? "+" : ""), net_per);
     }
 
-    if (stat_info.length() > 0) {
+    if (!stat_info.empty()) {
         add_msg(stat_info.c_str());
     }
 
