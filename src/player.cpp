@@ -62,6 +62,11 @@
 #include <stdlib.h>
 #include <fstream>
 
+const mtype_id mon_dermatik_larva( "mon_dermatik_larva" );
+const mtype_id mon_null( "mon_null" );
+const mtype_id mon_player_blob( "mon_player_blob" );
+const mtype_id mon_shadow_snake( "mon_shadow_snake" );
+
 // use this instead of having to type out 26 spaces like before
 static const std::string header_spaces(26, ' ');
 
@@ -2639,8 +2644,7 @@ void player::memorial( std::ofstream &memorial_file, std::string epitaph )
 
     int total_kills = 0;
 
-    const std::map<std::string, mtype*> monids = MonsterGenerator::generator().get_all_mtypes();
-    for( const auto &monid : monids ) {
+    for( const auto &monid : MonsterGenerator::generator().get_all_mtypes() ) {
         if( g->kill_count( monid.first ) > 0 ) {
             memorial_file << "  " << monid.second->sym << " - "
                           << string_format( "%4d", g->kill_count( monid.first ) ) << " "
@@ -5184,22 +5188,23 @@ void player::on_hit( Creature *source, body_part bp_hit,
     }
 }
 
-void player::on_hurt( Creature *source )
+void player::on_hurt( Creature *source, bool disturb /*= true*/ )
 {
     if( has_trait("ADRENALINE") && !has_effect("adrenaline") &&
         (hp_cur[hp_head] < 25 || hp_cur[hp_torso] < 15) ) {
         add_effect("adrenaline", 200);
     }
 
-    if( in_sleep_state() ) {
-        wake_up();
-    }
-
-    if( !is_npc() ) {
-        if( source != nullptr ) {
-            g->cancel_activity_query(_("You were attacked by %s!"), source->disp_name().c_str());
-        } else {
-            g->cancel_activity_query(_("You were hurt!"));
+    if( disturb ) {
+        if( in_sleep_state() ) {
+            wake_up();
+        }
+        if( !is_npc() ) {
+            if( source != nullptr ) {
+                g->cancel_activity_query(_("You were attacked by %s!"), source->disp_name().c_str());
+            } else {
+                g->cancel_activity_query(_("You were hurt!"));
+            }
         }
     }
 
@@ -5252,7 +5257,7 @@ dealt_damage_instance player::deal_damage(Creature* source, body_part bp, const 
         }
         for (int i = 0; i < snakes && !valid.empty(); i++) {
             const tripoint target = random_entry_removed( valid );
-            if (g->summon_mon("mon_shadow_snake", target)) {
+            if (g->summon_mon(mon_shadow_snake, target)) {
                 monster *snake = g->monster_at( target );
                 snake->friendly = -1;
             }
@@ -5274,7 +5279,7 @@ dealt_damage_instance player::deal_damage(Creature* source, body_part bp, const 
         int numslime = 1;
         for (int i = 0; i < numslime && !valid.empty(); i++) {
             const tripoint target = random_entry_removed( valid );
-            if (g->summon_mon("mon_player_blob", target)) {
+            if (g->summon_mon(mon_player_blob, target)) {
                 monster *slime = g->monster_at( target );
                 slime->friendly = -1;
             }
@@ -5535,7 +5540,7 @@ void player::healall(int dam)
     }
 }
 
-void player::hurtall(int dam, Creature *source)
+void player::hurtall(int dam, Creature *source, bool disturb /*= true*/)
 {
     if( is_dead_state() || has_trait( "DEBUG_NODMG" ) || dam <= 0 ) {
         return;
@@ -5554,7 +5559,7 @@ void player::hurtall(int dam, Creature *source)
 
     // Low pain: damage is spread all over the body, so not as painful as 6 hits in one part
     mod_pain( dam );
-    on_hurt( source );
+    on_hurt( source, disturb );
 }
 
 int player::hitall(int dam, int vary, Creature *source)
@@ -6130,10 +6135,10 @@ void player::regen()
             healall(1);
         }
         if (has_trait("ROT2") && one_in(5)) {
-            hurtall(1, nullptr);
+            hurtall(1, nullptr, false);
         }
         if (has_trait("ROT3") && one_in(2)) {
-            hurtall(1, nullptr);
+            hurtall(1, nullptr, false);
         }
 
         if (radiation > 0 && one_in(3)) {
@@ -7374,7 +7379,7 @@ void player::hardcoded_effects(effect &it)
                     }
                     tripoint dest( i, j, posz() );
                     if (g->mon_at( dest ) == -1) {
-                        if (g->summon_mon("mon_dermatik_larva", dest)) {
+                        if (g->summon_mon(mon_dermatik_larva, dest)) {
                             monster *grub = g->monster_at(dest);
                             if (one_in(3)) {
                                 grub->friendly = -1;
@@ -8108,8 +8113,8 @@ void player::hardcoded_effects(effect &it)
                         it.mod_duration(100);
                     }
                 } else {
-                    sounds::sound( pos(), 12, _("beep-beep-beep!"));
-                    if( !can_hear( pos(), 12 ) ) {
+                    sounds::sound( pos(), 16, _("beep-beep-beep!"));
+                    if( !can_hear( pos(), 16 ) ) {
                         // 10 minute automatic snooze
                         it.mod_duration(100);
                     } else {
@@ -10330,7 +10335,7 @@ bool player::eat(item *eaten, it_comest *comest)
             int numslime = 1;
             for (int i = 0; i < numslime && !valid.empty(); i++) {
                 const tripoint target = random_entry_removed( valid );
-                if (g->summon_mon("mon_player_blob", target)) {
+                if (g->summon_mon(mon_player_blob, target)) {
                     monster *slime = g->monster_at( target );
                     slime->friendly = -1;
                 }
@@ -14463,7 +14468,7 @@ void player::place_corpse()
 {
     std::vector<item *> tmp = inv_dump();
     item body;
-    body.make_corpse( "mon_null", calendar::turn, name );
+    body.make_corpse( mon_null, calendar::turn, name );
     for( auto itm : tmp ) {
         g->m.add_item_or_charges( pos(), *itm );
     }
