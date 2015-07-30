@@ -97,7 +97,11 @@ const mtype_id mon_zombie_smoker( "mon_zombie_smoker" );
 const mtype_id mon_zombie_soldier( "mon_zombie_soldier" );
 const mtype_id mon_zombie_spitter( "mon_zombie_spitter" );
 const mtype_id mon_zombie_tough( "mon_zombie_tough" );
-
+const mtype_id mon_doom_former_human( "mon_doom_former_human" );
+const mtype_id mon_doom_demon( "mon_doom_demon" );
+const mtype_id mon_doom_imp( "mon_doom_imp" );
+const mtype_id mon_doom_cacodemon( "mon_doom_cacodemon" );
+const mtype_id mon_doom_lost_soul( "mon_doom_lost_soul" );
 bool connects_to(oter_id there, int dir_from_here);
 void science_room(map *m, int x1, int y1, int x2, int y2, int z, int rotate);
 void set_science_room(map *m, int x1, int y1, bool faces_right, int turn);
@@ -9708,7 +9712,7 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
             furn_set(13, 9, "f_sign");
             set_signage(tripoint(13, 9, abs_sub.z), "Forgive my humble abode. Rotting bodies clogging the commode. Please pardon the stench and the trunk of a man lying on the workbench. Out by the shed are buzzing hives made of human heads. The gestation of larvae tells us the time of death.");
             if (one_in(2)) {
-                add_spawn("mon_zombie", rng(1, 6), 4, 14);
+                add_spawn(mon_zombie, rng(1, 6), 4, 14);
             } else {
                 place_spawns(GROUP_DOMESTIC, 2, 10, 15, 12, 17, 1);
             }
@@ -9859,7 +9863,7 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
                 }
             }
             if (one_in(3)) {
-                add_spawn("mon_zombie", rng(3, 6), 12, 12);
+                add_spawn(mon_zombie, rng(3, 6), 12, 12);
             } else {
                 place_spawns(GROUP_DOMESTIC, 2, 0, 0, 15, 15, 1);
             }
@@ -13750,7 +13754,7 @@ void mx_military(map &m, const tripoint &)
         }
 
     }
-    static const std::array<mtype_id, 4> netherspawns = { {
+    static const std::array<mtype_id, 6> netherspawns = { {
         mon_gelatin, mon_mi_go, mon_kreck, mon_gracke, mon_doom_imp, mon_doom_demon,
     } };
     int num_monsters = rng(0, 3);
@@ -13783,7 +13787,7 @@ void mx_science(map &m, const tripoint &)
             }
         }
     }
-    static const std::array<mtype_id, 4> spawncreatures = { {
+    static const std::array<mtype_id, 9> spawncreatures = { {
         mon_gelatin, mon_mi_go, mon_kreck, mon_gracke, mon_doom_imp, mon_doom_cacodemon, mon_doom_demon, mon_doom_lost_soul, mon_doom_former_human,
     } };
     int num_monsters = rng(0, 3);
@@ -14087,7 +14091,7 @@ void mx_supplydrop(map &m, const tripoint &abs_sub)
 
 void mx_portal(map &m, const tripoint &abs_sub)
 {
-    static const std::array<mtype_id, 5> spawncreatures = { {
+    static const std::array<mtype_id, 10> spawncreatures = { {
         mon_gelatin, mon_flaming_eye, mon_kreck, mon_gracke, mon_blank, mon_doom_imp, mon_doom_cacodemon, mon_doom_demon, mon_doom_lost_soul, mon_doom_former_human,
     } };
     int x = rng(1, SEEX * 2 - 2), y = rng(1, SEEY * 2 - 2);
@@ -14167,7 +14171,7 @@ void mx_fumarole(map &m, const tripoint &)
 
 void mx_portal_in(map &m, const tripoint &abs_sub)
 {
-    static const std::array<mtype_id, 5> monids = { {
+    static const std::array<mtype_id, 10> monids = { {
         mon_gelatin, mon_flaming_eye, mon_kreck, mon_gracke, mon_blank, mon_doom_imp, mon_doom_cacodemon, mon_doom_demon, mon_doom_lost_soul, mon_doom_former_human,
     } };
     int x = rng(5, SEEX * 2 - 6), y = rng(5, SEEY * 2 - 6);

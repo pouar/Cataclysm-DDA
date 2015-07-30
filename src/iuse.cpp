@@ -59,6 +59,9 @@ const mtype_id mon_shadow( "mon_shadow" );
 const mtype_id mon_spore( "mon_spore" );
 const mtype_id mon_vortex( "mon_vortex" );
 const mtype_id mon_wasp( "mon_wasp" );
+const mtype_id mon_diaperfur_dragon("mon_diaperfur_dragon");
+const mtype_id mon_diaperfur_fox("mon_diaperfur_fox");
+const mtype_id mon_diaperfur_cat("mon_diaperfur_cat");
 
 void remove_double_ammo_mod( item &it, player &p )
 {
@@ -1200,8 +1203,8 @@ int iuse::antiparasitic(player *p, item *it, bool, const tripoint& )
         p->remove_effect("bloodworms");
         p->add_msg_if_player(_("Your skin prickles and your veins itch for a few moments."));
     }
-    if (p->has_effect("brainworm")) {
-        p->remove_effect("brainworm");
+    if (p->has_effect("brainworms")) {
+        p->remove_effect("brainworms");
         if (p->has_trait("NOPAIN")) {
             p->add_msg_if_player(m_good, _("The pressure inside your head feels better already."));
         } else {
@@ -5850,7 +5853,7 @@ int iuse::diaperfur_whistle(player *p, item *it, bool, const tripoint& )
     }
     p->add_msg_if_player(_("You blow your diaperfur whistle."));
     for (size_t i = 0; i < g->num_zombies(); i++) {
-        if ((g->zombie(i).friendly != 0 && g->zombie(i).type->id == "mon_diaperfur_dragon") || (g->zombie(i).friendly != 0 && g->zombie(i).type->id == "mon_diaperfur_fox") || (g->zombie(i).friendly != 0 && g->zombie(i).type->id == "mon_diaperfur_cat")) {
+        if ((g->zombie(i).friendly != 0 && g->zombie(i).type->id == mon_diaperfur_dragon) || (g->zombie(i).friendly != 0 && g->zombie(i).type->id == mon_diaperfur_fox) || (g->zombie(i).friendly != 0 && g->zombie(i).type->id == mon_diaperfur_cat)) {
             bool u_see = g->u.sees(g->zombie(i));
             if (g->zombie(i).has_effect("docile")) {
                 if (u_see) {
