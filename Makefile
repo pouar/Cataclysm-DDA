@@ -462,7 +462,7 @@ ifeq ($(USE_XDG_DIR),1)
   DEFINES += -DUSE_XDG_DIR
 endif
 
-all: version $(TARGET) $(L10N)
+all: version $(TARGET) $(L10N) tests
 	@
 
 $(TARGET): $(ODIR) $(DDIR) $(OBJS)
