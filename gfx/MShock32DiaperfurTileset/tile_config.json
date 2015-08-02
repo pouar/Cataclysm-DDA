@@ -21730,6 +21730,11 @@
 					"id": "mag_cooking",
 					"fg": 38,
 					"rotates": false
+				},
+				{
+					"id": "mon_baman_piderman",
+					"fg": 39,
+					"rotates": false
 				}
 			]
 		}

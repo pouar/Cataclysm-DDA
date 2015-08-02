@@ -1181,5 +1181,32 @@
 		"type" : "snippet",
 		"category" : "flier",
 		"text" : "A petition reading \"The acts of a few rich white men prove that the American Flag is a symbol of greed and corruption, and with those stars, colors, and stripes, it is obvious it was designed with greed and corruption in mind. Take it down.\""
-	}
+	},
+	{
+		"type" : "MONSTER",
+		"id" : "mon_baman_piderman",
+		"name": "Baman & Piderman",
+		"species":"MUTANT",
+		"default_faction":"mutant",
+		"symbol":"h",
+		"color":"ltred",
+		"size":"MEDIUM",
+		"material":"flesh",
+		"diff":12,
+		"aggression":0,
+		"morale":100,
+		"speed":90,
+		"melee_skill":4,
+		"melee_dice":2,
+		"melee_dice_sides":4,
+		"melee_cut":0,
+		"dodge":6,
+		"armor_bash":0,
+		"armor_cut":0,
+		"vision_day":40,
+		"hp":70,
+		"death_function":"NORMAL",
+		"description":"I'm Baman. I'm Piderman. I come ober da house. We're best fwends.",
+		"flags":["SEES", "HEARS", "HUMAN", "CLIMBS", "FAT", "DESTROYS", "WARM", "BONES", "STUMBLES"]
+    }
 ]
