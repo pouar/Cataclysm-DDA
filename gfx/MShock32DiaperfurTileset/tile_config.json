@@ -21139,7 +21139,7 @@
 			]
 		},
 		{
-			"file": "gfx/MShock32DiaperfurTileset/8bit.png",
+			"file": "8bit.png",
 			"tiles": [
 				{
 					"rotates": false,
@@ -21478,7 +21478,7 @@
 			]
 		},
 		{
-			"file": "gfx/MShock32TilesetModded/tiles.png",
+			"file": "tiles.png",
 			"tiles": [
 				{
 					"id": "leather_spiked_collar_bell",
@@ -21521,7 +21521,7 @@
 			]
 		},
 		{
-			"file": "gfx/MShock32DiaperfurTileset/24bit.png",
+			"file": "24bit.png",
 			"tiles": [
 				{
 					"rotates": false,
