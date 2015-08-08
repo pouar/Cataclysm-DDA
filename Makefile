@@ -392,7 +392,7 @@ endif
 ifeq ($(TARGETSYSTEM),CYGWIN)
   ifeq ($(LOCALIZE),1)
     # Work around Cygwin not including gettext support in glibc
-    LDFLAGS += -lgdi32 -lwinmm -limm32 -loleaut32 -lversion  -luuid -lcomctl32 -lwebp -lharfbuzz -lglib-2.0 -lws2_32 -lole32 -lintl -liconv
+    LDFLAGS += -lgdi32 -lwinmm -limm32 -loleaut32 -lversion -ltiff -llzma -lpng -ljpeg -luuid -lcomctl32 -lwebp -lharfbuzz -lglib-2.0 -lws2_32 -lole32 -lintl -liconv
   endif
 endif
 
@@ -408,7 +408,7 @@ endif
 
 # Global settings for Windows targets (at end)
 ifeq ($(TARGETSYSTEM),WINDOWS)
-    LDFLAGS += -lgdi32 -lwinmm -limm32 -loleaut32 -lversion  -luuid -lcomctl32 -lwebp -lharfbuzz -lglib-2.0 -lws2_32 -lole32 -lintl -liconv
+    LDFLAGS += -lgdi32 -lwinmm -limm32 -loleaut32 -lversion -ltiff -llzma -lpng -ljpeg -luuid -lcomctl32 -lwebp -lharfbuzz -lglib-2.0 -lws2_32 -lole32 -lintl -liconv
 endif
 
 ifeq ($(LOCALIZE),1)
