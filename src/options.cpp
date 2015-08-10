@@ -501,7 +501,7 @@ bool cOpt::operator!=(const std::string sCompare) const
 }
 
 /** Fill TILESETS mapping with values.
- * Scans all directores in gfx directory for file named "tileset.txt".
+ * Scans all directores in FILENAMES["gfx"] directory for file named FILENAMES["tileset.txt"].
  * All founded values added in mapping TILESETS as name, tileset_dir.
  * Furthermore, it builds possible values list for cOpt class.
  * @return One string containing all found tilesets in form "tileset1,tileset2,tileset3,..."
@@ -509,9 +509,7 @@ bool cOpt::operator!=(const std::string sCompare) const
 static std::string build_tilesets_list()
 {
     const std::string defaultTilesets = "hoder,deon";
-
     std::string tileset_names;
-    bool first_tileset_name = true;
 
     TILESETS.clear();
 
@@ -523,12 +521,11 @@ static std::string build_tilesets_list()
 
         fin.open( file.c_str() );
         if(!fin.is_open()) {
-            fin.close();
             DebugLog( D_ERROR, DC_ALL ) << "Can't read tileset config from " << file;
         }
-        // should only have 2 values inside it, otherwise is going to only load the last 2 values
-        std::string tileset_name;
 
+        std::string tileset_name;
+        // should only have 2 values inside it, otherwise is going to only load the last 2 values
         while(!fin.eof()) {
             std::string sOption;
             fin >> sOption;
@@ -541,8 +538,7 @@ static std::string build_tilesets_list()
                 if (sOption.find("NAME") != std::string::npos) {
                     tileset_name = "";
                     fin >> tileset_name;
-                    if(first_tileset_name) {
-                        first_tileset_name = false;
+                    if(tileset_names.empty()) {
                         tileset_names += tileset_name;
                     } else {
                         tileset_names += std::string(",");

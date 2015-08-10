@@ -1009,7 +1009,7 @@ bool map::process_fields_in_submap( submap *const current_submap,
                                 smoke += 2;
                                 if( cur->getFieldDensity() > 1 &&
                                     one_in( 200 - cur->getFieldDensity() * 50 ) ) {
-                                    destroy( p, true );
+                                    destroy( p, false );
                                 }
 
                             } else if( ter_furn_has_flag( ter, frn, TFLAG_FLAMMABLE_HARD ) &&
@@ -1019,7 +1019,7 @@ bool map::process_fields_in_submap( submap *const current_submap,
                                 smoke += 2;
                                 if( cur->getFieldDensity() > 1 &&
                                     one_in( 200 - cur->getFieldDensity() * 50 ) ) {
-                                    destroy( p, true );
+                                    destroy( p, false );
                                 }
 
                             } else if( ter_furn_has_flag( ter, frn, TFLAG_FLAMMABLE_ASH ) ) {
