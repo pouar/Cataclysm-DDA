@@ -14,15 +14,7 @@ At some point we are going to want to switch that back once enough people are us
 We use Clang for our experimental and release builds.
 Clang similarly fully supports C++11 as of version 3.1, but you may be able to get by with an earlier version.
 
-## MinGW
-
-MinGW version 4.9.0 is currently building the project, but has a few rough edges, such as lack of support for std::to_string().  As such we aren't using to_string(), since MinGW is a popular option for building on Windows.  Input on the earliest version that will successfully compile the project is welcome.
-
-## MinGW-w64
+## MinGW-w64 (MXE in either Cygwin or Linux)
 
 This is the preferred compiler for building on Windows, and is the compiler we use to cross-compile for Windows experimental and release builds.
 MinGW-w64 is currently building the project.  Input on the earliest version that will successfully compile the project is welcome.
-
-## Visual Studio
-
-MSVC 14 can build Cataclysm and we have project files for it in msvc140/.  We strongly suspect that MSVC 13 and earlier are incapable of building Cataclysm and we've removed their project files.  If we can support MSVC 13, feel free to restore the project files.
