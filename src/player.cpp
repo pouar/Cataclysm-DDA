@@ -1036,9 +1036,8 @@ void player::update_bodytemp()
                 } else if (g->m.tr_at( dest ).loadid == tr_lava ) {
                     heat_intensity = 3;
                 }
-                int t1, t2;
                 if( heat_intensity > 0 &&
-                    g->m.sees( pos(), dest, -1, t1, t2 ) ) {
+                    g->m.sees( pos(), dest, -1 ) ) {
                     // Ensure fire_dist >= 1 to avoid divide-by-zero errors.
                     int fire_dist = std::max(1, std::max( std::abs( j ), std::abs( k ) ) );
                     if (frostbite_timer[i] > 0) {
@@ -2507,7 +2506,7 @@ void player::load_info(std::string data)
     JsonIn jsin(dump);
     try {
         deserialize(jsin);
-    } catch (std::string jsonerr) {
+    } catch( const JsonError &jsonerr ) {
         debugmsg("Bad player json\n%s", jsonerr.c_str() );
     }
 }
@@ -2864,7 +2863,7 @@ stats player::get_stats() const
     return player_stats;
 }
 
-void player::mod_stat( std::string stat, int modifier )
+void player::mod_stat( const std::string &stat, int modifier )
 {
     if( stat == "hunger" ) {
         hunger += modifier;
@@ -2882,7 +2881,7 @@ void player::mod_stat( std::string stat, int modifier )
         stamina = std::max( 0, stamina );
     } else {
         // Fall through to the creature method.
-        Creature::mod_stat( stat, modifier );
+        Character::mod_stat( stat, modifier );
     }
 }
 
@@ -5913,7 +5912,7 @@ void player::update_health(int base_threshold)
     if (has_artifact_with(AEP_SICK)) {
         base_threshold += 50;
     }
-    Creature::update_health(base_threshold);
+    Character::update_health(base_threshold);
 }
 
 void player::update_needs()
@@ -11553,7 +11552,7 @@ bool player::takeoff(int inventory_position, bool autodrop, std::vector<item> *i
     if( items != nullptr ) {
         items->push_back( w );
         taken_off = true;
-    } else if (autodrop || volume_capacity() - w.get_storage() > volume_carried() + w.volume()) {
+    } else if (autodrop || volume_capacity() - w.get_storage() >= volume_carried() + w.volume()) {
         inv.add_item_keep_invlet(w);
         taken_off = true;
     } else if (query_yn(_("No room in inventory for your %s.  Drop it?"),
@@ -14289,12 +14288,12 @@ Creature::Attitude player::attitude_to( const Creature &other ) const
     return A_NEUTRAL;
 }
 
-bool player::sees( const tripoint &t, int &bresen1, int &bresen2 ) const
+bool player::sees( const tripoint &t, bool ) const
 {
     static const std::string str_bio_night("bio_night");
     const int wanted_range = rl_dist( pos3(), t );
     bool can_see = is_player() ? g->m.pl_sees( t, wanted_range ) :
-        Creature::sees( t, bresen1, bresen2 );;
+        Creature::sees( t );;
     // Only check if we need to override if we already came to the opposite conclusion.
     if( can_see && wanted_range < 15 && wanted_range > sight_range(1) &&
         has_active_bionic(str_bio_night) ) {
@@ -14311,7 +14310,7 @@ bool player::sees( const tripoint &t, int &bresen1, int &bresen2 ) const
     return can_see;
 }
 
-bool player::sees( const Creature &critter, int &bresen1, int &bresen2 ) const
+bool player::sees( const Creature &critter ) const
 {
     // This handles only the player/npc specific stuff (monsters don't have traits or bionics).
     const int dist = rl_dist( pos3(), critter.pos3() );
@@ -14325,7 +14324,7 @@ bool player::sees( const Creature &critter, int &bresen1, int &bresen2 ) const
         // to the ground. It also might need a range check.
         return true;
     }
-    return Creature::sees( critter, bresen1, bresen2 );
+    return Creature::sees( critter );
 }
 
 bool player::can_pickup(bool print_msg) const

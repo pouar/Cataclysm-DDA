@@ -64,16 +64,6 @@ struct weight_compare {
 
 Creature::Creature()
 {
-    str_max = 0;
-    dex_max = 0;
-    per_max = 0;
-    int_max = 0;
-    str_cur = 0;
-    dex_cur = 0;
-    per_cur = 0;
-    int_cur = 0;
-    healthy = 0;
-    healthy_mod = 0;
     moves = 0;
     pain = 0;
     killer = NULL;
@@ -100,12 +90,6 @@ void Creature::reset()
 }
 void Creature::reset_bonuses()
 {
-    // Reset all bonuses to 0 and mults to 1.0
-    str_bonus = 0;
-    dex_bonus = 0;
-    per_bonus = 0;
-    int_bonus = 0;
-
     num_blocks = 1;
     num_dodges = 1;
     num_blocks_bonus = 0;
@@ -131,29 +115,9 @@ void Creature::reset_bonuses()
 
 void Creature::reset_stats()
 {
-    // Reset our stats to normal levels
-    // Any persistent buffs/debuffs will take place in effects,
-    // player::suffer(), etc.
-
-    // repopulate the stat fields
-    str_cur = str_max + get_str_bonus();
-    dex_cur = dex_max + get_dex_bonus();
-    per_cur = per_max + get_per_bonus();
-    int_cur = int_max + get_int_bonus();
-
-    // Floor for our stats.  No stat changes should occur after this!
-    if (dex_cur < 0) {
-        dex_cur = 0;
-    }
-    if (str_cur < 0) {
-        str_cur = 0;
-    }
-    if (per_cur < 0) {
-        per_cur = 0;
-    }
-    if (int_cur < 0) {
-        int_cur = 0;
-    }
+    // "Creatures" have no stats!
+    // This only exists to simplify cleanup
+    // TODO: Make this not exist
 }
 
 void Creature::process_turn()
@@ -178,14 +142,8 @@ bool Creature::digging() const
     return false;
 }
 
-bool Creature::sees( const Creature &critter ) const
-{
-    int junk1, junk2;
-    return sees( critter, junk1, junk2 );
-}
-
 extern bool debug_mode;
-bool Creature::sees( const Creature &critter, int &bresen1, int &bresen2 ) const
+bool Creature::sees( const Creature &critter ) const
 {
     if( critter.is_hallucination() ) {
         // hallucinations are imaginations of the player character, npcs or monsters don't hallucinate.
@@ -212,37 +170,22 @@ bool Creature::sees( const Creature &critter, int &bresen1, int &bresen2 ) const
         return false;
     }
 
-    return sees( critter.pos3(), bresen1, bresen2 );
-}
-
-bool Creature::sees( const Creature &critter, int &bresenham_slope ) const
-{
-    int bresen2;
-    return sees( critter, bresenham_slope, bresen2 );
+    return sees( critter.pos3(), critter.is_player() );
 }
 
 bool Creature::sees( const int tx, const int ty ) const
 {
-    int bresen1, bresen2;
-    return sees( tripoint( tx, ty, posz() ), bresen1, bresen2 );
+    return sees( tripoint( tx, ty, posz() ) );
 }
 
 bool Creature::sees( const point t ) const
 {
-    int bresen1, bresen2;
-    return sees( tripoint( t, posz() ), bresen1, bresen2 );
+    return sees( tripoint( t, posz() ) );
 }
 
-bool Creature::sees( const int tx, const int ty, int &bresenham_slope ) const
-{
-    int junk;
-    return sees( tripoint( tx, ty, posz() ), bresenham_slope, junk );
-}
-
-bool Creature::sees( const tripoint &t, int &bresen1, int &bresen2 ) const
+bool Creature::sees( const tripoint &t, bool is_player ) const
 {
     // TODO: FoV update
-    bresen2 = 0;
     if( posz() != t.z ) {
         return false;
     }
@@ -254,21 +197,22 @@ bool Creature::sees( const tripoint &t, int &bresen1, int &bresen2 ) const
     if( wanted_range <= range_min ||
         ( wanted_range <= range_day &&
           g->m.ambient_light_at( t ) > g->natural_light_level() ) ) {
+        int range = 0;
         if( g->m.ambient_light_at( t ) > g->natural_light_level() ) {
-            return g->m.sees( pos3(), t, wanted_range, bresen1, bresen2 );
+            range = wanted_range;
         } else {
-            return g->m.sees( pos3(), t, range_min, bresen1, bresen2 );
+            range = range_min;
+        }
+        if( is_player ) {
+            // Special case monster -> player visibility, forcing it to be symmetric with player vision.
+            return range >= wanted_range &&
+                g->m.get_cache_ref(pos().z).seen_cache[pos().x][pos().y] > LIGHT_TRANSPARENCY_SOLID;
+        } else {
+            return g->m.sees( pos3(), t, range );
         }
     } else {
         return false;
     }
-}
-
-bool Creature::sees( const tripoint &t ) const
-{
-    // TODO: FoV update
-    int junk1, junk2;
-    return sees( t, junk1, junk2 );
 }
 
 // Helper function to check if potential area of effect of a weapon overlaps vehicle
@@ -1046,25 +990,6 @@ bool Creature::has_trait(const std::string &flag) const
     return false;
 }
 
-void Creature::update_health(int base_threshold)
-{
-    if (get_healthy_mod() > 200) {
-        set_healthy_mod(200);
-    } else if (get_healthy_mod() < -200) {
-        set_healthy_mod(-200);
-    }
-    int roll = rng(-100, 100);
-    base_threshold += get_healthy() - get_healthy_mod();
-    if (roll > base_threshold) {
-        mod_healthy(1);
-    } else if (roll < base_threshold) {
-        mod_healthy(-1);
-    }
-    set_healthy_mod(get_healthy_mod() * 3 / 4);
-
-    add_msg( m_debug, "Health: %d, Health mod: %d", get_healthy(), get_healthy_mod());
-}
-
 // Methods for setting/getting misc key/value pairs.
 void Creature::set_value( const std::string key, const std::string value )
 {
@@ -1129,74 +1054,6 @@ void Creature::set_killer( Creature * const killer )
     if( killer != nullptr && !killer->is_fake() && this->killer == nullptr ) {
         this->killer = killer;
     }
-}
-
-/*
- * Innate stats getters
- */
-
-// get_stat() always gets total (current) value, NEVER just the base
-// get_stat_bonus() is always just the bonus amount
-int Creature::get_str() const
-{
-    return std::max(0, str_max + str_bonus);
-}
-int Creature::get_dex() const
-{
-    return std::max(0, dex_max + dex_bonus);
-}
-int Creature::get_per() const
-{
-    return std::max(0, per_max + per_bonus);
-}
-int Creature::get_int() const
-{
-    return std::max(0, int_max + int_bonus);
-}
-
-int Creature::get_str_base() const
-{
-    return str_max;
-}
-int Creature::get_dex_base() const
-{
-    return dex_max;
-}
-int Creature::get_per_base() const
-{
-    return per_max;
-}
-int Creature::get_int_base() const
-{
-    return int_max;
-}
-
-
-
-int Creature::get_str_bonus() const
-{
-    return str_bonus;
-}
-int Creature::get_dex_bonus() const
-{
-    return dex_bonus;
-}
-int Creature::get_per_bonus() const
-{
-    return per_bonus;
-}
-int Creature::get_int_bonus() const
-{
-    return int_bonus;
-}
-
-int Creature::get_healthy() const
-{
-    return healthy;
-}
-int Creature::get_healthy_mod() const
-{
-    return healthy_mod;
 }
 
 int Creature::get_num_blocks() const
@@ -1269,11 +1126,11 @@ int Creature::get_speed_base() const
 }
 int Creature::get_dodge_base() const
 {
-    return (get_dex() / 2);
+    return 0;
 }
 int Creature::get_hit_base() const
 {
-    return (get_dex() / 4) + 3;
+    return 0;
 }
 int Creature::get_speed_bonus() const
 {
@@ -1323,75 +1180,9 @@ int Creature::get_throw_resist() const
     return throw_resist;
 }
 
-/*
- * Innate stats setters
- */
-
-void Creature::set_str_bonus(int nstr)
+void Creature::mod_stat( const std::string &stat, int modifier )
 {
-    str_bonus = nstr;
-}
-void Creature::set_dex_bonus(int ndex)
-{
-    dex_bonus = ndex;
-}
-void Creature::set_per_bonus(int nper)
-{
-    per_bonus = nper;
-}
-void Creature::set_int_bonus(int nint)
-{
-    int_bonus = nint;
-}
-void Creature::mod_str_bonus(int nstr)
-{
-    str_bonus += nstr;
-}
-void Creature::mod_dex_bonus(int ndex)
-{
-    dex_bonus += ndex;
-}
-void Creature::mod_per_bonus(int nper)
-{
-    per_bonus += nper;
-}
-void Creature::mod_int_bonus(int nint)
-{
-    int_bonus += nint;
-}
-
-void Creature::set_healthy(int nhealthy)
-{
-    healthy = nhealthy;
-}
-void Creature::mod_healthy(int nhealthy)
-{
-    healthy += nhealthy;
-}
-void Creature::set_healthy_mod(int nhealthy_mod)
-{
-    healthy_mod = nhealthy_mod;
-}
-void Creature::mod_healthy_mod(int nhealthy_mod)
-{
-    healthy_mod += nhealthy_mod;
-}
-
-void Creature::mod_stat( std::string stat, int modifier )
-{
-    if( stat == "str" ) {
-        mod_str_bonus( modifier );
-    } else if( stat == "dex" ) {
-        mod_dex_bonus( modifier );
-    } else if( stat == "per" ) {
-        mod_per_bonus( modifier );
-    } else if( stat == "int" ) {
-        mod_int_bonus( modifier );
-    } else if( stat == "healthy" ) {
-        mod_healthy( modifier );
-    } else if( stat == "healthy_mod" ) {
-        mod_healthy_mod( modifier );
-    } else if( stat == "speed" ) {
+    if( stat == "speed" ) {
         mod_speed_bonus( modifier );
     } else if( stat == "dodge" ) {
         mod_dodge_bonus( modifier );
@@ -1508,7 +1299,7 @@ void Creature::set_throw_resist(int nthrowres)
 
 int Creature::weight_capacity() const
 {
-    int base_carry = 13000 + get_str() * 4000;
+    int base_carry = 13000;
     switch( get_size() ) {
     case MS_TINY:
         base_carry /= 4;

@@ -321,9 +321,9 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
 
         using Creature::sees;
         // see Creature::sees
-        bool sees( const tripoint &c, int &bresen1, int &bresen2 ) const override;
+        bool sees( const tripoint &c, bool is_player = false ) const override;
         // see Creature::sees
-        bool sees( const Creature &critter, int &bresen1, int &bresen2 ) const override;
+        bool sees( const Creature &critter ) const override;
         /**
          * Returns all creatures that this player can see and that are in the given
          * range. This player object itself is never included.
@@ -1038,7 +1038,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         //Record of player stats, for posterity only
         stats *lifetime_stats();
         stats get_stats() const; // for serialization
-        void mod_stat( std::string stat, int modifier ) override;
+        void mod_stat( const std::string &stat, int modifier ) override;
 
         int getID () const;
         // sets the ID, will *only* succeed when the current id is 0 (=not initialized)
