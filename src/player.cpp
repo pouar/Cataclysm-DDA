@@ -43,9 +43,9 @@
 
 #include <map>
 
-#ifdef SDLTILES
+#ifdef TILES
 #include "SDL2/SDL.h"
-#endif // SDLTILES
+#endif // TILES
 
 //Used for e^(x) functions
 #include <stdio.h>
@@ -7924,11 +7924,11 @@ void player::hardcoded_effects(effect &it)
         }
     } else if (id == "sleep") {
         set_moves(0);
-        #ifdef SDLTILES
+        #ifdef TILES
         if( calendar::once_every(MINUTES(10)) ) {
             SDL_PumpEvents();
         }
-        #endif // SDLTILES
+        #endif // TILES
         // Hibernating only kicks in whilst Engorged; separate tracking for hunger/thirst here
         // as a safety catch.  One test subject managed to get two Colds during hibernation;
         // since those add fatigue and dry out the character, the subject went for the full 10 days plus
@@ -12186,7 +12186,7 @@ void player::read(int inventory_position)
         // We're just skimming, so it's 10x faster.
         time /= 10;
 
-        activity = player_activity(ACT_READ, time - moves, -1, inventory_position, "");
+        assign_activity( ACT_READ, time - moves, -1, inventory_position );
         // Never trigger studying when skimming the book.
         activity.values.push_back(0);
         moves = 0;
@@ -12262,7 +12262,7 @@ void player::read(int inventory_position)
         time += (tmp->time * (tmp->intel - get_int()) * 100);
     }
 
-    activity = player_activity(ACT_READ, time, -1, inventory_position, "");
+    assign_activity( ACT_READ, time, -1, inventory_position );
     // activity.get_value(0) == 1 means continuous studing until
     // the player gained the next skill level, this ensured by this:
     activity.values.push_back(study ? 1 : 0);
