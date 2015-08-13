@@ -588,7 +588,7 @@
     },{
         "type" : "overmap_terrain",
         "id" : "s_grocery",
-        "name" : "grocery store",
+        "name" : "food libraries",
         "rotate" : true,
         "sym" : [94, 62, 118, 60],
         "color" : "green",
