@@ -181,7 +181,7 @@ void Item_factory::init()
     iuse_function_list["MYCUS"] = &iuse::mycus;
     iuse_function_list["DOGFOOD"] = &iuse::dogfood;
     iuse_function_list["CATFOOD"] = &iuse::catfood;
-
+    iuse_function_list["CAPTURE_MONSTER_ACT"] = &iuse::capture_monster_act;
     // TOOLS
     iuse_function_list["DIAPERLOCK"] = &iuse::diaperlock;
     iuse_function_list["SEW"] = &iuse::sew;
@@ -480,7 +480,7 @@ void Item_factory::check_definitions() const
                 if( !has_template( gm ) ){
                     msg << string_format("invalid built-in mod.") << "\n";
                 }
-            }      
+            }
         }
         if( type->gunmod ) {
             check_ammo_type( msg, type->gunmod->newtype );
