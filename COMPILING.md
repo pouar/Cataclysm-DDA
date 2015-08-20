@@ -389,7 +389,7 @@ If you dont want localization you can change `LOCALIZE` to 0.
 
 This is a tentative step-by-step guide to building your own CDDA with Tiles, Localization and Lua using only MSYS2. You may want to follow it if the MinGW guide above doesn't work for you or you just feel adventurous. Feedback is very much welcome in terms of issues and/or pull-requests.
 
-This guide assumes you're building on a x86_64 build of Windows. If not adjust the invocations appropriately. It has been tested and proven to work on Windows XP, Windows 7 and Windows 10. Your mileage may vary.
+It has been tested and proven to work on Windows XP, Windows 7 and Windows 10. Your mileage may vary.
 
 #### 1. Go to https://msys2.github.io/ and download appropriate MSYS (top of the page).
 
@@ -398,60 +398,10 @@ This guide assumes you're building on a x86_64 build of Windows. If not adjust t
 #### 3. In the open terminal:
 
 ```bash
-pacman --needed -Sy bash pacman pacman-mirrors msys2-runtime
+pacman --needed -Syu mingw-w64-$(uname -m)-{SDL2{,_image,_mixer,_ttf},pkg-config,toolchain,lua} base-devel git
 ```
 
-Note: You may close the terminal now and reopen it from the Start menu (MSYS2 Shell, just to be on the safe-er side).
-
-Note: You may need to bash the close button repeatedly. Or use the task manager to kill it.
-
-#### 4. Open an editor that preserves line-endings
-
-Note: Wordpad should do. Or Notepadd++.
-
-#### 5. Open `C:\msys64\etc\pacman.conf` and change:
-
-```bash
-# By default, pacman accepts packages signed by keys that its local keyring
-# trusts (see pacman-key and its man page), as well as unsigned packages.
-#SigLevel = Never
-SigLevel    = Required DatabaseOptional
-LocalFileSigLevel = Optional
-#RemoteFileSigLevel = Required
-```
-
-To:
-
-```bash
-# By default, pacman accepts packages signed by keys that its local keyring
-# trusts (see pacman-key and its man page), as well as unsigned packages.
-SigLevel = Never
-#SigLevel    = Required DatabaseOptional
-LocalFileSigLevel = Optional
-#RemoteFileSigLevel = Required
-```
-
-(Exchange the # on SigLevel). This disables signature checking as it is currently borked.
-
-#### 6. Save the file
-
-#### 7. Run in MSYS2 terminal:
-
-```bash
-pacman -Su
-pacman -S mingw-w64-x86_64-gcc
-pacman -S mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-SDL2_ttf
-pacman -S mingw-w64-x86_64-pkg-config mingw-w64-x86_64-libwebp
-pacman -S git make
-```
-
-If you wish to build with Lua also run:
-
-```bash
-pacman -S mingw-w64-x86_64-lua
-```
-
-#### 8. Close MSYS2 terminal and open MinGW-w64 Win64 Shell from Start menu and run:
+#### 4. Close MSYS2 terminal and open MinGW-w64 Win64 Shell from Start menu and run:
 
 Note: This will download whole CDDA repository. If you're just testing you should probably add `--depth=1`.
 
@@ -460,14 +410,14 @@ git clone https://github.com/CleverRaven/Cataclysm-DDA.git
 cd Cataclysm-DDA
 ```
 
-#### 9. Open `Makefile` (it's located at `C:\msys64\home\<Your_Login>\Cataclysm-DDA\Makefile`) in an editor that worked before and change:
+#### 5. Open `Makefile` (it's located at `C:\msys64\home\<Your_Login>\Cataclysm-DDA\Makefile`) in an editor that worked before and change:
 
 ```Makefile
    ifeq ($(NATIVE), osx)
      CXXFLAGS += -O3
    else
-     CXXFLAGS += -Os
-     LDFLAGS += -s
+    CXXFLAGS += -march=native -O2 -flto=$(JOBS) -finline-functions -fpredictive-commoning -ftree-partial-pre -fgcse-after-reload -fgcse-las -fmerge-all-constants -fira-hoist-pressure -fivopts -freorder-blocks-and-partition --param large-function-growth=0 --param inline-unit-growth=0 --param large-stack-frame-growth=0 --param max-inline-recursive-depth-auto=1000 --param max-inline-recursive-depth=1000
+    LDFLAGS += -s  -march=native -O2 -flto=$(JOBS) -finline-functions -fpredictive-commoning -ftree-partial-pre -fgcse-after-reload -fgcse-las -fmerge-all-constants -fira-hoist-pressure -fivopts -freorder-blocks-and-partition --param large-function-growth=0 --param inline-unit-growth=0 --param large-stack-frame-growth=0 --param max-inline-recursive-depth-auto=1000 --param max-inline-recursive-depth=1000
    endif
 ```
 
@@ -477,12 +427,10 @@ To:
    ifeq ($(NATIVE), osx)
      CXXFLAGS += -O3
    else
-     #CXXFLAGS += -Os
+     CXXFLAGS += -O2
      LDFLAGS += -s
    endif
 ```
-
-(Comment out `CXXFLAGS += -Os`). Optimizations break `gcc 4.9.2` you get with MSYS2.
 
 Also change:
 
@@ -506,13 +454,12 @@ To:
 
 (Add `-lharfbuzz -lglib-2.0 -llzma -lws2_32 -lintl -liconv -lwebp -ljpeg -luuid`). You'll need these libs for it to link.
 
-#### 10. Compile your CDDA by running:
+#### 6. Compile your CDDA by running:
 
 ```bash
-make RELEASE=1 TILES=1 LOCALIZE=0 NATIVE=win64
+make RELEASE=1 TILES=1
 ```
 
-Note: Add `-jX` where X should be the number of threads/cores your processor has (for speeding the build up).
 
 For:
 - Lua:
