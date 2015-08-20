@@ -149,7 +149,7 @@ void npc::load_npc_template(std::string ident)
 
 npc::~npc() { }
 
-std::string npc::save_info()
+std::string npc::save_info() const
 {
     return serialize(); // also saves contents
 }
