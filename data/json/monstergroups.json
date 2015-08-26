@@ -345,6 +345,12 @@
       { "monster" : "mon_bear_smoky", "freq" :  1, "cost_multiplier" : 0, "starts" : 672, "conditions" : ["SPRING", "SUMMER", "AUTUMN"] },
       { "monster" : "mon_sygg", "freq" :  8, "cost_multiplier" : 2},
       { "monster" : "mon_sanic", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_rainbowdash", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_pinkiepie", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_fluttershy", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_rarity", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_applejack", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_twilightsparkle", "freq" :  8, "cost_multiplier" : 2},
       { "monster" : "mon_baman_piderman", "freq" :  8, "cost_multiplier" : 2}
     ]
   },{
@@ -371,6 +377,12 @@
       { "monster" : "mon_zombie_pig", "freq" :  10, "cost_multiplier" : 25, "starts" :  168, "pack_size" : [1,5] },
       { "monster" : "mon_zombie_pig", "freq" :  10, "cost_multiplier" : 25, "starts" :  672, "pack_size" : [1,5] },
       { "monster" : "mon_zombie_pig", "freq" :  10, "cost_multiplier" : 25, "starts" : 2160, "pack_size" : [1,5] },
+			{ "monster" : "mon_rainbowdash", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_pinkiepie", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_fluttershy", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_rarity", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_applejack", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_twilightsparkle", "freq" :  8, "cost_multiplier" : 2},
       { "monster" : "mon_baman_piderman", "freq" :  8, "cost_multiplier" : 2}
     ]
   },{
@@ -1104,6 +1116,12 @@
       { "monster" : "mon_amy_rose", "freq" : 50, "cost_multiplier" : 10},
       { "monster" : "mon_sanic", "freq" : 50, "cost_multiplier" : 10},
       { "monster" : "mon_zombie_master", "freq" : 1, "cost_multiplier" : 25 },
+			{ "monster" : "mon_rainbowdash", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_pinkiepie", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_fluttershy", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_rarity", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_applejack", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_twilightsparkle", "freq" :  8, "cost_multiplier" : 2},
       { "monster" : "mon_baman_piderman", "freq" :  8, "cost_multiplier" : 2}
     ]
   },{
@@ -1114,6 +1132,12 @@
       { "monster" : "mon_zombie_smoker", "freq" : 180, "cost_multiplier" : 0 },
       { "monster" : "mon_amy_rose", "freq" : 50, "cost_multiplier" : 10},
       { "monster" : "mon_zombie_survivor", "freq" : 400, "cost_multiplier" : 0 },
+			{ "monster" : "mon_rainbowdash", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_pinkiepie", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_fluttershy", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_rarity", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_applejack", "freq" :  8, "cost_multiplier" : 2},
+			{ "monster" : "mon_twilightsparkle", "freq" :  8, "cost_multiplier" : 2},
       { "monster" : "mon_baman_piderman", "freq" :  8, "cost_multiplier" : 2}
     ]
   },{
