@@ -22364,6 +22364,31 @@
 					"id": "mon_baman_piderman",
 					"fg": 39,
 					"rotates": false
+				},
+				{
+					"id": "mon_pinkiepie",
+					"fg": 40,
+					"rotates": false
+				},
+				{
+					"id": "mon_fluttershy",
+					"fg": 41,
+					"rotates": false
+				},
+				{
+					"id": "mon_rarity",
+					"fg": 42,
+					"rotates": false
+				},
+				{
+					"id": "mon_applejack",
+					"fg": 43,
+					"rotates": false
+				},
+				{
+					"id": "mon_twilightsparkle",
+					"fg": 44,
+					"rotates": false
 				}
 			]
 		}
