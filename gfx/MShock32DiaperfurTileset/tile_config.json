@@ -22389,6 +22389,11 @@
 					"id": "mon_twilightsparkle",
 					"fg": 44,
 					"rotates": false
+				},
+				{
+					"id": "mon_zalgo_pinkie",
+					"fg": 45,
+					"rotates": false
 				}
 			]
 		}

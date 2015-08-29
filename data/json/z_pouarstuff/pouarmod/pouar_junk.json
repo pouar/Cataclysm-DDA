@@ -70,7 +70,7 @@
 		"name" : "Eye of Sauron",
 		"description" : "I see all",
 		"points" : 99,
-        "active" : true
+		"active" : true
 	},
 	{
 		"type":"GENERIC",
@@ -777,58 +777,58 @@
 		"armor_cut":20,
 		"vision_day":50,
 		"hp":500,
-		"death_function":["MELT"],
+		"death_function":["DISINTEGRATE"],
 		"special_attacks":[["SHRIEK", 5],["PARROT", 0],["RESURRECT", 1],["STARE", 5],["FEAR_PARALYZE", 5],["UPGRADE", 1],["LUNGE", 3],["LEAP", 3]],
 		"description":"It looks like Sonic the Hedgehog, but his eyes are pitch black and bleeding with two glowing red dots.",
-		"flags":["SEES", "HEARS", "SMELLS", "WARM","HARDTOSHOOT","BLEED", "BASHES", "NO_BREATHE","FLIES"]
+		"flags":["SEES", "HEARS", "SMELLS", "WARM","HARDTOSHOOT","BLEED", "BASHES", "NO_BREATHE","FLIES", "CLIMBS", "PLASTIC", "NOGIB"]
 	},
 	{
 		"type" : "speech",
 		"speaker" : "mon_sonicexe",
 		"sound" : "\"Hello. Do you want to play with me?\"",
-		"volume" : 100
+		"volume" : 20
 	},
 	{
 		"type" : "speech",
 		"speaker" : "mon_sonicexe",
 		"sound" : "\"FOuNd YOu!\"",
-		"volume" : 100
+		"volume" : 20
 	},
 	{
 		"type" : "speech",
 		"speaker" : "mon_sonicexe",
 		"sound" : "\"So many souls to play with, so little time... would you agree?\"",
-		"volume" : 100
+		"volume" : 20
 	},
 	{
 		"type" : "speech",
 		"speaker" : "mon_sonicexe",
 		"sound" : "\"You're a lot fun to play with kid, just like your friend Kyle, though he didn't last long...\"",
-		"volume" : 100
+		"volume" : 20
 	},
 	{
 		"type" : "speech",
 		"speaker" : "mon_sonicexe",
 		"sound" : "\"You can't run, kid. You're in my world now. Just like the others...\"",
-		"volume" : 100
+		"volume" : 20
 	},
 	{
 		"type" : "speech",
 		"speaker" : "mon_sonicexe",
 		"sound" : "\"Won't be long now until you join him and all my other friends...\"",
-		"volume" : 100
+		"volume" : 20
 	},
 	{
 		"type" : "speech",
 		"speaker" : "mon_sonicexe",
 		"sound" : "\"I AM GOD.\"",
-		"volume" : 100
+		"volume" : 20
 	},
 	{
 		"type" : "speech",
 		"speaker" : "mon_sonicexe",
 		"sound" : "\"Ready for Round 2?\"",
-		"volume" : 100
+		"volume" : 20
 	},
 	{
 		"type" : "mutation",
@@ -1157,7 +1157,7 @@
 		"vision_night":5,
 		"hp":30,
 		"death_function":"NORMAL",
-		"description": "Cumon\nStep it\nup!::¡!",
+		"description": "Cumon\nStep it\nup!::??!",
 		"flags":["SEES", "HEARS", "SMELLS", "ANIMAL", "WARM", "FUR", "HIT_AND_RUN", "KEENNOSE", "BLEED", "ATTACKMON", "BONES", "FAT"],
 		"anger_triggers":["HURT", "FRIEND_ATTACKED", "FRIEND_DIED"],
 		"placate_triggers":["MEAT"],
@@ -1208,5 +1208,44 @@
 		"death_function":"NORMAL",
 		"description":"I'm Baman. I'm Piderman. I come ober da house. We're best fwends.",
 		"flags":["SEES", "HEARS", "HUMAN", "CLIMBS", "FAT", "DESTROYS", "WARM", "BONES", "STUMBLES"]
-    }
+	},
+	{
+		"type" : "speech",
+		"speaker" : "mon_zalgo_pinkie",
+		"sound" : "\"LOVE ME!!!\"",
+		"volume" : 100
+	},
+	{
+		"type" : "speech",
+		"speaker" : "mon_zalgo_pinkie",
+		"sound" : "\"COME OUT!!!\"",
+		"volume" : 100
+	},
+	{
+		"type" : "MONSTER",
+		"id" : "mon_zalgo_pinkie",
+		"name": "Zalgo Pinkie",
+		"species":"NETHER",
+		"default_faction":"nether",
+		"symbol":"P",
+		"color":"red",
+		"size":"MEDIUM",
+		"material":"flesh",
+		"diff":30,
+		"aggression":100,
+		"morale":100,
+		"speed":210,
+		"melee_skill":12,
+		"melee_dice":4,
+		"melee_dice_sides":12,
+		"melee_cut":0,
+		"dodge":2,
+		"armor_bash":8,
+		"armor_cut":0,
+		"hp":400,
+		"death_function":"DISINTEGRATE",
+		"special_attacks":[["PARROT", 10],["SHRIEK",10],["RESURRECT", 1],["STARE", 5],["FEAR_PARALYZE", 5],["UPGRADE", 1],["LUNGE", 3],["LEAP", 3]],
+		"description":"Zalgo Pinkie from The Luna Games",
+		"flags":["SMELLS", "HEARS", "SWIMS", "ATTACKMON", "PLASTIC", "ACIDPROOF", "NOGIB", "CLIMBS"]
+	}
 ]

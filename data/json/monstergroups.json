@@ -988,12 +988,13 @@
       { "monster" : "mon_gozu", "freq" : 25, "cost_multiplier" : 0 },
       { "monster" : "mon_shoggoth", "freq" : 5, "cost_multiplier" : 0 },
       { "monster" : "mon_sygg", "freq" :  8, "cost_multiplier" : 2},
-      { "monster" : "mon_sonicexe", "freq" :  8, "cost_multiplier" : 2},
-      { "monster" : "mon_doom_lost_soul", "freq" :  100, "cost_multiplier" : 2},
-      { "monster" : "mon_doom_demon", "freq" :  100, "cost_multiplier" : 2},
-      { "monster" : "mon_doom_imp", "freq" :  100, "cost_multiplier" : 2},
-      { "monster" : "mon_doom_cacodemon", "freq" :  100, "cost_multiplier" : 2},
-      { "monster" : "mon_doom_former_human", "freq" :  100, "cost_multiplier" : 2},
+      { "monster" : "mon_sonicexe", "freq" :  200, "cost_multiplier" : 2},
+      { "monster" : "mon_doom_lost_soul", "freq" :  200, "cost_multiplier" : 2},
+      { "monster" : "mon_doom_demon", "freq" :  200, "cost_multiplier" : 2},
+      { "monster" : "mon_doom_imp", "freq" :  200, "cost_multiplier" : 2},
+      { "monster" : "mon_doom_cacodemon", "freq" :  200, "cost_multiplier" : 2},
+      { "monster" : "mon_doom_former_human", "freq" :  200, "cost_multiplier" : 2},
+      { "monster" : "mon_zalgo_pinkie", "freq" :  200, "cost_multiplier" : 2},
       { "monster" : "mon_baman_piderman", "freq" :  8, "cost_multiplier" : 2}
     ]
   },{

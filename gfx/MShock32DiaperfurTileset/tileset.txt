@@ -36,5 +36,8 @@ TILESET: tiles.png
 #Sonic.exe sprite modified from
 #http://xxsky64xx.deviantart.com/art/Sonic-exe-SPRITES-429259475
 
-#diapered rainbow dash came from here
+#diapered ponies came from here
 #http://www.furaffinity.net/view/15358249/
+
+Zalgo Pinkie came from here
+http://zalgopinkie.deviantart.com/art/Zalgo-Pinkie-Sprite-346397625
