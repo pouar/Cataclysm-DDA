@@ -2429,7 +2429,7 @@
 		"death_function":"NORMAL",
 		"death_drops": "diaper",
 		"description":"A lavender colored unicorn pony with a prussian blue mane. She is wearing a diaper.",
-		"flags":["SEES", "HEARS", "SMELLS", "ANIMAL", "WARM", "FUR", "BONES", "FAT", "GUILT"],
+		"flags":["SEES", "HEARS", "SMELLS", "ANIMAL", "WARM", "FUR", "BONES", "FAT", "GUILT", "FLIES", "FEATHER"],
 		"anger_triggers":["FRIEND_ATTACKED"],
 		"special_attacks":[["SHOCKSTORM", 15], ["BITE", 5]],
 		"fear_triggers":["HURT", "FIRE"],
