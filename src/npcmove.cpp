@@ -547,7 +547,7 @@ void npc::choose_monster_target(int &enemy, int &danger,
 
         bool okay_by_rules = true;
         if (is_following()) {
-            switch (combat_rules.engagement) {
+            switch (rules.engagement) {
             case ENGAGE_NONE:
                 okay_by_rules = false;
                 break;
@@ -617,8 +617,8 @@ npc_action npc::method_of_fleeing(int enemy)
 npc_action npc::method_of_attack(int target, int danger)
 {
     tripoint tar;
-    bool can_use_gun = (!is_following() || combat_rules.use_guns);
-    bool use_silent = (is_following() && combat_rules.use_silent);
+    bool can_use_gun = (!is_following() || rules.use_guns);
+    bool use_silent = (is_following() && rules.use_silent);
 
     Creature *critter = get_target( target );
     if( critter != nullptr ) {
@@ -742,10 +742,10 @@ npc_action npc::address_needs(int danger)
         return npc_reload;
     }
 
-    if ((danger <= NPC_DANGER_VERY_LOW && (hunger > 40 || thirst > 40)) ||
-        thirst > 80 || hunger > 160) {
+    if ((danger <= NPC_DANGER_VERY_LOW && (get_hunger() > 40 || thirst > 40)) ||
+        thirst > 80 || get_hunger() > 160) {
         //return npc_eat; // TODO: Make eating work when then NPC doesn't have enough food
-        hunger = 0;
+        set_hunger(0);
         thirst = 0;
     }
 
@@ -756,7 +756,7 @@ npc_action npc::address_needs(int danger)
             return npc_undecided;
         }
 
-        if( misc_rules.allow_sleep || fatigue > MASSIVE_FATIGUE ) {
+        if( rules.allow_sleep || fatigue > MASSIVE_FATIGUE ) {
             return npc_sleep;
         } else if( g->u.sees( *this ) && !has_effect( "npc_said" ) &&
                    one_in( 10000 / ( fatigue + 1 ) ) ) {
@@ -862,7 +862,7 @@ npc_action npc::long_term_goal_action()
 bool npc::alt_attack_available()
 {
     for( auto &elem : ALT_ATTACK_ITEMS ) {
-        if( ( !is_following() || combat_rules.use_grenades ||
+        if( ( !is_following() || rules.use_grenades ||
               !( item::find_type( elem )->item_tags.count( "GRENADE" ) ) ) &&
             has_amount( elem, 1 ) ) {
             return true;
@@ -1084,11 +1084,11 @@ bool npc::enough_time_to_reload(int target, item &gun)
         }
 
         dist = rl_dist(pos(), g->u.pos());
-        speed = speed_estimate( &g->u );
+        speed = speed_estimate( g->u );
     } else if (target >= 0) {
         const monster &mon = g->zombie( target );
         dist = rl_dist(pos(), mon.pos());
-        speed = speed_estimate( &mon );
+        speed = speed_estimate( mon );
     } else {
         return true;    // No target, plenty of time to reload
     }
@@ -1411,7 +1411,15 @@ void npc::move_away_from( const tripoint &pt )
     int best = 0;
     int chance = 2;
     for( const tripoint &p : g->m.points_in_radius( pos(), 1 ) ) {
+        if( p == pos() ) {
+            continue;
+        }
+
         const int cost = g->m.combined_movecost( pos(), p );
+        if( cost <= 0 ) {
+            continue;
+        }
+
         const int dst = abs( p.x - pt.x ) + abs( p.y - pt.y ) + abs( p.z - pt.z );
         const int val = dst * 1000 / cost;
         if( val > best && can_move_to( p ) ) {
@@ -1435,7 +1443,7 @@ void npc::move_pause()
 
 void npc::find_item()
 {
-    if( is_following() && !misc_rules.allow_pick_up ) {
+    if( is_following() && !rules.allow_pick_up ) {
         // Grabbing stuff not allowed by our "owner"
         return;
     }
@@ -1494,7 +1502,7 @@ void npc::find_item()
 
 void npc::pick_up_item()
 {
-    if( is_following() && !misc_rules.allow_pick_up ) {
+    if( is_following() && !rules.allow_pick_up ) {
         add_msg( m_debug, "%s::pick_up_item(); Cancelling on player's request", name.c_str() );
         fetching_item = false;
         moves -= 1;
@@ -1706,8 +1714,8 @@ void npc::drop_items(int weight, int volume)
 
 npc_action npc::scan_new_items(int target)
 {
-    bool can_use_gun = (!is_following() || combat_rules.use_guns);
-    bool use_silent = (is_following() && combat_rules.use_silent);
+    bool can_use_gun = (!is_following() || rules.use_guns);
+    bool use_silent = (is_following() && rules.use_silent);
     invslice slice = inv.slice();
 
     // Check if there's something better to wield
@@ -1779,7 +1787,7 @@ void npc::alt_attack(int target)
      * See npc.h for definition of ALT_ATTACK_ITEMS
      */
     for( auto &elem : ALT_ATTACK_ITEMS ) {
-        if( ( !is_following() || combat_rules.use_grenades ||
+        if( ( !is_following() || rules.use_grenades ||
               !( item::find_type( elem )->item_tags.count( "GRENADE" ) ) ) &&
             has_amount( elem, 1 ) ) {
             which = elem;
@@ -2096,7 +2104,7 @@ void npc::use_painkiller()
 void npc::pick_and_eat()
 {
     int best_hunger = 999, best_thirst = 999, index = -1;
-    bool thirst_more_important = (thirst > hunger * 1.5);
+    bool thirst_more_important = (thirst > get_hunger() * 1.5);
     invslice slice = inv.slice();
     for (size_t i = 0; i < slice.size(); i++) {
         int eaten_hunger = -1, eaten_thirst = -1;
@@ -2108,7 +2116,7 @@ void npc::pick_and_eat()
             food = dynamic_cast<const it_comest *>(it.contents[0].type);
         }
         if (food != NULL) {
-            eaten_hunger = hunger - food->nutr;
+            eaten_hunger = get_hunger() - food->nutr;
             eaten_thirst = thirst - food->quench;
         }
         if (eaten_hunger > 0) { // <0 means we have a chance of puking

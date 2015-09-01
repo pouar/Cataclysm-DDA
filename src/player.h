@@ -5,6 +5,7 @@
 #include "item.h"
 #include "player_activity.h"
 #include "weighted_list.h"
+#include "morale.h"
 
 #include <unordered_set>
 #include <bitset>
@@ -278,7 +279,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         /** Picks a random valid mutation in a category and mutate_towards() it */
         void mutate_category( const std::string &mut_cat );
         /** Mutates toward the entered mutation, upgrading or removing conflicts if necessary */
-        void mutate_towards( const std::string &mut );
+        bool mutate_towards( const std::string &mut );
         /** Removes a mutation, downgrading to the previous level if possible */
         void remove_mutation( const std::string &mut );
         /** Returns true if the player has the entered mutation child flag */
@@ -484,7 +485,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         // If average == true, adds expected values of random rolls instead of rolling.
         /** Adds all 3 types of physical damage to instance */
         void roll_all_damage( bool crit, damage_instance &di ) const;
-        void roll_all_damage( bool crit, damage_instance &di, bool average, const item &weap ) const; 
+        void roll_all_damage( bool crit, damage_instance &di, bool average, const item &weap ) const;
         /** Adds player's total bash damage to the damage instance */
         void roll_bash_damage( bool crit, damage_instance &di, bool average, const item &weap ) const;
         /** Adds player's total cut damage to the damage instance */
@@ -768,7 +769,6 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         void cancel_activity();
 
         double convert_weight(int weight) const;
-        bool can_eat(const item &i) const;
         int net_morale(morale_point effect) const;
         int morale_level() const; // Modified by traits, &c
         void add_morale(morale_type type, int bonus, int max_bonus = 0,
@@ -981,9 +981,8 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         bool last_climate_control_ret;
         std::string move_mode;
         int power_level, max_power_level;
-        int hunger, thirst, fatigue;
+        int thirst, fatigue;
         int bladder,bladdercap,bladdermict,bladderdance,bladderdesp,bladderlast,peerate,peesleeprate;
-        int stomach_food, stomach_water;
         int tank_plut, reactor_plut, slow_rad;
         int oxygen;
         int stamina;

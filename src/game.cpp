@@ -165,6 +165,7 @@ void game::load_static_data()
     // Only need to load names once, they do not depend on mods
     init_names();
     narrow_sidebar = OPTIONS["SIDEBAR_STYLE"] == "narrow";
+    right_sidebar = OPTIONS["SIDEBAR_POSITION"] == "right";
     fullscreen = false;
     was_fullscreen = false;
 
@@ -388,7 +389,9 @@ void game::init_ui()
     POSY = TERRAIN_WINDOW_HEIGHT / 2;
 
     // Set up the main UI windows.
-    w_terrain = newwin(TERRAIN_WINDOW_HEIGHT, TERRAIN_WINDOW_WIDTH, VIEW_OFFSET_Y, VIEW_OFFSET_X);
+    w_terrain = newwin(TERRAIN_WINDOW_HEIGHT, TERRAIN_WINDOW_WIDTH,
+                       VIEW_OFFSET_Y, right_sidebar ? VIEW_OFFSET_X :
+                       VIEW_OFFSET_X + sidebarWidth);
     werase(w_terrain);
 
     /**
@@ -476,7 +479,7 @@ void game::init_ui()
     }
 
     int _y = VIEW_OFFSET_Y;
-    int _x = TERMX - VIEW_OFFSET_X - sidebarWidth;
+    int _x = right_sidebar ? TERMX - VIEW_OFFSET_X - sidebarWidth : VIEW_OFFSET_X;
 
     w_minimap = newwin(MINIMAP_HEIGHT, MINIMAP_WIDTH, _y + minimapY, _x + minimapX);
     werase(w_minimap);
@@ -2783,7 +2786,7 @@ bool game::handle_action()
                 as_m.entries.push_back(uimenu_entry(2, true, (OPTIONS["FORCE_CAPITAL_YN"] ?
                                                     'N' : 'n'), _("No.")));
 
-                if( u.has_alarm_clock() && u.hunger < -60 && u.has_active_mutation( "HIBERNATE" ) ) {
+                if( u.has_alarm_clock() && u.get_hunger() < -60 && u.has_active_mutation( "HIBERNATE" ) ) {
                     as_m.text =
                         _("You're engorged to hibernate. The alarm would only attract attention. Enter hibernation?");
                 }
@@ -2822,7 +2825,7 @@ bool game::handle_action()
                     as_m.text = data.str();
                 }
                 if( u.has_alarm_clock() &&
-                    !( u.hunger < -60 && u.has_active_mutation( "HIBERNATE" ) ) ) {
+                    !( u.get_hunger() < -60 && u.has_active_mutation( "HIBERNATE" ) ) ) {
                     as_m.entries.push_back(uimenu_entry(3, true, '3',
                                                         _("Set alarm to wake up in 3 hours.")));
                     as_m.entries.push_back(uimenu_entry(4, true, '4',
@@ -4081,7 +4084,7 @@ void game::debug()
             case D_NEEDS:
             {
                 uimenu smenu;
-                smenu.addentry( 0, true, 'h', "%s: %d", _("Hunger"), p.hunger );
+                smenu.addentry( 0, true, 'h', "%s: %d", _("Hunger"), p.get_hunger() );
                 smenu.addentry( 1, true, 't', "%s: %d", _("Thirst"), p.thirst );
                 smenu.addentry( 2, true, 'f', "%s: %d", _("Fatigue"), p.fatigue );
                 smenu.addentry( 3, true, 'h', "%s: %d", _("Bladder"), p.bladder );
@@ -4095,16 +4098,20 @@ void game::debug()
                 smenu.addentry( 999, true, 'q', "%s", _("[q]uit") );
                 smenu.selected = 0;
                 smenu.query();
-                int *bp_ptr = nullptr;
+                int cur;
+                bool valid = false;
                 switch( smenu.ret ) {
                 case 0:
-                    bp_ptr = &p.hunger;
+                    cur = p.get_hunger();
+                    valid = true;
                     break;
                 case 1:
-                    bp_ptr = &p.thirst;
+                    cur = p.thirst;
+                    valid = true;
                     break;
                 case 2:
-                    bp_ptr = &p.fatigue;
+                    cur = p.fatigue;
+                    valid = true;
                     break;
                 case 3:
                     bp_ptr = &p.bladder;
@@ -4133,12 +4140,20 @@ void game::debug()
                 default:
                     break;
                 }
-
-                if( bp_ptr != nullptr ) {
-                    int value = query_int( "Set the value to? Currently: %d", *bp_ptr );
-                    // No canceling here
-                    *bp_ptr = value;
+                if( valid ) {
+                    int value = query_int( "Set the value to? Currently: %d", cur );
+                    switch (smenu.ret) {
+                    case 0:
+                        p.set_hunger(value);
+                        break;
+                    case 1:
+                        p.thirst = value;
+                        break;
+                    case 2:
+                        p.fatigue = value;
+                    }
                 }
+
             }
                 break;
             case D_MUTATE:
@@ -7694,118 +7709,31 @@ bool game::forced_gate_closing( const tripoint &p, const ter_id door_type, int b
 // the wall and gate.
 void game::open_gate( const tripoint &p, const ter_id handle_type )
 {
-    int examx = p.x;
-    int examy = p.y;
-    ter_id wall_type;
-    ter_id door_type;
-    ter_id floor_type;
+    int moves = 900;
     const char *pull_message;
-    const char *open_message;
-    const char *close_message;
-    int bash_dmg;
 
     if (handle_type == t_gates_mech_control) {
-        wall_type = t_wall;
-        door_type = t_door_metal_locked;
-        floor_type = t_floor;
         pull_message = _("You turn the handle...");
-        open_message = _("The gate is opened!");
-        close_message = _("The gate is closed!");
-        bash_dmg = 40;
     } else if (handle_type == t_gates_control_concrete) {
-        wall_type = t_concrete_wall;
-        door_type = t_door_metal_locked;
-        floor_type = t_floor;
         pull_message = _("You turn the handle...");
-        open_message = _("The gate is opened!");
-        close_message = _("The gate is closed!");
-        bash_dmg = 40;
     } else if (handle_type == t_barndoor) {
-        wall_type = t_wall_wood;
-        door_type = t_door_metal_locked;
-        floor_type = t_dirtfloor;
         pull_message = _("You pull the rope...");
-        open_message = _("The barn doors opened!");
-        close_message = _("The barn doors closed!");
-        bash_dmg = 40;
     } else if (handle_type == t_palisade_pulley) {
-        wall_type = t_palisade;
-        door_type = t_palisade_gate;
-        floor_type = t_palisade_gate_o;
         pull_message = _("You pull the rope...");
-        open_message = _("The palisade gate swings open!");
-        close_message = _("The palisade gate swings closed with a crash!");
-        bash_dmg = 30;
     } else if ( handle_type == t_gates_control_metal) {
-        wall_type = t_wall_metal;
-        door_type = t_door_metal_locked;
-        floor_type = t_metal_floor;
         pull_message = _("You throw the lever...");
-        open_message = _("The door rises!");
-        close_message = _("The door slams shut!");
-        bash_dmg = 60;
     } else {
         return;
     }
-
+    
     add_msg(pull_message);
-    u.moves -= 900;
     if (handle_type == t_gates_control_metal){
-        g->u.moves -= 300;
+        moves += 300;
     }else{
-        g->u.moves -= 900;
+        moves += 900;
     }
-
-    bool open = false;
-    bool close = false;
-
-    for (int wall_x = -1; wall_x <= 1; wall_x++) {
-        for (int wall_y = -1; wall_y <= 1; wall_y++) {
-            for (int gate_x = -1; gate_x <= 1; gate_x++) {
-                for (int gate_y = -1; gate_y <= 1; gate_y++) {
-                    if ((wall_x + wall_y == 1 || wall_x + wall_y == -1) &&
-                        // make sure wall not diagonally opposite to handle
-                        (gate_x + gate_y == 1 || gate_x + gate_y == -1) &&  // same for gate direction
-                        ((wall_y != 0 && (m.ter(examx + wall_x, examy + wall_y) == wall_type)) ||
-                         //horizontal orientation of the gate
-                         (wall_x != 0 &&
-                          (m.ter(examx + wall_x, examy + wall_y) == wall_type)))) { //vertical orientation of the gate
-
-                        int cur_x = examx + wall_x + gate_x;
-                        int cur_y = examy + wall_y + gate_y;
-
-                        if (!close &&
-                            (m.ter(examx + wall_x + gate_x, examy + wall_y + gate_y) == door_type)) {  //opening the gate...
-                            open = true;
-                            while (m.ter(cur_x, cur_y) == door_type) {
-                                m.ter_set(cur_x, cur_y, floor_type);
-                                cur_x = cur_x + gate_x;
-                                cur_y = cur_y + gate_y;
-                            }
-                        }
-
-                        if (!open &&
-                            (m.ter(examx + wall_x + gate_x, examy + wall_y + gate_y) == floor_type)) {  //closing the gate...
-                            close = true;
-                            while (m.ter(cur_x, cur_y) == floor_type) {
-                                forced_gate_closing( tripoint( cur_x, cur_y, p.z ), door_type, bash_dmg );
-                                cur_x = cur_x + gate_x;
-                                cur_y = cur_y + gate_y;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if (open) {
-        add_msg(open_message);
-    } else if (close) {
-        add_msg(close_message);
-    } else {
-        add_msg(_("Nothing happens."));
-    }
+    u.assign_activity( ACT_OPEN_GATE, moves) ;
+    u.activity.placement = p;
 }
 
 void game::moving_vehicle_dismount(int tox, int toy)
@@ -8450,14 +8378,17 @@ void game::zones_manager()
 
     int zone_ui_height = 12;
     const int width = use_narrow_sidebar() ? 45 : 55;
-    WINDOW *w_zones = newwin(TERMY - 2 - zone_ui_height - VIEW_OFFSET_Y * 2, width - 2, VIEW_OFFSET_Y + 1,
-                             TERMX - width + 1 - VIEW_OFFSET_X);
-    WINDOW *w_zones_border = newwin(TERMY - zone_ui_height - VIEW_OFFSET_Y * 2, width, VIEW_OFFSET_Y,
-                                    TERMX - width - VIEW_OFFSET_X);
-    WINDOW *w_zones_info = newwin(zone_ui_height - 1, width - 2, TERMY - zone_ui_height - VIEW_OFFSET_Y,
-                                  TERMX - width + 1 - VIEW_OFFSET_X);
-    WINDOW *w_zones_info_border = newwin(zone_ui_height, width, TERMY - zone_ui_height - VIEW_OFFSET_Y,
-                                         TERMX - width - VIEW_OFFSET_X);
+    const int offsetX = right_sidebar ? TERMX - VIEW_OFFSET_X - width :
+                                        VIEW_OFFSET_X;
+
+    WINDOW *w_zones = newwin(TERMY - 2 - zone_ui_height - VIEW_OFFSET_Y * 2, width - 2,
+                             VIEW_OFFSET_Y + 1, offsetX + 1);
+    WINDOW *w_zones_border = newwin(TERMY - zone_ui_height - VIEW_OFFSET_Y * 2, width,
+                                    VIEW_OFFSET_Y, offsetX);
+    WINDOW *w_zones_info = newwin(zone_ui_height - 1, width - 2,
+                                  TERMY - zone_ui_height - VIEW_OFFSET_Y, offsetX + 1);
+    WINDOW *w_zones_info_border = newwin(zone_ui_height, width,
+                                         TERMY - zone_ui_height - VIEW_OFFSET_Y, offsetX);
 
     zones_manager_draw_borders(w_zones_border, w_zones_info_border, zone_ui_height, width);
     zones_manager_shortcuts(w_zones_info);
@@ -9505,17 +9436,20 @@ int game::list_items(const int iLastState)
 {
     int iInfoHeight = std::min(25, TERMY / 2);
     const int width = use_narrow_sidebar() ? 45 : 55;
-    WINDOW *w_items = newwin(TERMY - 2 - iInfoHeight - VIEW_OFFSET_Y * 2, width - 2, VIEW_OFFSET_Y + 1,
-                             TERMX - width + 1 - VIEW_OFFSET_X);
+    const int offsetX = right_sidebar ? TERMX - VIEW_OFFSET_X - width :
+                                        VIEW_OFFSET_X;
+
+    WINDOW *w_items = newwin(TERMY - 2 - iInfoHeight - VIEW_OFFSET_Y * 2, width - 2,
+                             VIEW_OFFSET_Y + 1, offsetX + 1);
     WINDOW_PTR w_itemsptr( w_items );
-    WINDOW *w_items_border = newwin(TERMY - iInfoHeight - VIEW_OFFSET_Y * 2, width, VIEW_OFFSET_Y,
-                                    TERMX - width - VIEW_OFFSET_X);
+    WINDOW *w_items_border = newwin(TERMY - iInfoHeight - VIEW_OFFSET_Y * 2, width,
+                                    VIEW_OFFSET_Y, offsetX);
     WINDOW_PTR w_items_borderptr( w_items_border );
-    WINDOW *w_item_info = newwin(iInfoHeight - 1, width - 2, TERMY - iInfoHeight - VIEW_OFFSET_Y,
-                                 TERMX - width + 1 - VIEW_OFFSET_X);
+    WINDOW *w_item_info = newwin(iInfoHeight - 1, width - 2,
+                                 TERMY - iInfoHeight - VIEW_OFFSET_Y, offsetX + 1);
     WINDOW_PTR w_item_infoptr( w_item_info );
-    WINDOW *w_item_info_border = newwin(iInfoHeight, width, TERMY - iInfoHeight - VIEW_OFFSET_Y,
-                                        TERMX - width - VIEW_OFFSET_X);
+    WINDOW *w_item_info_border = newwin(iInfoHeight, width,
+                                        TERMY - iInfoHeight - VIEW_OFFSET_Y, offsetX);
     WINDOW_PTR w_item_info_borderptr( w_item_info_border );
 
     //Area to search +- of players position.
@@ -9932,17 +9866,20 @@ int game::list_monsters(const int iLastState)
 
     int iInfoHeight = 12;
     const int width = use_narrow_sidebar() ? 45 : 55;
+    const int offsetX = right_sidebar ? TERMX - VIEW_OFFSET_X - width :
+                                        VIEW_OFFSET_X;
+
     WINDOW *w_monsters = newwin(TERMY - 2 - iInfoHeight - VIEW_OFFSET_Y * 2, width - 2,
-                                VIEW_OFFSET_Y + 1, TERMX - width + 1 - VIEW_OFFSET_X);
+                                VIEW_OFFSET_Y + 1, offsetX + 1);
     WINDOW_PTR w_monstersptr( w_monsters );
-    WINDOW *w_monsters_border = newwin(TERMY - iInfoHeight - VIEW_OFFSET_Y * 2, width, VIEW_OFFSET_Y,
-                                       TERMX - width - VIEW_OFFSET_X);
+    WINDOW *w_monsters_border = newwin(TERMY - iInfoHeight - VIEW_OFFSET_Y * 2, width,
+                                       VIEW_OFFSET_Y, offsetX);
     WINDOW_PTR w_monsters_borderptr( w_monsters_border );
-    WINDOW *w_monster_info = newwin(iInfoHeight - 1, width - 2, TERMY - iInfoHeight - VIEW_OFFSET_Y,
-                                    TERMX - width + 1 - VIEW_OFFSET_X);
+    WINDOW *w_monster_info = newwin(iInfoHeight - 1, width - 2,
+                                    TERMY - iInfoHeight - VIEW_OFFSET_Y, offsetX + 1);
     WINDOW_PTR w_monster_infoptr( w_monster_info );
-    WINDOW *w_monster_info_border = newwin(iInfoHeight, width, TERMY - iInfoHeight - VIEW_OFFSET_Y,
-                                           TERMX - width - VIEW_OFFSET_X);
+    WINDOW *w_monster_info_border = newwin(iInfoHeight, width,
+                                           TERMY - iInfoHeight - VIEW_OFFSET_Y, offsetX);
     WINDOW_PTR w_monster_info_borderptr( w_monster_info_border );
 
     uistate.list_item_mon = 2; // remember we've tabbed here
@@ -11242,7 +11179,7 @@ void game::eat(int pos)
     if ((u.has_active_mutation("RUMINANT") || u.has_active_mutation("GRAZER")) &&
         m.ter(u.pos()) == t_underbrush && query_yn(_("Eat underbrush?"))) {
         u.moves -= 400;
-        u.hunger -= 10;
+        u.mod_hunger(-10);
         m.ter_set(u.pos(), t_grass);
         add_msg(_("You eat the underbrush."));
         return;
@@ -11250,12 +11187,12 @@ void game::eat(int pos)
     if (u.has_active_mutation("GRAZER") && m.ter(u.pos()) == t_grass &&
         query_yn(_("Graze?"))) {
         u.moves -= 400;
-        if ((u.hunger < 10) || one_in(20 - u.int_cur)) {
+        if ((u.get_hunger() < 10) || one_in(20 - u.int_cur)) {
             add_msg(_("You eat some of the taller grass, careful to leave some growing."));
-            u.hunger -= 2;
+            u.mod_hunger(-2);
         } else {
             add_msg(_("You eat the grass."));
-            u.hunger -= 5;
+            u.mod_hunger(-5);
             m.ter_set(u.pos(), t_dirt);
         }
         return;
@@ -13125,7 +13062,7 @@ void game::vertical_move(int movez, bool force)
                                 add_msg(m_bad, _("You descend on your vines, though leaving a part of you behind stings."));
                                 u.mod_pain(5);
                                 u.apply_damage( nullptr, bp_torso, 5 );
-                                u.hunger += 10;
+                                u.mod_hunger(10);
                                 u.thirst += 10;
                                 u.bladder += 1;
                             } else {
@@ -13134,7 +13071,7 @@ void game::vertical_move(int movez, bool force)
                         } else {
                             add_msg(_("You effortlessly lower yourself and leave a vine rooted for future use."));
                             rope_ladder = true;
-                            u.hunger += 10;
+                            u.mod_hunger(10);
                             u.thirst += 10;
 							u.bladder += 1;
                         }
@@ -14345,7 +14282,7 @@ void game::process_artifact(item *it, player *p)
 
         case AEP_HUNGER:
             if (one_in(100)) {
-                p->hunger++;
+                p->mod_hunger(1);
             }
             break;
 
