@@ -4087,14 +4087,14 @@ void game::debug()
                 smenu.addentry( 0, true, 'h', "%s: %d", _("Hunger"), p.get_hunger() );
                 smenu.addentry( 1, true, 't', "%s: %d", _("Thirst"), p.thirst );
                 smenu.addentry( 2, true, 'f', "%s: %d", _("Fatigue"), p.fatigue );
-                smenu.addentry( 3, true, 'h', "%s: %d", _("Bladder"), p.bladder );
-                smenu.addentry( 4, true, 'f', "%s: %d", _("Bladder Micturation Point"), p.bladdermict );
-                smenu.addentry( 5, true, 'h', "%s: %d", _("Fidgeting Point"), p.bladderdance );
-                smenu.addentry( 6, true, 't', "%s: %d", _("Desperation"), p.bladderdesp );
-                smenu.addentry( 7, true, 'f', "%s: %d", _("Last Minute Point"), p.bladderlast );
-                smenu.addentry( 8, true, 't', "%s: %d", _("Bladder Capacity"), p.bladdercap );
-                smenu.addentry( 9, true, 'f', "%s: %d", _("Bladder Fill Rate"), p.peerate );
-                smenu.addentry( 10, true, 'f', "%s: %d", _("Bladder Fill Rate When Asleep"), p.peesleeprate );
+                smenu.addentry( 3, true, 'b', "%s: %d", _("Bladder"), p.bladder );
+                smenu.addentry( 4, true, 'm', "%s: %d", _("Bladder Micturation Point"), p.bladdermict );
+                smenu.addentry( 5, true, 's', "%s: %d", _("Fidgeting Point"), p.bladderdance );
+                smenu.addentry( 6, true, 'd', "%s: %d", _("Desperation"), p.bladderdesp );
+                smenu.addentry( 7, true, 'l', "%s: %d", _("Last Minute Point"), p.bladderlast );
+                smenu.addentry( 8, true, 'w', "%s: %d", _("Bladder Capacity"), p.bladdercap );
+                smenu.addentry( 9, true, 'r', "%s: %d", _("Bladder Fill Rate"), p.peerate );
+                smenu.addentry( 10, true, 'a', "%s: %d", _("Bladder Fill Rate When Asleep"), p.peesleeprate );
                 smenu.addentry( 999, true, 'q', "%s", _("[q]uit") );
                 smenu.selected = 0;
                 smenu.query();
@@ -4114,28 +4114,36 @@ void game::debug()
                     valid = true;
                     break;
                 case 3:
-                    bp_ptr = &p.bladder;
+                    cur = p.bladder;
+                    valid = true;
                     break;
                 case 4:
-                    bp_ptr = &p.bladdermict;
+                    cur = p.bladdermict;
+                    valid = true;
                     break;
                 case 5:
-                    bp_ptr = &p.bladderdance;
+                    cur = p.bladderdance;
+                    valid = true;
                     break;
                 case 6:
-                    bp_ptr = &p.bladderdesp;
+                    cur = p.bladderdesp;
+                    valid = true;
                     break;
                 case 7:
-                    bp_ptr = &p.bladderlast;
+                    cur = p.bladderlast;
+                    valid = true;
                     break;
                 case 8:
-                    bp_ptr = &p.bladdercap;
+                    cur = p.bladdercap;
+                    valid = true;
                     break;
                 case 9:
-                    bp_ptr = &p.peerate;
+                    cur = p.peerate;
+                    valid = true;
                     break;
                 case 10:
-                    bp_ptr = &p.peesleeprate;
+                    cur = p.peesleeprate;
+                    valid = true;
                     break;
                 default:
                     break;
@@ -4151,6 +4159,31 @@ void game::debug()
                         break;
                     case 2:
                         p.fatigue = value;
+                        break;
+                    case 3:
+                        p.bladder = value;
+                        break;
+                    case 4:
+                        p.bladdermict = value;
+                        break;
+                    case 5:
+                        p.bladderdance = value;
+                        break;
+                    case 6:
+                        p.bladderdesp = value;
+                        break;
+                    case 7:
+                        p.bladderlast = value;
+                        break;
+                    case 8:
+                        p.bladdercap = value;
+                        break;
+                    case 9:
+                        p.peerate = value;
+                        break;
+                    case 10:
+                        p.peesleeprate = value;
+                        break;
                     }
                 }
 
