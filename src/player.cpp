@@ -66,6 +66,12 @@ const mtype_id mon_dermatik_larva( "mon_dermatik_larva" );
 const mtype_id mon_player_blob( "mon_player_blob" );
 const mtype_id mon_shadow_snake( "mon_shadow_snake" );
 
+const skill_id skill_dodge( "dodge" );
+const skill_id skill_gun( "gun" );
+const skill_id skill_swimming( "swimming" );
+const skill_id skill_throw( "throw" );
+const skill_id skill_unarmed( "unarmed" );
+
 // use this instead of having to type out 26 spaces like before
 static const std::string header_spaces(26, ' ');
 
@@ -521,7 +527,7 @@ void player::process_turn()
     // auto-learning. This is here because skill-increases happens all over the place:
     // SkillLevel::readBook (has no connection to the skill or the player),
     // player::read, player::practice, ...
-    if( get_skill_level( "unarmed" ) >= 2 ) {
+    if( get_skill_level( skill_unarmed ) >= 2 ) {
         const matype_id brawling( "style_brawling" );
         if( !has_martialart( brawling ) ) {
             add_martialart( brawling );
@@ -2341,7 +2347,7 @@ void player::pee()
 
 int player::swim_speed() const
 {
-    int ret = 440 + weight_carried() / 60 - 50 * get_skill_level("swimming");
+    int ret = 440 + weight_carried() / 60 - 50 * get_skill_level( skill_swimming );
     if (has_trait("PAWS")) {
         ret -= 20 + str_cur * 3;
     }
@@ -2366,11 +2372,11 @@ int player::swim_speed() const
     if (has_trait("FAT")) {
         ret -= 30;
     }
-    ret += (50 - get_skill_level("swimming") * 2) * ((encumb(bp_leg_l) + encumb(bp_leg_r)) / 10);
-    ret += (80 - get_skill_level("swimming") * 3) * (encumb(bp_torso) / 10);
-    if (get_skill_level("swimming") < 10) {
+    ret += (50 - get_skill_level( skill_swimming ) * 2) * ((encumb(bp_leg_l) + encumb(bp_leg_r)) / 10);
+    ret += (80 - get_skill_level( skill_swimming ) * 3) * (encumb(bp_torso) / 10);
+    if (get_skill_level( skill_swimming ) < 10) {
         for (auto &i : worn) {
-            ret += (i.volume() * (10 - get_skill_level("swimming"))) / 2;
+            ret += (i.volume() * (10 - get_skill_level( skill_swimming ))) / 2;
         }
     }
     ret -= str_cur * 6 + dex_cur * 4;
@@ -3272,10 +3278,15 @@ Strength - 4;    Dexterity - 4;    Intelligence - 4;    Perception - 4"));
         int level_num = (int)level;
         int exercise = level.exercise();
 
+        // TODO: this skill list here is used in other places as well. Useless redundancy and
+        // dependency. Maybe change it into a flag of the skill that indicates it's a skill used
+        // by the bionic?
+        static const std::array<skill_id, 5> cqb_skills = { {
+            skill_id( "melee" ), skill_id( "unarmed" ), skill_id( "cutting" ),
+            skill_id( "bashing" ), skill_id( "stabbing" ),
+        } };
         if( has_active_bionic( "bio_cqb" ) &&
-            ( ( elem )->ident() == "melee" || ( elem )->ident() == "unarmed" ||
-              ( elem )->ident() == "cutting" || ( elem )->ident() == "bashing" ||
-              ( elem )->ident() == "stabbing" ) ) {
+            std::find( cqb_skills.begin(), cqb_skills.end(), elem->ident() ) != cqb_skills.end() ) {
             level_num = 5;
             exercise = 0;
             text_color = c_yellow;
@@ -3571,7 +3582,7 @@ Strength - 4;    Dexterity - 4;    Intelligence - 4;    Perception - 4"));
                 const int melee_roll_pen = std::max( -( encumb( bp_torso ) / 10 ) * 10, -80 );
                 s += string_format( _("Melee attack rolls %+d%%; "), melee_roll_pen );
                 s += dodge_skill_text( - (encumb( bp_torso ) / 10));
-                s += swim_cost_text( (encumb( bp_torso ) / 10) * ( 80 - get_skill_level( "swimming" ) * 3 ) );
+                s += swim_cost_text( (encumb( bp_torso ) / 10) * ( 80 - get_skill_level( skill_swimming ) * 3 ) );
                 s += melee_cost_text( encumb( bp_torso ) );
             } else if (line == 1) { //Torso
                 s += _("Head encumbrance has no effect; it simply limits how much you can put on.");
@@ -3596,11 +3607,11 @@ Strength - 4;    Dexterity - 4;    Intelligence - 4;    Perception - 4"));
                 s += melee_cost_text( encumb( bp_hand_r ) / 2 );
             } else if (line == 8) { //Left Leg
                 s += run_cost_text( encumb( bp_leg_l ) * 0.15 );
-                s += swim_cost_text( (encumb( bp_leg_l ) / 10) * ( 50 - get_skill_level( "swimming" ) * 2 ) / 2 );
+                s += swim_cost_text( (encumb( bp_leg_l ) / 10) * ( 50 - get_skill_level( skill_swimming ) * 2 ) / 2 );
                 s += dodge_skill_text( -(encumb( bp_leg_l ) / 10) / 4.0 );
             } else if (line == 9) { //Right Leg
                 s += run_cost_text( encumb( bp_leg_r ) * 0.15 );
-                s += swim_cost_text( (encumb( bp_leg_r ) / 10) * ( 50 - get_skill_level( "swimming" ) * 2 ) / 2 );
+                s += swim_cost_text( (encumb( bp_leg_r ) / 10) * ( 50 - get_skill_level( skill_swimming ) * 2 ) / 2 );
                 s += dodge_skill_text( -(encumb( bp_leg_r ) / 10) / 4.0 );
             } else if (line == 10) { //Left Foot
                 s += run_cost_text( encumb( bp_foot_l ) * 0.25 );
@@ -4747,7 +4758,7 @@ bool player::has_two_arms() const
 
 bool player::avoid_trap( const tripoint &pos, const trap &tr ) const
 {
-    int myroll = dice( 3, int(dex_cur + get_skill_level( "dodge" ) * 1.5) );
+    int myroll = dice( 3, int(dex_cur + get_skill_level( skill_dodge ) * 1.5) );
     int traproll;
     if( tr.can_see( pos, *this ) ) {
         traproll = dice( 3, tr.get_avoidance() );
@@ -4809,18 +4820,18 @@ bool player::has_watch() const
 void player::pause()
 {
     moves = 0;
-    recoil -= str_cur + 2 * get_skill_level("gun");
+    recoil -= str_cur + 2 * get_skill_level( skill_gun );
     recoil = std::max(MIN_RECOIL * 2, recoil);
     recoil = int(recoil / 2);
 
     // Train swimming if underwater
     if( underwater ) {
-        practice( "swimming", 1 );
+        practice( skill_swimming, 1 );
         drench(100, mfb(bp_leg_l)|mfb(bp_leg_r)|mfb(bp_torso)|mfb(bp_arm_l)|mfb(bp_arm_r)|
                     mfb(bp_head)| mfb(bp_eyes)|mfb(bp_mouth)|mfb(bp_foot_l)|mfb(bp_foot_r)|
                     mfb(bp_hand_l)|mfb(bp_hand_r), true );
     } else if( g->m.has_flag( TFLAG_DEEP_WATER, pos() ) ) {
-        practice( "swimming", 1 );
+        practice( skill_swimming, 1 );
         // Same as above, except no head/eyes/mouth
         drench(100, mfb(bp_leg_l)|mfb(bp_leg_r)|mfb(bp_torso)|mfb(bp_arm_l)|mfb(bp_arm_r)|
                     mfb(bp_foot_l)|mfb(bp_foot_r)| mfb(bp_hand_l)|mfb(bp_hand_r), true );
@@ -4845,7 +4856,7 @@ void player::pause()
                 if( exp_temp - experience > 0 && x_in_y( exp_temp - experience, 1.0 ) ) {
                     experience++;
                 }
-                practice( "driving", experience );
+                practice( skill_id( "driving" ), experience );
             }
             break;
         }
@@ -4989,8 +5000,8 @@ int player::throw_range(int pos) const
         return 1;
     }
     // Cap at double our strength + skill
-    if( ret > str_cur * 1.5 + get_skill_level("throw") ) {
-        return str_cur * 1.5 + get_skill_level("throw");
+    if( ret > str_cur * 1.5 + get_skill_level( skill_throw ) ) {
+        return str_cur * 1.5 + get_skill_level( skill_throw );
     }
 
     return ret;
@@ -5105,7 +5116,7 @@ int player::rust_rate(bool return_stat_effect) const
 
 int player::talk_skill() const
 {
-    int ret = get_int() + get_per() + get_skill_level("speech") * 3;
+    int ret = get_int() + get_per() + get_skill_level( skill_id( "speech" ) ) * 3;
     if (has_trait("SAPIOVORE")) {
         ret -= 20; // Friendly convo with your prey? unlikely
     } else if (has_trait("UGLY")) {
@@ -5170,7 +5181,7 @@ void player::on_dodge( Creature *source, int difficulty )
     }
 
     if( difficulty > 0 ) {
-        practice( "dodge", difficulty );
+        practice( skill_dodge, difficulty );
     }
 
     ma_ondodge_effects();
@@ -5189,7 +5200,7 @@ void player::on_hit( Creature *source, body_part bp_hit,
     }
 
     if( difficulty > 0 ) {
-        practice( "dodge", difficulty );
+        practice( skill_dodge, difficulty );
     }
 
     if (has_active_bionic("bio_ods")) {
@@ -5646,7 +5657,7 @@ float player::fall_damage_mod() const
     float ret = 1.0f;
 
     // Ability to land properly is 2x as important as dexterity itself
-    float dex_dodge = dex_cur / 2 + get_skill_level( "dodge" );
+    float dex_dodge = dex_cur / 2 + get_skill_level( skill_dodge );
     // Penalize for wearing heavy stuff
     dex_dodge -= ( ( encumb(bp_leg_l) + encumb(bp_leg_r) ) / 20 ) + ( encumb(bp_torso) / 10 );
     // But prevent it from increasing damage
@@ -10165,7 +10176,7 @@ bool player::consume_item( item &target )
             to_eat->tname().c_str());
         } else if (!to_eat->is_food() && !to_eat->is_food_container(this)) {
             if (to_eat->is_book()) {
-                if (to_eat->type->book->skill != NULL && !query_yn(_("Really eat %s?"), to_eat->tname().c_str())) {
+                if (to_eat->type->book->skill && !query_yn(_("Really eat %s?"), to_eat->tname().c_str())) {
                     return false;
                 }
             }
@@ -11620,7 +11631,7 @@ hint_rating player::rate_action_use( const item &it ) const
             return HINT_GOOD;
         }
     } else if (it.is_gunmod()) {
-        if (get_skill_level("gun") == 0) {
+        if (get_skill_level( skill_gun ) == 0) {
             return HINT_IFFY;
         } else {
             return HINT_GOOD;
@@ -11727,7 +11738,7 @@ void player::use(int inventory_position)
         invoke_item( used );
     } else if (used->is_gunmod()) {
         const auto mod = used->type->gunmod.get();
-        if (!(get_skill_level("gun") >= mod->req_skill)) {
+        if (!(get_skill_level( skill_gun ) >= mod->req_skill)) {
             add_msg(m_info, _("You need to be at least level %d in the marksmanship skill before you \
 can install this mod."), mod->req_skill);
             return;
@@ -11745,31 +11756,31 @@ can install this mod."), mod->req_skill);
             return;
         }
         islot_gun* guntype = gun->type->gun.get();
-        if (guntype->skill_used == Skill::skill("pistol") && !mod->used_on_pistol) {
+        if (guntype->skill_used == skill_id("pistol") && !mod->used_on_pistol) {
             add_msg(m_info, _("That %s cannot be attached to a handgun."),
                        used->tname().c_str());
             return;
-        } else if (guntype->skill_used == Skill::skill("shotgun") && !mod->used_on_shotgun) {
+        } else if (guntype->skill_used == skill_id("shotgun") && !mod->used_on_shotgun) {
             add_msg(m_info, _("That %s cannot be attached to a shotgun."),
                        used->tname().c_str());
             return;
-        } else if (guntype->skill_used == Skill::skill("smg") && !mod->used_on_smg) {
+        } else if (guntype->skill_used == skill_id("smg") && !mod->used_on_smg) {
             add_msg(m_info, _("That %s cannot be attached to a submachine gun."),
                        used->tname().c_str());
             return;
-        } else if (guntype->skill_used == Skill::skill("rifle") && !mod->used_on_rifle) {
+        } else if (guntype->skill_used == skill_id("rifle") && !mod->used_on_rifle) {
             add_msg(m_info, _("That %s cannot be attached to a rifle."),
                        used->tname().c_str());
             return;
-        } else if (guntype->skill_used == Skill::skill("archery") && !mod->used_on_bow && guntype->ammo == "arrow") {
+        } else if (guntype->skill_used == skill_id("archery") && !mod->used_on_bow && guntype->ammo == "arrow") {
             add_msg(m_info, _("That %s cannot be attached to a bow."),
                        used->tname().c_str());
             return;
-        } else if (guntype->skill_used == Skill::skill("archery") && !mod->used_on_crossbow && guntype->ammo == "bolt") {
+        } else if (guntype->skill_used == skill_id("archery") && !mod->used_on_crossbow && guntype->ammo == "bolt") {
             add_msg(m_info, _("That %s cannot be attached to a crossbow."),
                        used->tname().c_str());
             return;
-        } else if (guntype->skill_used == Skill::skill("launcher") && !mod->used_on_launcher) {
+        } else if (guntype->skill_used == skill_id("launcher") && !mod->used_on_launcher) {
             add_msg(m_info, _("That %s cannot be attached to a launcher."),
                        used->tname().c_str());
             return;
@@ -12120,8 +12131,8 @@ void player::read(int inventory_position)
     }
 
 
-    const auto skill = tmp->skill;
-    if( skill == nullptr ) {
+    const skill_id &skill = tmp->skill;
+    if( !skill ) {
         // special guidebook effect: print a misc. hint when read
         if (it->typeId() == "guidebook") {
             add_msg(m_info, get_hint().c_str());
@@ -12134,7 +12145,7 @@ void player::read(int inventory_position)
         return;
     } else if( get_skill_level( skill ) < tmp->req ) {
         add_msg(_("The %s-related jargon flies over your head!"),
-                   skill->name().c_str());
+                   skill.obj().name().c_str());
         if (tmp->recipes.empty()) {
             return;
         } else {
@@ -12144,13 +12155,13 @@ void player::read(int inventory_position)
                !query_yn(tmp->fun > 0 ?
                          _("It would be fun, but your %s skill won't be improved.  Read anyway?") :
                          _("Your %s skill won't be improved.  Read anyway?"),
-                         skill->name().c_str())) {
+                         skill.obj().name().c_str())) {
         return;
     } else if( !continuous && ( get_skill_level(skill) < tmp->level || can_study_recipe(*it->type) ) &&
                          !query_yn( get_skill_level(skill) < tmp->level ?
                          _("Study %s until you learn something? (gain a level)") :
                          _("Study the book until you learn all recipes?"),
-                         skill->name().c_str()) ) {
+                         skill.obj().name().c_str()) ) {
         study = false;
     } else {
         //If we just started studying, tell the player how to stop
@@ -12211,19 +12222,19 @@ void player::read(int inventory_position)
 void player::do_read( item *book )
 {
     auto reading = book->type->book.get();
-    const auto skill = reading->skill;
+    const skill_id &skill = reading->skill;
 
     if( !has_identified( book->type->id ) ) {
         // Note that we've read the book.
         items_identified.insert( book->type->id );
 
         add_msg(_("You skim %s to find out what's in it."), book->type_name().c_str());
-        if( skill != nullptr ) {
+        if( skill ) {
             add_msg(m_info, _("Can bring your %s skill to %d."),
-                    skill->name().c_str(), reading->level);
+                    skill.obj().name().c_str(), reading->level);
             if( reading->req != 0 ){
                 add_msg(m_info, _("Requires %s level %d to understand."),
-                        skill->name().c_str(), reading->req);
+                        skill.obj().name().c_str(), reading->req);
             }
         }
 
@@ -12307,7 +12318,7 @@ void player::do_read( item *book )
 
         // for books that the player cannot yet read due to skill level or have no skill component,
         // but contain lower level recipes, break out once recipe has been studied
-        if( skill == nullptr || (get_skill_level(skill) < reading->req) ) {
+        if( !skill || (get_skill_level(skill) < reading->req) ) {
             if( recipe_learned ) {
                 add_msg(m_info, _("The rest of the book is currently still beyond your understanding."));
             }
@@ -12317,7 +12328,7 @@ void player::do_read( item *book )
         }
     }
 
-    if( skill != nullptr && get_skill_level(skill) < reading->level ) {
+    if( skill && get_skill_level(skill) < reading->level ) {
         int originalSkillLevel = get_skill_level( skill );
         int min_ex = reading->time / 10 + int_cur / 4;
         int max_ex = reading->time /  5 + int_cur / 2 - originalSkillLevel;
@@ -12339,7 +12350,7 @@ void player::do_read( item *book )
 
         skillLevel(skill).readBook( min_ex, max_ex, reading->level );
 
-        add_msg(_("You learn a little about %s! (%d%%)"), skill->name().c_str(),
+        add_msg(_("You learn a little about %s! (%d%%)"), skill.obj().name().c_str(),
                 skillLevel(skill).exercise());
 
         if (get_skill_level(skill) == originalSkillLevel && activity.get_value(0) == 1) {
@@ -12368,14 +12379,14 @@ void player::do_read( item *book )
         int new_skill_level = get_skill_level(skill);
         if (new_skill_level > originalSkillLevel) {
             add_msg(m_good, _("You increase %s to level %d."),
-                    skill->name().c_str(),
+                    skill.obj().name().c_str(),
                     new_skill_level);
 
             if(new_skill_level % 4 == 0) {
                 //~ %s is skill name. %d is skill level
                 add_memorial_log(pgettext("memorial_male", "Reached skill level %1$d in %2$s."),
                                    pgettext("memorial_female", "Reached skill level %1$d in %2$s."),
-                                   new_skill_level, skill->name().c_str());
+                                   new_skill_level, skill.obj().name().c_str());
             }
         }
 
@@ -12432,7 +12443,7 @@ bool player::can_study_recipe(const itype &book) const
     for( auto const &elem : book.book->recipes ) {
         auto const r = elem.recipe;
         if( !knows_recipe( r ) &&
-            ( r->skill_used == nullptr ||
+            ( !r->skill_used ||
               get_skill_level( r->skill_used ) >= elem.skill_level ) ) {
             return true;
         }
@@ -12463,8 +12474,8 @@ bool player::try_study_recipe( const itype &book )
         if( knows_recipe( r ) ) {
             continue;
         }
-        if( r->skill_used == nullptr || get_skill_level( r->skill_used ) >= elem.skill_level ) {
-            if (r->skill_used == NULL ||
+        if( !r->skill_used || get_skill_level( r->skill_used ) >= elem.skill_level ) {
+            if( !r->skill_used ||
                 rng(0, 4) <= (get_skill_level(r->skill_used) - elem.skill_level) / 2) {
                 learn_recipe( r );
                 add_msg(m_good, _("Learned a recipe for %1$s from the %2$s."),
@@ -13630,10 +13641,9 @@ void player::practice( const Skill* s, int amount, int cap )
     skillLevel(s).practice();
 }
 
-void player::practice( std::string s, int amount, int cap )
+void player::practice( const skill_id &s, int amount, int cap )
 {
-    const Skill* aSkill = Skill::skill(s);
-    practice( aSkill, amount, cap );
+    practice( &s.obj(), amount, cap );
 }
 
 bool player::knows_recipe(const recipe *rec) const
@@ -13642,7 +13652,7 @@ bool player::knows_recipe(const recipe *rec) const
     if( rec->autolearn ) {
         // Can the skill being trained can handle the difficulty of the task
         bool meets_requirements = false;
-        if(rec->skill_used == NULL || get_skill_level(rec->skill_used) >= rec->difficulty){
+        if( !rec->skill_used || get_skill_level(rec->skill_used) >= rec->difficulty){
             meets_requirements = true;
             //If there are required skills, insure their requirements are met, or we can't craft
             if(!rec->required_skills.empty()){
@@ -13680,7 +13690,7 @@ int player::has_recipe( const recipe *r, const inventory &crafting_inv ) const
                 if( elem.recipe != r ) {
                     continue;
                 }
-                if( ( r->skill_used == NULL ||
+                if( ( !r->skill_used ||
                       get_skill_level(r->skill_used) >= r->difficulty ) &&
                     ( difficulty == -1 || r->difficulty < difficulty ) ) {
                     difficulty = r->difficulty;
@@ -13802,7 +13812,7 @@ std::string player::weapname(bool charges) const
 }
 
 void player::wield_contents(item *container, bool force_invlet,
-                            std::string /*skill_used*/, int /*volume_factor*/)
+                            const skill_id &/*skill_used*/, int /*volume_factor*/)
 {
     if(!(container->contents.empty())) {
         item& weap = container->contents[0];
@@ -13814,7 +13824,7 @@ void player::wield_contents(item *container, bool force_invlet,
     }
 }
 
-void player::store(item* container, item* put, std::string skill_used, int volume_factor)
+void player::store(item* container, item* put, const skill_id &skill_used, int volume_factor)
 {
     const int lvl = get_skill_level(skill_used);
     moves -= (lvl == 0) ? ((volume_factor + 1) * put->volume()) : (volume_factor * put->volume()) / lvl;
@@ -13834,11 +13844,6 @@ nc_color encumb_color(int level)
  return c_red;
 }
 
-void player::copy_skill_levels(const player *rhs)
-{
-    _skills = rhs->_skills;
-}
-
 void player::set_skill_level(const Skill* _skill, int level)
 {
     skillLevel(_skill).level(level);
@@ -13849,7 +13854,7 @@ void player::set_skill_level(Skill const &_skill, int level)
     set_skill_level(&_skill, level);
 }
 
-void player::set_skill_level(std::string ident, int level)
+void player::set_skill_level(const skill_id &ident, int level)
 {
     skillLevel(ident).level(level);
 }
@@ -13859,14 +13864,14 @@ void player::boost_skill_level(const Skill* _skill, int level)
     skillLevel(_skill).level(level+skillLevel(_skill));
 }
 
-void player::boost_skill_level(std::string ident, int level)
+void player::boost_skill_level(const skill_id &ident, int level)
 {
     skillLevel(ident).level(level+skillLevel(ident));
 }
 
 int player::get_melee() const
 {
-    return get_skill_level("melee");
+    return get_skill_level( skill_id( "melee" ) );
 }
 
 void player::setID (int i)

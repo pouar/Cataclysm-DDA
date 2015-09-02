@@ -48,6 +48,8 @@ static const itype_id fuel_type_water("water_clean");
 static const itype_id fuel_type_muscle("muscle");
 static const std::string part_location_structure("structure");
 
+const skill_id skill_mechanics( "mechanics" );
+
 const std::array<fuel_type, 7> &get_fuel_types()
 {
 
@@ -780,13 +782,13 @@ bool vehicle::interact_vehicle_locked()
             if (query_yn(_("You don't find any keys in the %s. Attempt to hotwire vehicle?"),
                             name.c_str())) {
 
-                int mechanics_skill = g->u.skillLevel("mechanics");
+                int mechanics_skill = g->u.skillLevel( skill_mechanics );
                 int hotwire_time = 6000 / ((mechanics_skill > 0)? mechanics_skill : 1);
                 //assign long activity
                 g->u.assign_activity(ACT_HOTWIRE_CAR, hotwire_time, -1, INT_MIN, _("Hotwire"));
                 g->u.activity.values.push_back(global_x());//[0]
                 g->u.activity.values.push_back(global_y());//[1]
-                g->u.activity.values.push_back(g->u.skillLevel("mechanics"));//[2]
+                g->u.activity.values.push_back(g->u.skillLevel( skill_mechanics ));//[2]
             } else {
                 if( has_security_working() && query_yn(_("Trigger the %s's Alarm?"), name.c_str()) ) {
                     is_alarm_on = true;
@@ -817,7 +819,7 @@ void vehicle::smash_security_system(){
     }
     //controls and security must both be valid
     if (c >= 0 && s >= 0){
-        int skill = g->u.skillLevel("mechanics");
+        int skill = g->u.skillLevel( skill_mechanics );
         int percent_controls = 70 / (1 + skill);
         int percent_alarm = (skill+3) * 10;
         int rand = rng(1,100);
@@ -5851,7 +5853,7 @@ bool vehicle::automatic_fire_turret( int p, const itype &gun, const itype &ammo,
     tmp.add_effect( "on_roof", 1 );
     tmp.name = rmp_format(_("<veh_player>The %s"), part_info(p).name.c_str());
     tmp.skillLevel(gun.gun->skill_used).level(8);
-    tmp.skillLevel("gun").level(4);
+    tmp.skillLevel( skill_id( "gun" ) ).level(4);
     tmp.recoil = abs(velocity) / 100 / 4;
     tmp.setpos( pos );
     tmp.str_cur = 16;
@@ -5957,13 +5959,13 @@ bool vehicle::manual_fire_turret( int p, player &shooter, const itype &guntype,
     constexpr target_mode tmode = TARGET_MODE_TURRET_MANUAL; // No aiming yet!
     tripoint shooter_pos = shooter.pos3();
     auto trajectory = g->pl_target_ui( shooter_pos, range, &shooter.weapon, tmode );
+    shooter.recoil = abs(velocity) / 100 / 4;
     if( !trajectory.empty() ) {
         // Need to redraw before shooting
         g->draw_ter();
         const tripoint &targ = trajectory.back();
         // Put our shooter on the roof of the vehicle
         shooter.add_effect( "on_roof", 1 );
-        // TODO (maybe): Less recoil? We're using a mounted, stabilized turret
         shooter.fire_gun( targ, (long)abs( parts[p].mode ) );
         // And now back - we don't want to get any weird behavior
         shooter.remove_effect( "on_roof" );
