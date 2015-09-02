@@ -2455,7 +2455,7 @@ void mattack::sygg_sting(monster *z, int index)
     int fire_t = 0;
 
     npc tmp = make_fake_npc(z, 16, 10, 8, 12);
-    tmp.skillLevel("throw").level(20);
+    tmp.skillLevel(skill_id("throw")).level(20);
 
     z->reset_special(index); // Reset timer
     Creature *target = NULL;
