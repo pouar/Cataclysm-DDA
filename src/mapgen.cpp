@@ -9894,25 +9894,11 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
                 ter_set(1, 22, t_fence_barbed);
             }
             //standard field
-            line(this, t_dirtmound, xStart, 3, xEnd, 3); //Crop rows
-            line(this, t_dirtmound, xStart, 5, xEnd, 5);
-            line(this, t_dirtmound, xStart, 7, xEnd, 7);
-            line(this, t_dirtmound, xStart, 9, xEnd, 9);
-            line(this, t_dirtmound, xStart, 11, xEnd, 11);
-            line(this, t_dirtmound, xStart, 13, xEnd, 13);
-            line(this, t_dirtmound, xStart, 15, xEnd, 15);
-            line(this, t_dirtmound, xStart, 17, xEnd, 17);
-            line(this, t_dirtmound, xStart, 19, xEnd, 19);
-
-            place_items("corpse", 70, xStart, 3, xEnd, 3, true, turn); //Spawn crops
-            place_items("corpse", 70, xStart, 5, xEnd, 5, true, turn);
-            place_items("corpse", 70, xStart, 7, xEnd, 7, true, turn);
-            place_items("corpse", 70, xStart, 9, xEnd, 9, true, turn);
-            place_items("corpse", 70, xStart, 11, xEnd, 11, true, turn);
-            place_items("corpse", 70, xStart, 13, xEnd, 13, true, turn);
-            place_items("corpse", 70, xStart, 15, xEnd, 15, true, turn);
-            place_items("corpse", 70, xStart, 17, xEnd, 17, true, turn);
-            place_items("corpse", 70, xStart, 19, xEnd, 19, true, turn);
+            for (int i = 3; i <= 19;i+=2)
+            {
+                line(this, t_dirtmound, xStart, i, xEnd, i); //Crop rows
+                place_items("corpse", 70, xStart, i, xEnd, i, true, turn); //Spawn crops
+            }
         }
 	}
 
@@ -10172,25 +10158,11 @@ FFFFFFFFFFFFFFFFFFFFFFFF\n\
                 ter_set(1, 22, t_fence_barbed);
             }
             //standard field
-            line(this, t_dirtmound, xStart, 3, xEnd, 3); //Crop rows
-            line(this, t_dirtmound, xStart, 5, xEnd, 5);
-            line(this, t_dirtmound, xStart, 7, xEnd, 7);
-            line(this, t_dirtmound, xStart, 9, xEnd, 9);
-            line(this, t_dirtmound, xStart, 11, xEnd, 11);
-            line(this, t_dirtmound, xStart, 13, xEnd, 13);
-            line(this, t_dirtmound, xStart, 15, xEnd, 15);
-            line(this, t_dirtmound, xStart, 17, xEnd, 17);
-            line(this, t_dirtmound, xStart, 19, xEnd, 19);
-
-            place_items("hydro", 70, xStart, 3, xEnd, 3, true, turn); //Spawn crops
-            place_items("hydro", 70, xStart, 5, xEnd, 5, true, turn);
-            place_items("hydro", 70, xStart, 7, xEnd, 7, true, turn);
-            place_items("hydro", 70, xStart, 9, xEnd, 9, true, turn);
-            place_items("hydro", 70, xStart, 11, xEnd, 11, true, turn);
-            place_items("hydro", 70, xStart, 13, xEnd, 13, true, turn);
-            place_items("hydro", 70, xStart, 15, xEnd, 15, true, turn);
-            place_items("hydro", 70, xStart, 17, xEnd, 17, true, turn);
-            place_items("hydro", 70, xStart, 19, xEnd, 19, true, turn);
+            for (int i = 3; i <= 19;i+=2)
+            {
+                line(this, t_dirtmound, xStart, i, xEnd, i); //Crop rows
+                place_items("hydro", 70, xStart, i, xEnd, i, true, turn); //Spawn crops
+            }
         }
 
     } else if (terrain_type == "megastore_entrance") {
