@@ -93,6 +93,7 @@ void curtains( player *p, map *m, const tripoint &examp );
 void sign( player *p, map *m, const tripoint &examp );
 void pay_gas( player *p, map *m, const tripoint &examp );
 void chunk_blower (player *p, map *m, const tripoint &examp);
+void climb_down( player *p, map *m, const tripoint &examp );
 
 } //namespace iexamine
 
