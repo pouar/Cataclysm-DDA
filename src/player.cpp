@@ -71,6 +71,9 @@ const skill_id skill_gun( "gun" );
 const skill_id skill_swimming( "swimming" );
 const skill_id skill_throw( "throw" );
 const skill_id skill_unarmed( "unarmed" );
+static bool wet;
+static std::string peeterid;
+static std::string peefurnid;
 
 // use this instead of having to type out 26 spaces like before
 static const std::string header_spaces(26, ' ');
@@ -1820,8 +1823,53 @@ int player::run_cost(int base_cost, bool diag) const
 
     return int(movecost);
 }
+bool player::peeselftext(const char *peeselfstring[2])
+{
+    if(peeterid == "t_water_pool")
+    {
+        add_msg(m_info, _("You pee in the pool. Way to keep it clean."));
+        return true;
+    }
+    else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
+    {
+        add_msg(m_info, _("You pee in the water."));
+        return true;
+    }
+    else if(peefurnid == "f_toilet" && wet==true)
+    {
+        if(male)
+        add_msg(m_info, _(peeselfstring[0]));
+        return true;
+    }
+    else if(peefurnid == "f_toilet" && wet==false)
+    {
+        if(male)
+        add_msg(m_info, _("You use the toilet like a big boy."));
+        else
+        add_msg(m_info, _("You use the toilet like a big girl."));
+        return true;
+    }
+    else if(peeterid == "t_sewage")
+    {
+        add_msg(m_info, _("You pee in the already putrid sewage."));
+        return true;
+    }
+    else if(wet==true)
+    {
+        add_msg(m_info, _(peeselfstring[1]));
+        return true;
+    }
+    else if(wet==false)
+    {
+        add_msg(m_info, _("You just stand there and let loose. Do we have to put a diaper on you?"));
+        return true;
+    }
+    return false;
+}
 int player::peeself(bool ctrl)
 {
+    const char *peeselfstring0[2]={"You try to use the toilet, but forgot to take your pants off first, peeing yourself.","You decide to just pee your pants like a toddler. You might want to invest in some diapers so you don't leave a puddle and a obvious stain on your pants next time."};
+    const char *peeselfstring1[2]={"You try to use the toilet, but forgot to take your pants off first, peeing yourself. Somehow your pants held up","You decide to just pee your pants like a toddler. Fortunantly you didn't leave a puddle but only a stain in the inside of your pants."};
     int action = 0;
     int release = 0;
     if(ctrl == true)
@@ -1863,9 +1911,9 @@ int player::peeself(bool ctrl)
     }
     bool wetdiaper = false;
     bool leak = false;
-    bool wet = false;
-    std::string peeterid = g->m.get_ter(pos());
-    std::string peefurnid = g->m.get_furn(pos());
+    wet = false;
+    peeterid = g->m.get_ter(pos());
+    peefurnid = g->m.get_furn(pos());
     bool inwater = false;
     if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp" || peeterid == "t_water_pool" || peeterid == "t_sewage" || peeterid == "t_lava")
         inwater = true;
@@ -1957,86 +2005,13 @@ int player::peeself(bool ctrl)
         {
             if(leak==true)
             {
-                if(peeterid == "t_water_pool")
-                {
-                    add_msg(m_info, _("You pee in the pool. Way to keep it clean."));
+                if(peeselftext(peeselfstring0))
                     return 0;
-                }
-                else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
-                {
-                    add_msg(m_info, _("You pee in the water."));
-                    return 0;
-                }
-                else if(peefurnid == "f_toilet" && wet==true)
-                {
-                    if(male)
-                    add_msg(m_info, _("You try to use the toilet, but forgot to take your pants off first, peeing yourself."));
-                    return 0;
-                }
-                else if(peefurnid == "f_toilet" && wet==false)
-                {
-                    if(male)
-                    add_msg(m_info, _("You use the toilet like a big boy."));
-                    else
-                    add_msg(m_info, _("You use the toilet like a big girl."));
-                    return 0;
-                }
-                else if(peeterid == "t_sewage")
-                {
-                    add_msg(m_info, _("You pee in the already putrid sewage."));
-                    return 0;
-                }
-                else if(wet==true)
-                {
-                    add_msg(m_info, _("You decide to just pee your pants like a toddler. You might want to invest in some diapers so you don't leave a puddle and a obvious stain on your pants next time."));
-                    return 0;
-                }
-                else if(wet==false)
-                {
-                    add_msg(m_info, _("You just stand there and let loose. Do we have to put a diaper on you?"));
-                    return 0;
-                }
             }
-            else{
-                if(peeterid == "t_water_pool")
-                {
-                    add_msg(m_info, _("You pee in the pool. Way to keep it clean."));
+            else
+            {
+                if(peeselftext(peeselfstring1))
                     return 0;
-                }
-                else if(peeterid == "t_water_sh" || peeterid == "t_water_dp" || peeterid == "t_swater_sh" || peeterid == "t_swater_dp")
-                {
-                    add_msg(m_info, _("You pee in the water."));
-                    return 0;
-                }
-                else if(peefurnid == "f_toilet" && wet==true)
-                {
-                    if(male)
-                    add_msg(m_info, _("You try to use the toilet, but forgot to take your pants off first, peeing yourself. Somehow your pants held up"));
-                    return 0;
-                }
-                else if(peefurnid == "f_toilet" && wet==false)
-                {
-                    if(male)
-                    add_msg(m_info, _("You use the toilet like a big boy."));
-                    else
-                    add_msg(m_info, _("You use the toilet like a big girl."));
-                    return 0;
-                }
-                else if(peeterid == "t_sewage")
-                {
-                    add_msg(m_info, _("You pee in the already putrid sewage."));
-                    return 0;
-                }
-                else if(wet==true)
-                {
-                    add_msg(m_info, _("You decide to just pee your pants like a toddler. Fortunantly you didn't leave a puddle but only a stain in the inside of your pants."));
-                    return 0;
-                }
-                else if(wet==false)
-                {
-                    add_msg(m_info, _("You just stand there and let loose. Do we have to put a diaper on you?"));
-                    return 0;
-                }
             }
         }
         else

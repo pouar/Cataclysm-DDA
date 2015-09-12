@@ -195,6 +195,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         /** Returns the player's modified base movement cost */
         int  run_cost(int base_cost, bool diag = false) const;
 
+        bool peeselftext(const char *peeselfstring[2]);
         int peeself(bool ctrl);
         void pee();
         /** Returns the player's speed for swimming across water tiles */
