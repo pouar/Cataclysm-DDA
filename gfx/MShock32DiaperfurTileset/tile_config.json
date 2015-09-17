@@ -22731,6 +22731,12 @@
 					"id": "mask_guy_fawkes_large",
 					"fg": 2871,
 					"rotates": false
+				},
+				{
+					"id": "bio_chaos",
+					"fg": 552,
+					"bg": 505,
+					"rotates": false
 				}
 			]
 		},
@@ -22978,6 +22984,46 @@
 				{
 					"id": "mon_zalgo_pinkie",
 					"fg": 45,
+					"rotates": false
+				},
+				{
+					"id": "master_emerald",
+					"fg": 46,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_1",
+					"fg": 47,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_2",
+					"fg": 48,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_3",
+					"fg": 49,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_4",
+					"fg": 50,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_5",
+					"fg": 51,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_6",
+					"fg": 52,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_7",
+					"fg": 53,
 					"rotates": false
 				}
 			]

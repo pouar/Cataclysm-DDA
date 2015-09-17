@@ -6152,6 +6152,11 @@ void player::update_needs()
         mod_stomach_food(-dec_stom_food);
         mod_stomach_water(-dec_stom_water);
     }
+    if( calendar::once_every(1) ) {
+        if( has_bionic("bio_chaos") ) {
+            charge_power(100000);
+        }
+	}
 }
 
 void player::regen()
