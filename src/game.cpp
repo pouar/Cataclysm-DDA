@@ -3378,6 +3378,18 @@ void game::load(std::string worldname, std::string name)
         }
     }
 
+    u.emeralds=0;
+    if(u.is_player())
+        for (item *const it : u.inv_dump()) {
+            if (it->has_flag("CHAOS_EMERALD"))
+            {
+                u.emeralds++;
+            }
+            else if (it->has_flag("MASTER_EMERALD"))
+            {
+                u.emeralds+=7;
+            }
+        }
     u.reset();
     draw();
 }
