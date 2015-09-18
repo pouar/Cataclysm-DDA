@@ -1733,11 +1733,11 @@
 			"msg": "You deactivate the Chaos Emerald."
 		}
 	},
-    {
-        "type": "effect_type",
-        "id": "super",
-        "removes_effects": ["fungus", "dermatik", "bloodworms", "paincysts", "brainworms", "tapeworm",
-                            "blind", "poison", "stung", "badpoison", "foodpoison", "paralyzepoison",
-                            "tetanus", "infected", "asthma", "common_cold", "flu", "onfire", "winded"]
-    }
+	{
+		"type": "effect_type",
+		"id": "super",
+		"removes_effects": ["fungus", "dermatik", "bloodworms", "paincysts", "brainworms", "tapeworm",
+							"blind", "poison", "stung", "badpoison", "foodpoison", "paralyzepoison",
+							"tetanus", "infected", "asthma", "common_cold", "flu", "onfire", "winded"]
+	}
 ]
