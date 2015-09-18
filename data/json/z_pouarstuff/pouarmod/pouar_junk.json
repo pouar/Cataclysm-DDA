@@ -1739,5 +1739,113 @@
 		"removes_effects": ["fungus", "dermatik", "bloodworms", "paincysts", "brainworms", "tapeworm",
 							"blind", "poison", "stung", "badpoison", "foodpoison", "paralyzepoison",
 							"tetanus", "infected", "asthma", "common_cold", "flu", "onfire", "winded"]
+	},
+	{
+		"type" : "speech",
+		"speaker" : "mon_infant_annihilator",
+		"sound" : "\"You have been gathered here to kill every child under two; every pregnant mother too. We will stop the second coming of Christ.\"",
+		"volume" : 40
+	},
+	{
+		"type" : "speech",
+		"speaker" : "mon_infant_annihilator",
+		"sound" : "\"I the Pope bow to no one - yet alone bow to God. I will slaughter everyone before I risk the power vested in me.\"",
+		"volume" : 40
+	},
+	{
+		"type" : "speech",
+		"speaker" : "mon_infant_annihilator",
+		"sound" : "\"Assemble the legions of priests and vow to me that every infant will die. Promise to me that Christ will hang; nailed to a cross before he's three.\"",
+		"volume" : 40
+	},
+	{
+		"type" : "speech",
+		"speaker" : "mon_infant_annihilator",
+		"sound" : "\"Arise and become an ordained clergy of plague, all sweeping across the world to cleanse. Crucify the children in the streets for all the world to see.\"",
+		"volume" : 40
+	},
+	{
+		"type" : "speech",
+		"speaker" : "mon_infant_annihilator",
+		"sound" : "\"The prophecies cannot be fulfilled. If they are we will be exposed for what we have truly become: Perverts draped in robes claiming to be embodiments of God.\"",
+		"volume" : 40
+	},
+	{
+		"type" : "speech",
+		"speaker" : "mon_infant_annihilator",
+		"sound" : "\"Erase him so no one knows what we have become. Now bring me the head of the infant Jesus Christ impaled on my sword, so that I may mount it on my wall.\"",
+		"volume" : 40
+	},
+	{
+		"type" : "speech",
+		"speaker" : "mon_infant_annihilator",
+		"sound" : "\"I will rule forever. Bring me the head of the infant Jesus Christ.\"",
+		"volume" : 40
+	},
+	{
+		"type" : "MONSTER",
+		"id" : "mon_infant_annihilator",
+		"name": "Infant Annihilator",
+		"species":"ZOMBIE",
+		"default_faction":"zombie",
+		"symbol":"Z",
+		"color":"pink_red",
+		"size":"MEDIUM",
+		"material":"flesh",
+		"diff":16,
+		"aggression":5,
+		"morale":100,
+		"speed":90,
+		"melee_skill":5,
+		"melee_dice":2,
+		"melee_dice_sides":6,
+		"melee_cut":0,
+		"dodge":4,
+		"armor_bash":2,
+		"armor_cut":2,
+		"vision_day":50,
+		"vision_night":5,
+		"death_drops": "default_zombie_death_drops",
+		"hp":180,
+		"death_function":["NORMAL"],
+		"special_attacks":[["UPGRADE", 10],["PARROT", 10]],
+		"description":"You have been gathered here to kill every child under two; every pregnant mother too. We will stop the second coming of Christ. I the Pope bow to no one - yet alone bow to God. I will slaughter everyone before I risk the power vested in me. Assemble the legions of priests and vow to me that every infant will die. Promise to me that Christ will hang; nailed to a cross before he's three. Arise and become an ordained clergy of plague, all sweeping across the world to cleanse. Crucify the children in the streets for all the world to see. The prophecies cannot be fulfilled. If they are we will be exposed for what we have truly become: Perverts draped in robes claiming to be embodiments of God. Kill him before we are exposed. Erase him so no one knows what we have become. Now bring me the head of the infant Jesus Christ impaled on my sword, so that I may mount it on my wall. I will rule forever. Bring me the head of the infant Jesus Christ.",
+		"flags":["SEES", "HEARS", "SMELLS", "WARM", "BASHES", "POISON", "NO_BREATHE", "REVIVES", "BONES"],
+		"anger_triggers":["HURT", "PLAYER_CLOSE", "PLAYER_WEAK"]
+	},
+	{
+		"type" : "MONSTER",
+		"id" : "mon_cuntcrusher",
+		"name": "Cuntcrusher",
+		"species":"ROBOT",
+		"default_faction":"military",
+		"symbol":"R",
+		"color":"dkgray",
+		"size":"HUGE",
+		"material":"steel",
+		"diff":52,
+		"aggression":100,
+		"morale":100,
+		"speed":75,
+		"melee_skill":5,
+		"melee_dice":5,
+		"melee_dice_sides":5,
+		"melee_cut":0,
+		"dodge":0,
+		"armor_bash":24,
+		"armor_cut":30,
+		"vision_day":50,
+		"death_drops": {
+			"groups": [
+				[ "robots", 4 ],
+				[ "tankbot", 1 ]
+			]
+		},
+		"hp":240,
+		"death_function":"EXPLODE",
+		"special_attacks":[["MULTI_ROBOT", 3]],
+		"starting_ammo" : {"556":1000, "40mm_frag":100, "120mm_HEAT":40},
+		"description":"By the order of the Pope we condemn them to be neutered with a machine devised to sterilize. With a hundred tons of force, its name is The Cuntcrusher. Hooks pierce through their feet, then suspends them upside down to be fed into the side where they are conveyed to a press of blades. With their legs pried open, their cunts align. At the flick of a switch they are sterilized.",
+		"flags":["SEES", "HEARS", "GOODHEARING", "NOHEAD", "BASHES", "DESTROYS", "ATTACKMON", "NO_BREATHE", "ELECTRONIC"]
 	}
 ]

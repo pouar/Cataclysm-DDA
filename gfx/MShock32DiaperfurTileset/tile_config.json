@@ -22896,6 +22896,12 @@
 					"fg": 552,
 					"bg": 505,
 					"rotates": false
+				},
+				{
+					"id": "mon_infant_annihilator",
+					"fg": 1582,
+					"bg": 515,
+					"rotates": false
 				}
 			]
 		},
@@ -23223,6 +23229,11 @@
 				{
 					"id": "chaos_emerald_7_active",
 					"fg": 53,
+					"rotates": false
+				},
+				{
+					"id": "mon_cuntcrusher",
+					"fg": 54,
 					"rotates": false
 				}
 			]
