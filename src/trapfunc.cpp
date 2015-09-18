@@ -819,13 +819,11 @@ void trapfunc::pit_glass( Creature *c, const tripoint &p )
 void trapfunc::lava( Creature *c, const tripoint &p )
 {
     if( c != nullptr ) {
-        c->add_msg_player_or_npc( m_bad, _( "The %s burns you horribly!" ), _( "The %s burns <npcname>!" ),
-                                  g->m.tername( p ).c_str() );
-        c->add_memorial_log( pgettext( "memorial_male", "Stepped into lava." ),
-                             pgettext( "memorial_female", "Stepped into lava." ) );
         monster *z = dynamic_cast<monster *>( c );
         player *n = dynamic_cast<player *>( c );
         if( n != nullptr ) {
+            if( n->emeralds > 6 )
+                return;
             n->deal_damage( nullptr, bp_foot_l, damage_instance( DT_HEAT, 20 ) );
             n->deal_damage( nullptr, bp_foot_r, damage_instance( DT_HEAT, 20 ) );
             n->deal_damage( nullptr, bp_leg_l, damage_instance( DT_HEAT, 20 ) );
@@ -851,6 +849,10 @@ void trapfunc::lava( Creature *c, const tripoint &p )
             }
             z->apply_damage( nullptr, bp_torso, dam );
         }
+        c->add_msg_player_or_npc( m_bad, _( "The %s burns you horribly!" ), _( "The %s burns <npcname>!" ),
+                                  g->m.tername( p ).c_str() );
+        c->add_memorial_log( pgettext( "memorial_male", "Stepped into lava." ),
+                             pgettext( "memorial_female", "Stepped into lava." ) );
         c->check_dead_state();
     }
 }

@@ -2481,27 +2481,24 @@ void mattack::sygg_sting(monster *z, int index)
     }
     z->moves -= 150;   // It takes a while
     int dam = 100;
-    double goodhit = double(rand() / RAND_MAX) / 2.0;
     body_part bp = bp_torso;
 
     if (target == &g->u) {
         add_msg(m_warning, _("The %s throws one of its quills at you"), z->name().c_str());
         z->add_effect("targeted", 3);
-        if (goodhit < .1) {
-            bp = bp_head;
-            dam = rng(dam, dam * 3);
-        } else if (goodhit < .2) {
-            dam = rng(dam, dam * 2);
-        } else if (goodhit < .4) {
-            dam = rng(dam / 2, int(dam * 1.5));
-        } else if (goodhit < .5) {
-            dam = rng(0, dam);
+        body_part hit = target->get_random_body_part();
+        if(g->u.emeralds<7)
+        {
+            g->u.deal_damage( z, hit, damage_instance( DT_CUT, dam ) );
+            target->add_effect("paralyzepoison",20);
+            target->add_effect("badpoison",20);
         }
-        target->add_effect("paralyzepoison",20);
-        target->add_effect("badpoison",20);
+        target->on_hit( z, hit,  z->type->melee_skill  );
     } else
+    {
         add_msg(m_warning, _("The %s throws one of its quills at the enemy"), z->name().c_str());
-    target->apply_damage( nullptr,bp,dam);
+        target->apply_damage( nullptr,bp,dam);
+    }
 }
 void mattack::triffid_growth(monster *z, int index)
 {

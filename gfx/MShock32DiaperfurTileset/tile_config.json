@@ -23025,6 +23025,46 @@
 					"id": "chaos_emerald_7",
 					"fg": 53,
 					"rotates": false
+				},
+				{
+					"id": "master_emerald_active",
+					"fg": 46,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_1_active",
+					"fg": 47,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_2_active",
+					"fg": 48,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_3_active",
+					"fg": 49,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_4_active",
+					"fg": 50,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_5_active",
+					"fg": 51,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_6_active",
+					"fg": 52,
+					"rotates": false
+				},
+				{
+					"id": "chaos_emerald_7_active",
+					"fg": 53,
+					"rotates": false
 				}
 			]
 		}

@@ -990,7 +990,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         std::string move_mode;
         int power_level, max_power_level;
         int thirst, fatigue;
-        int bladder,bladdercap,bladdermict,bladderdance,bladderdesp,bladderlast,peerate,peesleeprate;
+        int bladder,bladdercap,bladdermict,bladderdance,bladderdesp,bladderlast,peerate,peesleeprate,emeralds;
         int tank_plut, reactor_plut, slow_rad;
         int oxygen;
         int stamina;

@@ -1310,7 +1310,7 @@
 		]
 	},
 	{
-		"type":"GENERIC",
+		"type":"TOOL",
 		"id":"master_emerald",
 		"symbol": "*",
 		"color": "green",
@@ -1322,10 +1322,22 @@
 		"volume": 1,
 		"bashing": 0,
 		"cutting": 0,
-		"to_hit": -5
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"use_action": {
+			"type": "transform",
+			"target": "master_emerald_active",
+			"active": true,
+			"msg": "You activate the Master Emerald."
+		}
 	},
 	{
-		"type":"GENERIC",
+		"type":"TOOL",
 		"id":"chaos_emerald_1",
 		"symbol": "*",
 		"color": "blue",
@@ -1337,10 +1349,22 @@
 		"volume": 1,
 		"bashing": 0,
 		"cutting": 0,
-		"to_hit": -5
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_1_active",
+			"active": true,
+			"msg": "You activate the Chaos Emerald."
+		}
 	},
 	{
-		"type":"GENERIC",
+		"type":"TOOL",
 		"id":"chaos_emerald_2",
 		"symbol": "*",
 		"color": "green",
@@ -1352,10 +1376,22 @@
 		"volume": 1,
 		"bashing": 0,
 		"cutting": 0,
-		"to_hit": -5
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_2_active",
+			"active": true,
+			"msg": "You activate the Chaos Emerald."
+		}
 	},
 	{
-		"type":"GENERIC",
+		"type":"TOOL",
 		"id":"chaos_emerald_3",
 		"symbol": "*",
 		"color": "gray",
@@ -1367,10 +1403,22 @@
 		"volume": 1,
 		"bashing": 0,
 		"cutting": 0,
-		"to_hit": -5
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_3_active",
+			"active": true,
+			"msg": "You activate the Chaos Emerald."
+		}
 	},
 	{
-		"type":"GENERIC",
+		"type":"TOOL",
 		"id":"chaos_emerald_4",
 		"symbol": "*",
 		"color": "red",
@@ -1382,10 +1430,22 @@
 		"volume": 1,
 		"bashing": 0,
 		"cutting": 0,
-		"to_hit": -5
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_4_active",
+			"active": true,
+			"msg": "You activate the Chaos Emerald."
+		}
 	},
 	{
-		"type":"GENERIC",
+		"type":"TOOL",
 		"id":"chaos_emerald_5",
 		"symbol": "*",
 		"color": "yellow",
@@ -1397,10 +1457,22 @@
 		"volume": 1,
 		"bashing": 0,
 		"cutting": 0,
-		"to_hit": -5
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_5_active",
+			"active": true,
+			"msg": "You activate the Chaos Emerald."
+		}
 	},
 	{
-		"type":"GENERIC",
+		"type":"TOOL",
 		"id":"chaos_emerald_6",
 		"symbol": "*",
 		"color": "magenta",
@@ -1412,10 +1484,22 @@
 		"volume": 1,
 		"bashing": 0,
 		"cutting": 0,
-		"to_hit": -5
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_6_active",
+			"active": true,
+			"msg": "You activate the Chaos Emerald."
+		}
 	},
 	{
-		"type":"GENERIC",
+		"type":"TOOL",
 		"id":"chaos_emerald_7",
 		"symbol": "*",
 		"color": "cyan",
@@ -1427,6 +1511,249 @@
 		"volume": 1,
 		"bashing": 0,
 		"cutting": 0,
-		"to_hit": -5
-	}
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_7_active",
+			"active": true,
+			"msg": "You activate the Chaos Emerald."
+		}
+	},
+	{
+		"type":"TOOL",
+		"id":"master_emerald_active",
+		"symbol": "*",
+		"color": "green",
+		"name":"Master Emerald",
+		"description":"A giant gem that's as tall as you are that creates a shitload of energy. I'll assume you can shrink it down like in SA2",
+		"price": 1000000,
+		"material": "diamond",
+		"weight": 700,
+		"volume": 1,
+		"bashing": 0,
+		"cutting": 0,
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"flags": ["MASTER_EMERALD"],
+		"use_action": {
+			"type": "transform",
+			"target": "master_emerald",
+			"active": false,
+			"msg": "You deactivate the Master Emerald."
+		}
+	},
+	{
+		"type":"TOOL",
+		"id":"chaos_emerald_1_active",
+		"symbol": "*",
+		"color": "blue",
+		"name":"Chaos Emerald",
+		"description":"A mysterious gem that creates a shitload of energy",
+		"price": 1000000,
+		"material": "diamond",
+		"weight": 700,
+		"volume": 1,
+		"bashing": 0,
+		"cutting": 0,
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"flags": ["CHAOS_EMERALD"],
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_1",
+			"active": false,
+			"msg": "You deactivate the Chaos Emerald."
+		}
+	},
+	{
+		"type":"TOOL",
+		"id":"chaos_emerald_2_active",
+		"symbol": "*",
+		"color": "green",
+		"name":"Chaos Emerald",
+		"description":"A mysterious gem that creates a shitload of energy",
+		"price": 1000000,
+		"material": "diamond",
+		"weight": 700,
+		"volume": 1,
+		"bashing": 0,
+		"cutting": 0,
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"flags": ["CHAOS_EMERALD"],
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_2",
+			"active": false,
+			"msg": "You deactivate the Chaos Emerald."
+		}
+	},
+	{
+		"type":"TOOL",
+		"id":"chaos_emerald_3_active",
+		"symbol": "*",
+		"color": "gray",
+		"name":"Chaos Emerald",
+		"description":"A mysterious gem that creates a shitload of energy",
+		"price": 1000000,
+		"material": "diamond",
+		"weight": 700,
+		"volume": 1,
+		"bashing": 0,
+		"cutting": 0,
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"flags": ["CHAOS_EMERALD"],
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_3",
+			"active": false,
+			"msg": "You deactivate the Chaos Emerald."
+		}
+	},
+	{
+		"type":"TOOL",
+		"id":"chaos_emerald_4_active",
+		"symbol": "*",
+		"color": "red",
+		"name":"Chaos Emerald",
+		"description":"A mysterious gem that creates a shitload of energy",
+		"price": 1000000,
+		"material": "diamond",
+		"weight": 700,
+		"volume": 1,
+		"bashing": 0,
+		"cutting": 0,
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"flags": ["CHAOS_EMERALD"],
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_4",
+			"active": false,
+			"msg": "You deactivate the Chaos Emerald."
+		}
+	},
+	{
+		"type":"TOOL",
+		"id":"chaos_emerald_5_active",
+		"symbol": "*",
+		"color": "yellow",
+		"name":"Chaos Emerald",
+		"description":"A mysterious gem that creates a shitload of energy",
+		"price": 1000000,
+		"material": "diamond",
+		"weight": 700,
+		"volume": 1,
+		"bashing": 0,
+		"cutting": 0,
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"flags": ["CHAOS_EMERALD"],
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_5",
+			"active": false,
+			"msg": "You deactivate the Chaos Emerald."
+		}
+	},
+	{
+		"type":"TOOL",
+		"id":"chaos_emerald_6_active",
+		"symbol": "*",
+		"color": "magenta",
+		"name":"Chaos Emerald",
+		"description":"A mysterious gem that creates a shitload of energy",
+		"price": 1000000,
+		"material": "diamond",
+		"weight": 700,
+		"volume": 1,
+		"bashing": 0,
+		"cutting": 0,
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"flags": ["CHAOS_EMERALD"],
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_6",
+			"active": false,
+			"msg": "You deactivate the Chaos Emerald."
+		}
+	},
+	{
+		"type":"TOOL",
+		"id":"chaos_emerald_7_active",
+		"symbol": "*",
+		"color": "cyan",
+		"name":"Chaos Emerald",
+		"description":"A mysterious gem that creates a shitload of energy",
+		"price": 1000000,
+		"material": "diamond",
+		"weight": 700,
+		"volume": 1,
+		"bashing": 0,
+		"cutting": 0,
+		"to_hit": -5,
+		"revert_to": "null",
+		"ammo": "NULL",
+		"max_charges": 900,
+		"initial_charges": 900,
+		"charges_per_use": 0,
+		"turns_per_charge": 0,
+		"flags": ["CHAOS_EMERALD"],
+		"use_action": {
+			"type": "transform",
+			"target": "chaos_emerald_7",
+			"active": false,
+			"msg": "You deactivate the Chaos Emerald."
+		}
+	},
+    {
+        "type": "effect_type",
+        "id": "super",
+        "removes_effects": ["fungus", "dermatik", "bloodworms", "paincysts", "brainworms", "tapeworm",
+                            "blind", "poison", "stung", "badpoison", "foodpoison", "paralyzepoison",
+                            "tetanus", "infected", "asthma", "common_cold", "flu", "onfire", "winded"]
+    }
 ]

@@ -12165,7 +12165,7 @@ bool game::walk_move( const tripoint &dest_loc )
                 dangerous = cur.is_dangerous();
                 break;
             }
-            if( dangerous && !u.has_trait( "DEBUG_NODMG" ) &&
+            if( dangerous && !(u.has_trait( "DEBUG_NODMG" ) || u.emeralds > 6 ) &&
                 !query_yn(_("Really step into that %s?"), cur.name().c_str())) {
                 return true;
             }
