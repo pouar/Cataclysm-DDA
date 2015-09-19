@@ -198,6 +198,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         bool peeselftext(const char *peeselfstring[2]);
         int peeself(bool ctrl);
         void pee();
+        int emeralds() const;
         /** Returns the player's speed for swimming across water tiles */
         int  swim_speed() const;
         /** Maintains body wetness and handles the rate at which the player dries */
@@ -990,7 +991,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         std::string move_mode;
         int power_level, max_power_level;
         int thirst, fatigue;
-        int bladder,bladdercap,bladdermict,bladderdance,bladderdesp,bladderlast,peerate,peesleeprate,emeralds;
+        int bladder,bladdercap,bladdermict,bladderdance,bladderdesp,bladderlast,peerate,peesleeprate;
         int tank_plut, reactor_plut, slow_rad;
         int oxygen;
         int stamina;

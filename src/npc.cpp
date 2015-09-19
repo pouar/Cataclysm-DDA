@@ -79,7 +79,6 @@ npc::npc()
     bladderlast = 595;
     peerate = 0;
     peesleeprate = 0;
-    emeralds = 0;
     fetching_item = false;
     has_new_items = false;
     worst_item_value = 0;

@@ -3378,18 +3378,6 @@ void game::load(std::string worldname, std::string name)
         }
     }
 
-    u.emeralds=0;
-    if(u.is_player())
-        for (item *const it : u.inv_dump()) {
-            if (it->has_flag("CHAOS_EMERALD"))
-            {
-                u.emeralds++;
-            }
-            else if (it->has_flag("MASTER_EMERALD"))
-            {
-                u.emeralds+=7;
-            }
-        }
     u.reset();
     draw();
 }
@@ -12177,7 +12165,7 @@ bool game::walk_move( const tripoint &dest_loc )
                 dangerous = cur.is_dangerous();
                 break;
             }
-            if( dangerous && !(u.has_trait( "DEBUG_NODMG" ) || u.emeralds > 6 ) &&
+            if( dangerous && !(u.has_trait( "DEBUG_NODMG" ) || u.emeralds() > 6 ) &&
                 !query_yn(_("Really step into that %s?"), cur.name().c_str())) {
                 return true;
             }

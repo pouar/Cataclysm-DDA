@@ -1785,7 +1785,7 @@ void map::player_in_field( player &u )
         {
             // Assume vehicles block acid damage entirely,
             // you're certainly not standing in it.
-            if( u.in_vehicle || u.emeralds > 6 ) {
+            if( u.in_vehicle || u.emeralds() > 6 ) {
                 break;
             }
 
@@ -1858,7 +1858,7 @@ void map::player_in_field( player &u )
 
         case fd_fire:
             if( u.has_active_bionic("bio_heatsink") || u.is_wearing("rm13_armor_on") ||
-                u.has_trait("M_SKIN2") || u.emeralds > 6) {
+                u.has_trait("M_SKIN2") || u.emeralds() > 6) {
                 //heatsink, suit, or internal restructuring prevents ALL fire damage.
                 break;
             }
@@ -2020,7 +2020,7 @@ void map::player_in_field( player &u )
             //A burst of flame? Only hits the legs and torso.
             if (inside) break; //fireballs can't touch you inside a car.
             if (!u.has_active_bionic("bio_heatsink") && !u.is_wearing("rm13_armor_on") &&
-                !u.has_trait("M_SKIN2") && u.emeralds < 7 ) { //heatsink, suit, or Mycus fireproofing stops fire.
+                !u.has_trait("M_SKIN2") && u.emeralds() < 7 ) { //heatsink, suit, or Mycus fireproofing stops fire.
                 u.add_msg_player_or_npc(m_bad, _("You're torched by flames!"), _("<npcname> is torched by flames!"));
                 u.deal_damage( nullptr, bp_leg_l, damage_instance( DT_HEAT, rng( 2, 6 ) ) );
                 u.deal_damage( nullptr, bp_leg_r, damage_instance( DT_HEAT, rng( 2, 6 ) ) );
@@ -2069,7 +2069,7 @@ void map::player_in_field( player &u )
 
         case fd_bees:
             // Player is immune to bees while underwater.
-            if( !u.is_underwater() || u.emeralds > 6 ) {
+            if( !u.is_underwater() || u.emeralds() > 6 ) {
                 int times_stung = 0;
                 int density = cur->getFieldDensity();
                 // If the bees can get at you, they cause steadily increasing pain.
@@ -2116,7 +2116,7 @@ void map::player_in_field( player &u )
             break;
 
         case fd_incendiary:
-            if( u.emeralds > 6 )
+            if( u.emeralds() > 6 )
                 break;
             // Mysterious incendiary substance melts you horribly.
             if (u.has_trait("M_SKIN2") || cur->getFieldDensity() == 1) {
@@ -2137,7 +2137,7 @@ void map::player_in_field( player &u )
                     break;
                 }
                 // Full body suits protect you from the effects of the gas.
-                if( u.worn_with_flag("GAS_PROOF") || u.emeralds > 6 ) {
+                if( u.worn_with_flag("GAS_PROOF") || u.emeralds() > 6 ) {
                     break;
                 }
                 bool inhaled = false;

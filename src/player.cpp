@@ -210,7 +210,6 @@ player::player() : Character()
  bladderlast = 595;
  peerate = 8;
  peesleeprate = 15;
- emeralds=0;
  fatigue = 0;
  stamina = get_stamina_max();
  stim = 0;
@@ -472,18 +471,6 @@ void player::reset_stats()
 void player::process_turn()
 {
     Character::process_turn();
-    emeralds=0;
-    if(is_player())
-        for (item *const it : inv_dump()) {
-            if (it->has_flag("CHAOS_EMERALD"))
-            {
-                emeralds++;
-            }
-            else if (it->has_flag("MASTER_EMERALD"))
-            {
-                emeralds+=7;
-            }
-        }
     // Didn't just pick something up
     last_item = itype_id("null");
 
@@ -2336,7 +2323,25 @@ void player::pee()
         add_msg(m_info, _("You take a whiz."));
     }
 }
-
+int player::emeralds() const
+{
+    int ret = 0;
+    if(is_player())
+    {
+        player proxy(*this);
+        for (item *const it : proxy.inv_dump()) {
+            if (it->has_flag("CHAOS_EMERALD"))
+            {
+                ret++;
+            }
+            else if (it->has_flag("MASTER_EMERALD"))
+            {
+                ret+=7;
+            }
+        }
+    }
+    return ret;
+}
 int player::swim_speed() const
 {
     int ret = 440 + weight_carried() / 60 - 50 * get_skill_level( skill_swimming );
@@ -2423,8 +2428,7 @@ int player::stability_roll() const
 bool player::is_immune_damage( const damage_type dt ) const
 {
     
-    add_msg(m_warning, _("emeralds %i"), emeralds);
-    if( emeralds > 6 )
+    if( emeralds() > 6 )
         return true;
     switch( dt ) {
     case DT_NULL:
@@ -5284,7 +5288,7 @@ void player::on_hurt( Creature *source, bool disturb /*= true*/ )
 
 dealt_damage_instance player::deal_damage(Creature* source, body_part bp, const damage_instance& d)
 {
-    if( has_trait( "DEBUG_NODMG" ) || emeralds > 6 ) {
+    if( has_trait( "DEBUG_NODMG" ) || emeralds() > 6 ) {
         return dealt_damage_instance();
     }
 
@@ -5479,7 +5483,7 @@ dealt_damage_instance player::deal_damage(Creature* source, body_part bp, const 
 }
 
 void player::mod_pain(int npain) {
-    if ((has_trait("NOPAIN")||emeralds>6)) {
+    if ((has_trait("NOPAIN")||emeralds()>6)) {
         return;
     }
     if (has_trait("PAINRESIST") && npain > 1) {
@@ -5521,7 +5525,7 @@ void player::mod_pain(int npain) {
  */
 void player::apply_damage(Creature *source, body_part hurt, int dam)
 {
-    if( is_dead_state() || has_trait( "DEBUG_NODMG" ) || emeralds > 6  ) {
+    if( is_dead_state() || has_trait( "DEBUG_NODMG" ) || emeralds() > 6  ) {
         // don't do any more damage if we're already dead
         // Or if we're debugging and don't want to die
         return;
@@ -5611,7 +5615,7 @@ void player::healall(int dam)
 
 void player::hurtall(int dam, Creature *source, bool disturb /*= true*/)
 {
-    if( is_dead_state() || has_trait( "DEBUG_NODMG" ) || dam <= 0 || emeralds > 6  ) {
+    if( is_dead_state() || has_trait( "DEBUG_NODMG" ) || dam <= 0 || emeralds() > 6  ) {
         return;
     }
 
@@ -5633,7 +5637,7 @@ void player::hurtall(int dam, Creature *source, bool disturb /*= true*/)
 
 int player::hitall(int dam, int vary, Creature *source)
 {
-    if( emeralds > 6  ) {
+    if( emeralds() > 6  ) {
         return 0;
     }
     int damage_taken = 0;
@@ -6180,7 +6184,7 @@ void player::update_needs()
 
 void player::regen()
 {
-    if( emeralds > 6 )
+    if( emeralds() > 6 )
         add_effect("super", 1);
     if( calendar::once_every(MINUTES(30)) ) { // Pain up/down every 30 minutes
         if (pain > 0) {
@@ -13085,7 +13089,7 @@ int player::get_armor_bash_base(body_part bp) const
         // Limbs & head are safe inside the shell! :D
         ret += 9;
     }
-    ret+=pow(3,emeralds);
+    ret+=pow(3,emeralds());
     return ret;
 }
 
@@ -13151,7 +13155,7 @@ int player::get_armor_cut_base(body_part bp) const
         // Limbs & head are safe inside the shell! :D
         ret += 17;
     }
-    ret+=pow(3,emeralds);
+    ret+=pow(3,emeralds());
     return ret;
 }
 
@@ -13418,7 +13422,7 @@ void player::absorb_hit(body_part bp, damage_instance &dam) {
             }
             elem.amount -= mabuff_arm_bash_bonus();
         }
-        elem.amount-=pow(3,emeralds);
+        elem.amount-=pow(3,emeralds());
         if( elem.amount < 0 ) {
             elem.amount = 0;
         }

@@ -822,7 +822,7 @@ void trapfunc::lava( Creature *c, const tripoint &p )
         monster *z = dynamic_cast<monster *>( c );
         player *n = dynamic_cast<player *>( c );
         if( n != nullptr ) {
-            if( n->emeralds > 6 )
+            if( n->emeralds() > 6 )
                 return;
             n->deal_damage( nullptr, bp_foot_l, damage_instance( DT_HEAT, 20 ) );
             n->deal_damage( nullptr, bp_foot_r, damage_instance( DT_HEAT, 20 ) );

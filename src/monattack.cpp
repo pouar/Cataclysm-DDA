@@ -2487,7 +2487,7 @@ void mattack::sygg_sting(monster *z, int index)
         add_msg(m_warning, _("The %s throws one of its quills at you"), z->name().c_str());
         z->add_effect("targeted", 3);
         body_part hit = target->get_random_body_part();
-        if(g->u.emeralds<7)
+        if(g->u.emeralds()<7)
         {
             g->u.deal_damage( z, hit, damage_instance( DT_CUT, dam ) );
             target->add_effect("paralyzepoison",20);
