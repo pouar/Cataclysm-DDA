@@ -434,7 +434,7 @@ bool map::vehproceed()
 
     // k slowdown second.
     const float k_slowdown = (0.1 + veh.k_dynamics()) / ((0.1) + veh.k_mass());
-    const int slowdown = (int)ceil( k_slowdown * base_slowdown );
+    const int slowdown = veh.drag() + (int)ceil( k_slowdown * base_slowdown );
     if( slowdown > abs( veh.velocity ) ) {
         veh.stop();
     } else if( veh.velocity < 0 ) {
@@ -817,6 +817,7 @@ void map::move_vehicle( vehicle &veh, const tripoint &dp, const tileray &facing 
             veh.skidding = true;
             veh.turn( coll_turn );
         }
+        veh.on_move();
         // Actually change position
         displace_vehicle( pt, dp );
     } else if( !vertical ) {
@@ -3708,17 +3709,16 @@ void map::shoot( const tripoint &p, projectile &proj, const bool hit_items )
     int dam = initial_damage;
     const auto &ammo_effects = proj.proj_effects;
 
-    if (has_flag("ALARMED", p) && !g->event_queued(EVENT_WANTED))
-    {
+    if( has_flag("ALARMED", p) && !g->event_queued(EVENT_WANTED) ) {
         sounds::sound(p, 30, _("An alarm sounds!"));
         const tripoint abs = overmapbuffer::ms_to_sm_copy( getabs( p ) );
         g->add_event(EVENT_WANTED, int(calendar::turn) + 300, 0, abs );
     }
 
+    const bool inc = (ammo_effects.count("INCENDIARY") || ammo_effects.count("FLAME"));
     int vpart;
     vehicle *veh = veh_at(p, vpart);
     if( veh != nullptr ) {
-        const bool inc = (ammo_effects.count("INCENDIARY") || ammo_effects.count("FLAME"));
         dam -= veh->damage( vpart, dam, inc ? DT_HEAT : DT_BASH, hit_items );
     }
 
@@ -3827,29 +3827,25 @@ void map::shoot( const tripoint &p, projectile &proj, const bool hit_items )
         }
     } else if( terrain == t_paper ) {
         dam -= rng(4, 16);
-        if (dam > 0) {
+        if( dam > 0 ) {
             sounds::sound(p, 8, _("rrrrip!"));
             ter_set(p, t_dirt);
         }
-        if (ammo_effects.count("INCENDIARY")) {
+        if( inc ) {
             add_field(p, fd_fire, 1, 0);
         }
     } else if( terrain == t_gas_pump ) {
         if (hit_items || one_in(3)) {
             if (dam > 15) {
-                if (ammo_effects.count("INCENDIARY") || ammo_effects.count("FLAME")) {
+                if( inc ) {
                     g->explosion( p, 40, 0, true);
                 } else {
-                    tripoint tmp = p;
-                    int &i = tmp.x;
-                    int &j = tmp.y;
-                    for( i = p.x - 2; i <= p.x + 2; i++ ) {
-                        for( j = p.y - 2; j <= p.y + 2; j++ ) {
-                            if (move_cost( tmp ) > 0 && one_in(3)) {
-                                    spawn_item( tmp, "gasoline" );
-                            }
+                    for( const tripoint &pt : points_in_radius( p, 2 ) ) {
+                        if( one_in( 3 ) && move_cost( pt ) > 0 ) {
+                            spawn_item( pt, "gasoline" );
                         }
                     }
+
                     sounds::sound(p, 10, _("smash!"));
                 }
                 ter_set(p, t_gas_pump_smashed);
@@ -3863,13 +3859,11 @@ void map::shoot( const tripoint &p, projectile &proj, const bool hit_items )
         } else {
             dam = 0;
         }
+    } else if( move_cost( p ) == 0 && !trans( p ) ) {
+        bash( p, dam, false );
+        dam = 0; // TODO: Preserve some residual damage when it makes sense.
     } else {
-        if (move_cost(p) == 0 && !trans(p)) {
-            bash( p, dam, false );
-            dam = 0; // TODO: Preserve some residual damage when it makes sense.
-        } else {
-            dam -= (rng(0, 1) * rng(0, 1) * rng(0, 1));
-        }
+        dam -= (rng(0, 1) * rng(0, 1) * rng(0, 1));
     }
 
     if (ammo_effects.count("TRAIL") && !one_in(4)) {
@@ -3908,7 +3902,7 @@ void map::shoot( const tripoint &p, projectile &proj, const bool hit_items )
     // Check fields?
     const field_entry *fieldhit = get_field( p, fd_web );
     if( fieldhit != nullptr ) {
-        if (ammo_effects.count("INCENDIARY") || ammo_effects.count("FLAME")) {
+        if( inc ) {
             add_field( p, fd_fire, fieldhit->getFieldDensity() - 1, 0 );
         } else if (dam > 5 + fieldhit->getFieldDensity() * 5 &&
                    one_in(5 - fieldhit->getFieldDensity())) {
@@ -3920,35 +3914,18 @@ void map::shoot( const tripoint &p, projectile &proj, const bool hit_items )
     // Rescale the damage
     if( dam <= 0 ) {
         proj.impact.damage_units.clear();
-    } else {
-        proj.impact.mult_damage( static_cast<double>( initial_damage ) / dam );
+        return;
+    } else if( dam < initial_damage ) {
+        proj.impact.mult_damage( dam / static_cast<double>( initial_damage ) );
     }
 
     // Now, destroy items on that tile.
-    if ((move_cost(p) == 2 && !hit_items) || !inbounds(p)) {
+    if( (move_cost( p ) == 2 && !hit_items) || !inbounds( p ) ) {
         return; // Items on floor-type spaces won't be shot up.
     }
 
-    auto target_items = i_at(p);
-    for( auto target_item = target_items.begin(); target_item != target_items.end(); ) {
-        bool destroyed = false;
-        int chance = ( target_item->volume() > 0 ? target_item->volume() : 1);
-        // volume dependent chance
-
-        if( dam > target_item->bash_resist() && one_in(chance) ) {
-            target_item->damage++;
-        }
-        if( target_item->damage >= 5 ) {
-            destroyed = true;
-        }
-
-        if (destroyed) {
-            spawn_items( p, target_item->contents );
-            target_item = target_items.erase( target_item );
-        } else {
-            ++target_item;
-        }
-    }
+    // dam / 3, because bullets aren't all that good at destroying items...
+    smash_items( p, dam / 3 );
 }
 
 bool map::hit_with_acid( const tripoint &p )

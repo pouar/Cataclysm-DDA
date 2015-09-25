@@ -1692,13 +1692,13 @@ void player::recalc_speed_bonus()
 int player::run_cost(int base_cost, bool diag) const
 {
     float movecost = float(base_cost);
-    const bool flatground = movecost < 105;
     if( diag ) {
         movecost *= 0.7071f; // because everything here assumes 100 is base
     }
 
+    const bool flatground = movecost < 105;
     // The "FLAT" tag includes soft surfaces, so not a good fit.
-    const bool offroading = flatground && !g->m.has_flag( "ROAD", pos() );
+    const bool on_road = flatground && g->m.has_flag( "ROAD", pos() );
 
     if (has_trait("PARKOUR") && movecost > 100 ) {
         movecost *= .5f;
@@ -1768,25 +1768,21 @@ int player::run_cost(int base_cost, bool diag) const
     if (has_trait("PONDEROUS3")) {
         movecost *= 1.3f;
     }
-    if (is_wearing("swim_fins")) {
-            movecost *= 1.0f + (0.25f * shoe_type_count("swim_fins"));
+    if( is_wearing("swim_fins") ) {
+        movecost *= 1.5f;
     }
-    if ( (is_wearing("roller_blades")) && !(is_on_ground())) {
-        if (offroading) {
-            movecost *= 1.0f + (0.25f * shoe_type_count("roller_blades"));
-        } else if (flatground) {
-            movecost *= 1.0f - (0.25f * shoe_type_count("roller_blades"));
+    if( is_wearing("roller_blades") ) {
+        if( on_road ) {
+            movecost *= 0.5f;
         } else {
             movecost *= 1.5f;
         }
     }
     // Quad skates might be more stable than inlines,
     // but that also translates into a slower speed when on good surfaces.
-    if ( (is_wearing("rollerskates")) && !(is_on_ground())) {
-        if (offroading) {
-            movecost *= 1.0f + (0.15f * shoe_type_count("rollerskates"));
-        } else if (flatground) {
-            movecost *= 1.0f - (0.15f * shoe_type_count("rollerskates"));
+    if ( is_wearing("rollerskates") ) {
+        if( on_road ) {
+            movecost *= 0.7f;
         } else {
             movecost *= 1.3f;
         }
@@ -4501,7 +4497,9 @@ bool player::in_climate_control()
 {
     bool regulated_area=false;
     // Check
-    if(has_active_bionic("bio_climate")||has_trait("SMARTTEMP")) { return true; }
+    if( has_active_bionic("bio_climate") || has_trait("SMARTTEMP") ) {
+        return true;
+    }
     for( auto &w : worn ) {
         if( w.typeId() == "rm13_armor_on" ) {
             return true;
@@ -4510,24 +4508,24 @@ bool player::in_climate_control()
             return true;
         }
     }
-    if(int(calendar::turn) >= next_climate_control_check)
-    {
-        next_climate_control_check=int(calendar::turn)+20;  // save cpu and similate acclimation.
+    if( int(calendar::turn) >= next_climate_control_check ) {
+        // save cpu and simulate acclimation.
+        next_climate_control_check = int(calendar::turn) + 20;
         int vpart = -1;
         vehicle *veh = g->m.veh_at( pos(), vpart );
-        if(veh)
-        {
-            regulated_area=(
+        if(veh) {
+            regulated_area = (
                 veh->is_inside(vpart) &&    // Already checks for opened doors
                 veh->total_power(true) > 0  // Out of gas? No AC for you!
             );  // TODO: (?) Force player to scrounge together an AC unit
         }
         // TODO: AC check for when building power is implemented
-        last_climate_control_ret=regulated_area;
-        if(!regulated_area) { next_climate_control_check+=40; }  // Takes longer to cool down / warm up with AC, than it does to step outside and feel cruddy.
-    }
-    else
-    {
+        last_climate_control_ret = regulated_area;
+        if( !regulated_area ) {
+            // Takes longer to cool down / warm up with AC, than it does to step outside and feel cruddy.
+            next_climate_control_check += 40;
+        }
+    } else {
         return ( last_climate_control_ret ? true : false );
     }
     return regulated_area;
@@ -5184,7 +5182,7 @@ void player::on_dodge( Creature *source, int difficulty )
 }
 
 void player::on_hit( Creature *source, body_part bp_hit,
-                     int difficulty, projectile const* const proj ) {
+                     int difficulty, dealt_projectile_attack const* const proj ) {
     check_dead_state();
     bool u_see = g->u.sees( *this );
     if( source == nullptr || proj != nullptr ) {
@@ -9961,12 +9959,7 @@ int player::amount_of(const itype_id &it) const
         return 1;
     }
     if (it == "apparatus") {
-        if (has_amount("crackpipe", 1) ||
-            has_amount("can_drink", 1) ||
-            has_amount("pipe_glass", 1) ||
-            has_amount("pipe_tobacco", 1)) {
-            return 1;
-        }
+        return ( has_items_with_quality("SMOKE_PIPE", 1, 1) ? 1 : 0 );
     }
     int quantity = weapon.amount_of(it, true);
     for( const auto &elem : worn ) {
@@ -13783,13 +13776,6 @@ void player::cancel_activity()
     activity = player_activity();
 }
 
-std::vector<const item *> player::get_ammo( const ammotype &at ) const
-{
-    return items_with( [at]( const item & it ) {
-        return it.is_ammo() && it.ammo_type() == at;
-    } );
-}
-
 bool player::has_gun_for_ammo( const ammotype &at ) const
 {
     return has_item_with( [at]( const item & it ) {
@@ -14496,6 +14482,14 @@ std::vector<Creature *> player::get_targetable_creatures( const int range ) cons
           rl_dist( this->pos(), critter.pos() ) <= range;
     } );
 }
+
+std::vector<Creature *> player::get_hostile_creatures() const
+{
+    return get_creatures_if( [this] ( const Creature &critter ) -> bool {
+        return this != &critter && this->sees(critter) && critter.attitude_to(*this) == A_HOSTILE;
+    } );
+}
+
 
 void player::place_corpse()
 {

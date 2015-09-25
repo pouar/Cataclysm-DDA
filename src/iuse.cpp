@@ -166,7 +166,7 @@ void remove_radio_mod( item &it, player &p )
     if( !it.has_flag( "RADIO_MOD" ) ) {
         return;
     }
-    p.add_msg_if_player( _( "You remove the radio modification from your %s." ), it.tname().c_str() );
+    p.add_msg_if_player( _( "You remove the radio modification from your %s!" ), it.tname().c_str() );
     item mod( "radio_mod", calendar::turn );
     p.i_add_or_drop( mod, 1 );
     it.item_tags.erase( "RADIO_ACTIVATION" );
@@ -603,7 +603,7 @@ int iuse::bladderset(player *p, item *it, bool, const tripoint& )
 
 int iuse::atomic_caff(player *p, item *it, bool, const tripoint& )
 {
-    p->add_msg_if_player(m_good, _("Wow! This %s has a kick."), it->tname().c_str());
+    p->add_msg_if_player(m_good, _("Wow!  This %s has a kick."), it->tname().c_str());
     const auto food = dynamic_cast<const it_comest *> (it->type);
     p->fatigue -= food->stim * 12;
     p->radiation += 8;
@@ -726,101 +726,6 @@ int iuse::alcohol_medium(player *p, item *it, bool, const tripoint& )
 int iuse::alcohol_strong(player *p, item *it, bool, const tripoint& )
 {
     return alcohol(p, it, 2);
-}
-
-/**
- * Entry point for intentional bodily intake of smoke via paraphernalia: pipe,
- * crack pipe, etc.
- *
- * @param p
- * @param it the apparatus with which to do the smoking.
- * @param
- * @return
- */
-int iuse::smoking_pipe(player *p, item *it, bool, const tripoint& )
-{
-    bool hasFire = (p->has_charges("fire", 1));
-    // Hardcoded for now, would like to get away from this.
-    std::vector<std::string> smokable_ids;
-    smokable_ids.push_back("tobacco");
-    smokable_ids.push_back("weed");
-    // What is available in our area (inventory right now) to smoke.
-    std::vector<std::string> smokable_choices;
-
-    // Fail fast(er) if we can't/shouldn't smoke.
-    if( !check_litcig( *p ) ) {
-        return 0;
-    }
-    if (!hasFire) {
-        p->add_msg_if_player(m_info, _("You don't have anything to light it with!"));
-        return 0;
-    }
-
-    // Figure out what we can smoke, if anything.
-    for (auto s_id : smokable_ids) {
-        if (p->has_amount(s_id, 1)) {
-            smokable_choices.push_back(s_id);
-        }
-    }
-    if (smokable_choices.size() == 0) {
-        p->add_msg_if_player(m_info, _("You need to find something to smoke."));
-        return 0;
-    }
-    const size_t choice = uimenu(true, _("What would you like to smoke?"), smokable_choices) - 1;
-    if (choice >= smokable_choices.size()) {
-        // Chose not to smoke.
-        return 0;
-    }
-    // Finally we can smoke.
-    std::string id_to_smoke = smokable_choices[(size_t)choice];
-    // We trust from this point on that we've checked for the existence of
-    // consumables and as such will now consume.
-    p->use_charges("fire", 1);
-    /// \todo More content goes into a single toke than a cig/cigar. Should pipe effects be stronger?
-    if ("tobacco" == id_to_smoke) {
-        p->add_msg_if_player(m_neutral, _("You smoke some tobacco out of your %s."), it->tname().c_str());
-        p->use_charges("tobacco", 1);
-        p->thirst += 1;
-        p->mod_hunger(-2);
-        p->add_effect("cig", 200);
-        for (int i = 0; i < 3; i++) {
-            g->m.add_field({p->posx() + int(rng(-2, 2)), p->posy() + int(rng(-2, 2)), p->posz()}, fd_cigsmoke, 2, 0);
-        }
-        if (p->get_effect_dur("cig") > (100 * (p->addiction_level(ADD_CIG)))) {
-            p->add_msg_if_player(m_bad, _("Ugh, too much smoke... you cough heavily."));
-            sounds::sound(p->pos(), 10, "");
-        }
-        p->moves -= 250;
-    } else if ("weed" == id_to_smoke) {
-        if (!(p->has_effect("weed_high"))) {
-            p->add_msg_if_player(m_good, _("You smoke some weed.  Good stuff, man!"));
-        } else {
-            p->add_msg_if_player(m_info, _("You smoke some more weed."));
-        }
-        p->use_charges("weed", 1);
-        p->mod_hunger(4);
-        p->thirst += 6;
-        if (p->pkill < 5) {
-            p->pkill += 3;
-            p->pkill *= 2;
-        }
-        int duration = 90;
-        if (p->has_trait("TOLERANCE")) {
-            duration = 60;
-        } else if (p->has_trait("LIGHTWEIGHT")) {
-            duration = 120;
-        }
-        p->add_effect("weed_high", duration);
-        p->moves -= 40;
-        // breathe out some smoke
-        for (int i = 0; i < 3; i++) {
-            g->m.add_field({p->posx() + int(rng(-2, 2)), p->posy() + int(rng(-2, 2)), p->posz()}, fd_weedsmoke, 2, 0);
-        }
-        if (one_in(5)) {
-            weed_msg(p);
-        }
-    }
-    return 0;
 }
 
 /**
@@ -2759,7 +2664,7 @@ int iuse::sew_advanced(player *p, item *it, bool, const tripoint& )
 
     // If the picked mod already exists, player wants to destroy it
     if( mod->item_tags.count( the_mod ) ) {
-        if( query_yn( _("Are you sure? You will not gain any materials back") ) ) {
+        if( query_yn( _("Are you sure?  You will not gain any materials back.") ) ) {
             mod->item_tags.erase( the_mod );
         }
 
@@ -3430,7 +3335,7 @@ int iuse::solder_weld( player *p, item *it, bool, const tripoint& )
     }
 
     static const std::vector<std::string> materials = {{
-        "kevlar", "plastic", "iron", "steel", "hardsteel", "aluminum"
+        "kevlar", "plastic", "iron", "steel", "hardsteel", "aluminum", "copper"
     }};
 
     int pos = g->inv_for_filter( _("Repair what?"), [it]( const item &itm ) {
@@ -3461,7 +3366,8 @@ int iuse::solder_weld( player *p, item *it, bool, const tripoint& )
             std::make_tuple( "iron", "scrap", _("scrap metal") ),
             std::make_tuple( "steel", "scrap", _("scrap metal") ),
             std::make_tuple( "hardsteel", "scrap", _("scrap metal") ),
-            std::make_tuple( "aluminum", "material_aluminium_ingot", _("aluminum ingots") )
+            std::make_tuple( "aluminum", "material_aluminium_ingot", _("aluminum ingots") ),
+            std::make_tuple( "copper", "scrap_copper", _("scrap copper") )
     };
 
     if( &fix == it || any_of( repair_list.begin(), repair_list.end(), [&fix]( const repair_tuple &tup ) {
@@ -4559,7 +4465,7 @@ int iuse::set_trap(player *p, item *it, bool, const tripoint& )
             p->add_msg_if_player(m_info, _("You need a shovel."));
             return 0;
         } else if (!g->m.has_flag("DIGGABLE", posx, posy)) {
-            p->add_msg_if_player(m_info, _("You can't dig in that %s"), g->m.tername(posx, posy).c_str());
+            p->add_msg_if_player(m_info, _("You can't dig in that %s."), g->m.tername(posx, posy).c_str());
             return 0;
         }
     }
@@ -4980,10 +4886,10 @@ int iuse::arrow_flamable(player *p, item *it, bool, const tripoint& )
         return 0;
     }
     if (!p->use_charges_if_avail("fire", 1)) {
-        p->add_msg_if_player(m_info, _("You need a lighter!"));
+        p->add_msg_if_player(m_info, _("You need a source of fire!"));
         return 0;
     }
-    p->add_msg_if_player(_("You light the arrow!."));
+    p->add_msg_if_player(_("You light the arrow!"));
     p->moves -= 150;
     if (it->charges == 1) {
         it->make("arrow_flamming");
@@ -5003,7 +4909,7 @@ int iuse::molotov(player *p, item *it, bool, const tripoint& )
         return 0;
     }
     if (!p->use_charges_if_avail("fire", 1)) {
-        p->add_msg_if_player(m_info, _("You need a lighter!"));
+        p->add_msg_if_player(m_info, _("You need a source of fire!"));
         return 0;
     }
     p->add_msg_if_player(_("You light the Molotov cocktail."));
@@ -5044,7 +4950,7 @@ int iuse::firecracker_pack(player *p, item *it, bool, const tripoint& )
         return 0;
     }
     if (!p->has_charges("fire", 1)) {
-        p->add_msg_if_player(m_info, _("You need a lighter!"));
+        p->add_msg_if_player(m_info, _("You need a source of fire!"));
         return 0;
     }
     WINDOW *w = newwin(5, 41, (TERMY - 5) / 2, (TERMX - 41) / 2);
@@ -5146,7 +5052,7 @@ int iuse::firecracker(player *p, item *it, bool, const tripoint& )
         return 0;
     }
     if (!p->use_charges_if_avail("fire", 1)) {
-        p->add_msg_if_player(m_info, _("You need a lighter!"));
+        p->add_msg_if_player(m_info, _("You need a source of fire!"));
         return 0;
     }
     p->add_msg_if_player(_("You light the firecracker."));
@@ -5453,7 +5359,7 @@ int iuse::shocktonfa_on(player *p, item *it, bool t, const tripoint &pos)
 
     } else {
         if (it->charges <= 0) {
-            p->add_msg_if_player(m_info, _("Your tactical tonfa is out of power"));
+            p->add_msg_if_player(m_info, _("Your tactical tonfa is out of power."));
             it->make("shocktonfa_off");
             it->active = false;
         } else {
@@ -5467,7 +5373,7 @@ int iuse::shocktonfa_on(player *p, item *it, bool t, const tripoint &pos)
                 break;
 
                 case 2: {
-                    p->add_msg_if_player(_("You turn off the light"));
+                    p->add_msg_if_player(_("You turn off the light."));
                     it->make("shocktonfa_off");
                     it->active = false;
                 }
@@ -6052,13 +5958,13 @@ int iuse::torch_lit(player *p, item *it, bool t, const tripoint &pos)
             it->active = false;
         }
     } else if (it->charges <= 0) {
-        p->add_msg_if_player(_("The %s winks out"), it->tname().c_str());
+        p->add_msg_if_player(_("The %s winks out."), it->tname().c_str());
     } else { // Turning it off
         int choice = menu(true, _("torch (lit)"), _("extinguish"),
                           _("light something"), _("cancel"), NULL);
         switch (choice) {
             case 1: {
-                p->add_msg_if_player(_("The torch is extinguished"));
+                p->add_msg_if_player(_("The torch is extinguished."));
                 it->charges -= 1;
                 it->make("torch");
                 it->active = false;
@@ -6099,7 +6005,7 @@ int iuse::battletorch_lit(player *p, item *it, bool t, const tripoint &pos)
                           _("light something"), _("cancel"), NULL);
         switch (choice) {
             case 1: {
-                p->add_msg_if_player(_("The Louisville Slaughterer is extinguished"));
+                p->add_msg_if_player(_("The Louisville Slaughterer is extinguished."));
                 it->charges -= 1;
                 it->make("battletorch");
                 it->active = false;
@@ -7101,7 +7007,7 @@ int iuse::sheath_sword(player *p, item *it, bool, const tripoint& )
                 }
 
                 //~ $1s is a body part, %2$s is the weapon name.
-                p->add_msg_if_player(_("You catch a glimpse of %1$s in the blade of the %2$s"),
+                p->add_msg_if_player(_("You catch a glimpse of %1$s in the blade of the %2$s."),
                                       part.c_str(), p->weapon.tname().c_str());
 
             // diamond swords glimmer in the sunlight
@@ -7438,7 +7344,7 @@ int iuse::gun_repair(player *p, item *it, bool, const tripoint& )
         p->add_msg_if_player(m_info, _("You need a mechanics skill of 2 to use this repair kit."));
         return 0;
     }
-    int inventory_index = g->inv(_("Select the firearm to repair."));
+    int inventory_index = g->inv(_("Select the firearm to repair"));
     item *fix = &(p->i_at(inventory_index));
     if (fix == NULL || fix->is_null()) {
         p->add_msg_if_player(m_info, _("You do not have that item!"));
@@ -8355,7 +8261,7 @@ int iuse::camera(player *p, item *it, bool, const tripoint& )
 
                     // get an empty photo if the target is a hallucination
                     if (zid == sel_zid && (z.is_hallucination() || z.type->in_species("HALLUCINATION"))) {
-                        p->add_msg_if_player(_("Strange...there's nothing in the picture?"));
+                        p->add_msg_if_player(_("Strange... there's nothing in the picture?"));
                         return it->type->charges_to_use();
                     }
 
@@ -9558,7 +9464,7 @@ int iuse::capture_monster_act( player *p, item *it, bool, const tripoint &pos )
                     }
                 }
                 if( valid.empty() ) {
-                    p->add_msg_if_player(_("There is no place to put the %s"),
+                    p->add_msg_if_player(_("There is no place to put the %s."),
                                          it->get_var("contained_name","").c_str());
                     return 0;
                 }
