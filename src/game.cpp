@@ -109,6 +109,9 @@ const skill_id skill_dodge( "dodge" );
 const skill_id skill_driving( "driving" );
 const skill_id skill_firstaid( "firstaid" );
 
+const species_id ZOMBIE( "ZOMBIE" );
+const species_id PLANT( "PLANT" );
+
 void advanced_inv(); // player_activity.cpp
 void intro();
 nc_color sev(int a); // Right now, ONLY used for scent debugging....
@@ -2547,7 +2550,7 @@ bool game::handle_action()
         case ACTION_CLOSE:
             if( u.has_active_mutation( "SHELL2" ) ) {
                 add_msg(m_info, _("You can't close things while you're in your shell."));
-            } else if( mouse_action_x != -1 && mouse_action_y != -1 ) {                
+            } else if( mouse_action_x != -1 && mouse_action_y != -1 ) {
                 close( tripoint( mouse_action_x, mouse_action_y, u.posz() ) );
             } else {
                 close();
@@ -5772,7 +5775,7 @@ int game::mon_info(WINDOW *w)
             if (!new_seen_mon.empty()) {
                 monster &critter = critter_tracker->find(new_seen_mon.back());
                 cancel_activity_query(_("%s spotted!"), critter.name().c_str());
-                if (u.has_trait("M_DEFENDER") && critter.type->in_species("PLANT")) {
+                if (u.has_trait("M_DEFENDER") && critter.type->in_species( PLANT )) {
                     add_msg(m_warning, _("We have detected a %s."), critter.name().c_str());
                     if (!u.has_effect("adrenaline_mycus")){
                         u.add_effect("adrenaline_mycus", 300);
@@ -7782,7 +7785,7 @@ void game::open_gate( const tripoint &p, const ter_id handle_type )
     } else {
         return;
     }
-    
+
     add_msg(pull_message);
     if (handle_type == t_gates_control_metal){
         moves += 300;
@@ -7878,7 +7881,7 @@ bool pet_menu(monster *z)
     uimenu amenu;
 
     std::string pet_name = _("dog");
-    if( z->type->in_species("ZOMBIE") ) {
+    if( z->type->in_species( ZOMBIE ) ) {
         pet_name = _("zombie slave");
     }
 
@@ -7907,7 +7910,7 @@ bool pet_menu(monster *z)
         }
     }
 
-    if( z->type->in_species("ZOMBIE") ) {
+    if( z->type->in_species( ZOMBIE ) ) {
         amenu.addentry(pheromone, true, 't', _("Tear out pheromone ball"));
     }
 
@@ -12771,7 +12774,7 @@ bool game::grabbed_veh_move( const tripoint &dp )
     }
 
     return false;
-    
+
 }
 
 bool game::grabbed_furn_move( const tripoint &dp )
@@ -12901,7 +12904,7 @@ bool game::grabbed_furn_move( const tripoint &dp )
             u.grab_type = OBJECT_NONE;
         }
         return true; // We moved furniture but stayed still.
-    } 
+    }
 
     if( pushing_furniture && m.move_cost( fpos ) <= 0 ) {
         // Not sure how that chair got into a wall, but don't let player follow.
@@ -13352,12 +13355,13 @@ tripoint game::find_or_make_stairs( map &mp, const int z_after, bool &rope_ladde
     const int omtilesz = SEEX * 2;
     real_coords rc( m.getabs(u.posx(), u.posy()) );
     tripoint omtile_align_start( m.getlocal(rc.begin_om_pos()), z_after );
+    tripoint omtile_align_end( omtile_align_start.x + omtilesz - 1, omtile_align_start.y + omtilesz - 1, omtile_align_start.z );
 
     // Try to find the stairs.
     tripoint stairs = tripoint_min;
     int best = INT_MAX;
     const int movez = z_after - get_levz();
-    for( const tripoint &dest : m.points_in_radius( omtile_align_start, omtilesz ) ) {
+    for( const tripoint &dest : m.points_in_rectangle( omtile_align_start, omtile_align_end ) ) {
         if( rl_dist( u.pos(), dest ) <= best &&
             ((movez == -1 && mp.has_flag("GOES_UP", dest)) ||
              (movez == 1 && (mp.has_flag("GOES_DOWN", dest) ||

@@ -47,6 +47,11 @@ const skill_id skill_bashing( "bashing" );
 const skill_id skill_cutting( "cutting" );
 const skill_id skill_stabbing( "stabbing" );
 
+const species_id FISH( "FISH" );
+const species_id BIRD( "BIRD" );
+const species_id INSECT( "INSECT" );
+const species_id ROBOT( "ROBOT" );
+
 enum item::LIQUID_FILL_ERROR : int {
     L_ERR_NONE, L_ERR_NO_MIX, L_ERR_NOT_CONTAINER, L_ERR_NOT_WATERTIGHT,
     L_ERR_NOT_SEALED, L_ERR_FULL
@@ -2174,7 +2179,7 @@ int item::weight() const
         if (made_of("veggy")) {
             ret /= 3;
         }
-        if(corpse->in_species("FISH") || corpse->in_species("BIRD") || corpse->in_species("INSECT") || made_of("bone")) {
+        if( corpse->in_species( FISH ) || corpse->in_species( BIRD ) || corpse->in_species( INSECT ) || made_of("bone")) {
             ret /= 8;
         } else if (made_of("iron") || made_of("steel") || made_of("stone")) {
             ret *= 7;
@@ -4762,7 +4767,7 @@ bool item::process_corpse( player *carrier, const tripoint &pos )
     if( rng( 0, volume() ) > burnt && g->revive_corpse( pos, *this ) ) {
         if( carrier == nullptr ) {
             if( g->u.sees( pos ) ) {
-                if( corpse->in_species( "ROBOT" ) ) {
+                if( corpse->in_species( ROBOT ) ) {
                     add_msg( m_warning, _( "A nearby robot has repaired itself and stands up!" ) );
                 } else {
                     add_msg( m_warning, _( "A nearby corpse rises and moves towards you!" ) );
@@ -4773,7 +4778,7 @@ bool item::process_corpse( player *carrier, const tripoint &pos )
             carrier->add_memorial_log( pgettext( "memorial_male", "Had a %s revive while carrying it." ),
                                        pgettext( "memorial_female", "Had a %s revive while carrying it." ),
                                        tname().c_str() );
-            if( corpse->in_species( "ROBOT" ) ) {
+            if( corpse->in_species( ROBOT ) ) {
                 carrier->add_msg_if_player( m_warning, _( "Oh dear god, a robot you're carrying has started moving!" ) );
             } else {
                 carrier->add_msg_if_player( m_warning, _( "Oh dear god, a corpse you're carrying has started moving!" ) );
@@ -5032,8 +5037,10 @@ bool item::update_charger_gun_ammo()
     tmpammo->ammo_effects.clear();
     if( charges == 8 ) {
         tmpammo->ammo_effects.insert( "EXPLOSIVE_BIG" );
-    } else if( charges >= 6 ) {
+    } else if( charges >= 7 ) {
         tmpammo->ammo_effects.insert( "EXPLOSIVE" );
+    } else if( charges >= 6 ) {
+        tmpammo->ammo_effects.insert( "EXPLOSIVE_SMALL" );
     }
     if( charges >= 5 ) {
         tmpammo->ammo_effects.insert( "FLAME" );
