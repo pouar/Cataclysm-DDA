@@ -3724,7 +3724,7 @@ void map::shoot( const tripoint &p, projectile &proj, const bool hit_items )
     int vpart;
     vehicle *veh = veh_at(p, vpart);
     if( veh != nullptr ) {
-        dam -= veh->damage( vpart, dam, inc ? DT_HEAT : DT_BASH, hit_items );
+        dam = veh->damage( vpart, dam, inc ? DT_HEAT : DT_BASH, hit_items );
     }
 
     ter_id terrain = ter( p );
@@ -5191,11 +5191,11 @@ static bool trigger_radio_item( item_stack &items, std::list<item>::iterator &n,
         sounds::sound(pos, 6, _("beep."));
         if( n->has_flag("RADIO_INVOKE_PROC") ) {
             // Invoke twice: first to transform, then later to proc
-            process_item( items, n, pos, true );
-            n->charges = 0;
+            // Can't use process_item here - invalidates our iterator
+            n->process( nullptr, pos, true );
         }
         if( n->has_flag("BOMB") ) {
-            // Set charges to 0 to ensure it detonates.
+            // Set charges to 0 to ensure it detonates now
             n->charges = 0;
         }
         trigger_item = true;
@@ -5206,6 +5206,10 @@ static bool trigger_radio_item( item_stack &items, std::list<item>::iterator &n,
         itype_id bomb_type = n->contents[0].type->id;
 
         n->make(bomb_type);
+        if( n->has_flag("RADIO_INVOKE_PROC") ) {
+            n->process( nullptr, pos, true );
+        }
+
         n->charges = 0;
         trigger_item = true;
     }
@@ -5850,8 +5854,8 @@ bool map::draw_maptile( WINDOW* w, player &u, const tripoint &p, const maptile &
     static const long AUTO_WALL_PLACEHOLDER = 2; // this should never appear as a real symbol!
 
     if( curr_furn.loadid != f_null ) {
-        sym = curr_furn.sym;
-        tercol = curr_furn.color;
+        sym = curr_furn.symbol();
+        tercol = curr_furn.color();
     } else {
         if( curr_ter.has_flag( TFLAG_AUTO_WALL_SYMBOL ) ) {
             // If the terrain symbol is later overriden by something, we don't need to calculate
@@ -5859,9 +5863,9 @@ bool map::draw_maptile( WINDOW* w, player &u, const tripoint &p, const maptile &
             // placeholder, if it's still the same, we have to calculate the wall symbol.
             sym = AUTO_WALL_PLACEHOLDER;
         } else {
-            sym = curr_ter.sym;
+            sym = curr_ter.symbol();
         }
-        tercol = curr_ter.color;
+        tercol = curr_ter.color();
     }
     if( curr_ter.has_flag( TFLAG_SWIMMABLE ) && curr_ter.has_flag( TFLAG_DEEP_WATER ) && !u.is_underwater() ) {
         show_items = false; // Can only see underwater items if WE are underwater
@@ -6002,11 +6006,11 @@ void map::draw_from_above( WINDOW* w, player &u, const tripoint &p,
     int part_below;
     const vehicle *veh;
     if( curr_furn.has_flag( TFLAG_SEEN_FROM_ABOVE ) ) {
-        sym = curr_furn.sym;
-        tercol = curr_furn.color;
+        sym = curr_furn.symbol();
+        tercol = curr_furn.color();
     } else if( curr_furn.movecost < 0 ) {
         sym = '.';
-        tercol = curr_furn.color;
+        tercol = curr_furn.color();
     } else if( ( veh = veh_at_internal( p, part_below ) ) != nullptr ) {
         const int roof = veh->roof_at_part( part_below );
         const int displayed_part = roof >= 0 ? roof : part_below;
@@ -6018,23 +6022,23 @@ void map::draw_from_above( WINDOW* w, player &u, const tripoint &p,
         } else if( curr_ter.has_flag( TFLAG_RAMP ) ) {
             sym = '>';
         } else {
-            sym = curr_ter.sym;
+            sym = curr_ter.symbol();
         }
-        tercol = curr_ter.color;
+        tercol = curr_ter.color();
     } else if( curr_ter.movecost == 0 ) {
         sym = '.';
-        tercol = curr_ter.color;
+        tercol = curr_ter.color();
     } else if( !curr_ter.has_flag( TFLAG_NO_FLOOR ) ) {
         sym = '.';
-        if( curr_ter.color != c_cyan ) {
+        if( curr_ter.color() != c_cyan ) {
             // Need a special case here, it doesn't cyanize well
-            tercol = cyan_background( curr_ter.color );
+            tercol = cyan_background( curr_ter.color() );
         } else {
             tercol = c_black_cyan;
         }
     } else {
-        sym = curr_ter.sym;
-        tercol = curr_ter.color;
+        sym = curr_ter.symbol();
+        tercol = curr_ter.color();
     }
 
     if( sym == AUTO_WALL_PLACEHOLDER ) {
@@ -7058,7 +7062,7 @@ long map::determine_wall_corner( const tripoint &p ) const
         case 0 | 2 | 0 | 0: return LINE_OXOX; // LINE_OXOO would be better
         case 1 | 0 | 0 | 0: return LINE_XOXO; // LINE_XOOO would be better
 
-        case 0 | 0 | 0 | 0: return ter_at( p ).sym; // technically just a column
+        case 0 | 0 | 0 | 0: return ter_at( p ).symbol(); // technically just a column
 
         default:
             // assert( false );
