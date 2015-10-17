@@ -2776,5 +2776,29 @@
 		"flags" : ["VARSIZE", "HOOD"],
 		"coverage" : 100,
 		"material_thickness" : 4
+	},
+	{
+		"type" : "ARMOR",
+		"id" : "leather_onesie",
+		"name" : "leather onesie",
+		"weight" : 1450,
+		"color" : "dark_grey",
+		"covers" : ["LEGS","TORSO"],
+		"to_hit" : 1,
+		"storage" : 0,
+		"symbol" : "[",
+		"description" : "A black leather onesie",
+		"price" : 17900,
+		"material" : ["leather", "null"],
+		"volume" : 18,
+		"cutting" : 0,
+		"warmth" : 15,
+		"phase" : "solid",
+		"environmental_protection" : 1,
+		"encumbrance" : 15,
+		"bashing" : -3,
+		"flags" : ["VARSIZE"],
+		"coverage" : 37,
+		"material_thickness" : 3
 	}
 ]
