@@ -5931,29 +5931,36 @@ int game::mon_info(WINDOW *w)
 
 void game::cleanup_dead()
 {
-    for( size_t i = 0; i < num_zombies(); ) {
+    // Important: `Creature::die` must not be called after creature objects (NPCs, monsters) have
+    // been removed, the dying creature could still have a pointer (the killer) to another creature.
+    for( size_t i = 0; i < num_zombies(); i++ ) {
         monster &critter = critter_tracker->find(i);
         if( critter.is_dead() ) {
             dbg(D_INFO) << string_format("cleanup_dead: critter[%d] %d,%d dead:%c hp:%d %s",
                                          i, critter.posx(), critter.posy(), (critter.is_dead() ? '1' : '0'),
                                          critter.get_hp(), critter.name().c_str());
             critter.die( nullptr );
+        }
+    }
+
+    for( auto &n : active_npc ) {
+        if( n->is_dead() ) {
+            n->die( nullptr ); // make sure this has been called to create corpses etc.
+        }
+    }
+
+    // From here on, pointers to creatures get invalidated as dead creatures get removed.
+    for( size_t i = 0; i < num_zombies(); ) {
+        if( critter_tracker->find( i ).is_dead() ) {
             remove_zombie( i );
         } else {
             i++;
         }
     }
-
-    //Cleanup any dead npcs.
-    //This will remove the npc object, it is assumed that they have been transformed into
-    //dead bodies before this.
     for( auto it = active_npc.begin(); it != active_npc.end(); ) {
-        npc *n = *it;
-        if( n->is_dead() ) {
-            n->die( nullptr ); // make sure this has been called to create corpses etc.
-            const int npc_id = n->getID();
+        if( (*it)->is_dead() ) {
+            overmap_buffer.remove_npc( (*it)->getID() );
             it = active_npc.erase( it );
-            overmap_buffer.remove_npc( npc_id );
         } else {
             it++;
         }
@@ -14281,13 +14288,13 @@ bool game::spread_fungus( const tripoint &p )
                     } else if (m.has_flag("YOUNG", dest)) {
                         if (one_in(5)) {
                             if( m.get_field_strength( p, fd_fungal_haze ) != 0 ) {
-                                if (one_in(3)) { // young trees are Vulnerable
+                                if (one_in(8)) { // young trees are vulnerable
                                     m.ter_set(dest, t_fungus);
                                     summon_mon( mon_fungal_blossom, p );
                                     if (u.sees(p)) {
                                         add_msg(m_warning, _("The young tree blooms forth into a fungal blossom!"));
                                     }
-                                } else if (one_in(2)) {
+                                } else if (one_in(4)) {
                                     m.ter_set(dest, t_marloss_tree);
                                 }
                             } else {
@@ -14298,13 +14305,13 @@ bool game::spread_fungus( const tripoint &p )
                     } else if (m.has_flag("TREE", dest)) {
                         if (one_in(10)) {
                             if( m.get_field_strength( p, fd_fungal_haze ) != 0) {
-                                if (one_in(4)) {
+                                if (one_in(10)) {
                                     m.ter_set(dest, t_fungus);
                                     summon_mon( mon_fungal_blossom, p );
                                     if (u.sees(p)) {
                                         add_msg(m_warning, _("The tree blooms forth into a fungal blossom!"));
                                     }
-                                } else if (one_in(3)) {
+                                } else if (one_in(6)) {
                                     m.ter_set(dest, t_marloss_tree);
                                 }
                             } else {
