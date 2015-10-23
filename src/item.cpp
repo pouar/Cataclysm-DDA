@@ -228,7 +228,7 @@ void item::init()
     last_rot_check = 0;
 }
 
-void item::make( const std::string new_type )
+void item::make( const std::string new_type, bool scrub )
 {
     const bool was_armor = is_armor();
     type = find_type( new_type );
@@ -242,6 +242,14 @@ void item::make( const std::string new_type )
         } else {
             covered_bodyparts = armor->covers;
         }
+    }
+
+    if (scrub) {
+        components.clear();
+        charges = -1;
+        bday = 0;
+        name = "";
+        curammo = NULL;
     }
 }
 
@@ -997,9 +1005,11 @@ std::string item::info(bool showtext, std::vector<iteminfo> &dump_ref) const
         }
         if( g->u.has_identified( type->id ) ) {
             if( book->skill ) {
-                dump->push_back(iteminfo("BOOK", "",
-                                         string_format(_("Can bring your %s skill to <num>"),
-                                                       book->skill.obj().name().c_str()), book->level));
+                if( g->u.get_skill_level( book->skill ).can_train() ) {
+                    dump->push_back(iteminfo("BOOK", "",
+                                             string_format(_("Can bring your %s skill to <num>"),
+                                                           book->skill.obj().name().c_str()), book->level));
+                }
 
                 if( book->req != 0 ){
                     dump->push_back(iteminfo("BOOK", "",
@@ -1806,13 +1816,15 @@ nc_color item::color_in_inventory() const
         if(u->has_identified( type->id )) {
             auto &tmp = *type->book;
             if( tmp.skill && // Book can improve skill: blue
-                ( u->skillLevel( tmp.skill ) >= tmp.req ) &&
-                ( u->skillLevel( tmp.skill ) < tmp.level ) ) {
+                u->get_skill_level( tmp.skill ).can_train() &&
+                u->get_skill_level( tmp.skill ) >= tmp.req &&
+                u->get_skill_level( tmp.skill ) < tmp.level ) {
                 ret = c_ltblue;
             } else if( !u->studied_all_recipes( *type ) ) { // Book can't improve skill right now, but has more recipes: yellow
                 ret = c_yellow;
             } else if( tmp.skill && // Book can't improve skill right now, but maybe later: pink
-                       u->skillLevel( tmp.skill ) < tmp.level ) {
+                       u->get_skill_level( tmp.skill ).can_train() &&
+                       u->get_skill_level( tmp.skill ) < tmp.level ) {
                 ret = c_pink;
             } else if( !tmp.use_methods.empty() && // Book has function or can teach new martial art: blue
                 // TODO: replace this terrible hack to rely on the item name matching the style name, it's terrible.
@@ -1832,19 +1844,17 @@ nc_color item::color_in_inventory() const
 
 void item::on_wear( player &p  )
 {
-    const auto art = dynamic_cast<const it_artifact_armor*>( type );
     // TODO: artifacts currently only work with the player character
-    if( &p == &g->u && art != nullptr ) {
-        g->add_artifact_messages( art->effects_worn );
+    if( &p == &g->u && type->artifact ) {
+        g->add_artifact_messages( type->artifact->effects_worn );
     }
 }
 
 void item::on_wield( player &p  )
 {
-    const auto art = dynamic_cast<const it_artifact_tool*>( type );
     // TODO: artifacts currently only work with the player character
-    if( &p == &g->u && art != nullptr ) {
-        g->add_artifact_messages( art->effects_wielded );
+    if( &p == &g->u && type->artifact ) {
+        g->add_artifact_messages( type->artifact->effects_wielded );
     }
 
      if (has_flag("SLOW_WIELD") && (! is_gunmod())) {
@@ -1867,10 +1877,9 @@ void item::on_wield( player &p  )
 
 void item::on_pickup( Character &p  )
 {
-    const auto art = dynamic_cast<const it_artifact_tool*>( type );
     // TODO: artifacts currently only work with the player character
-    if( &p == &g->u && art != nullptr ) {
-        g->add_artifact_messages( art->effects_carried );
+    if( &p == &g->u && type->artifact ) {
+        g->add_artifact_messages( type->artifact->effects_carried );
     }
 }
 
@@ -3234,10 +3243,7 @@ bool item::is_software() const
 
 bool item::is_artifact() const
 {
-    if( is_null() )
-        return false;
-
-    return type->is_artifact();
+    return type->artifact.get() != nullptr;
 }
 
 int item::get_chapters() const
@@ -5173,36 +5179,36 @@ bool item::reduce_charges( long quantity )
 
 bool item::has_effect_when_wielded( art_effect_passive effect ) const
 {
-    const auto tool = dynamic_cast<const it_artifact_tool*>( type );
-    if( tool != nullptr ) {
-        auto &ew = tool->effects_wielded;
-        if( std::find( ew.begin(), ew.end(), effect ) != ew.end() ) {
-            return true;
-        }
+    if( !type->artifact ) {
+        return false;
+    }
+    auto &ew = type->artifact->effects_wielded;
+    if( std::find( ew.begin(), ew.end(), effect ) != ew.end() ) {
+        return true;
     }
     return false;
 }
 
 bool item::has_effect_when_worn( art_effect_passive effect ) const
 {
-    const auto armor = dynamic_cast<const it_artifact_armor*>( type );
-    if( armor != nullptr ) {
-        auto &ew = armor->effects_worn;
-        if( std::find( ew.begin(), ew.end(), effect ) != ew.end() ) {
-            return true;
-        }
+    if( !type->artifact ) {
+        return false;
+    }
+    auto &ew = type->artifact->effects_worn;
+    if( std::find( ew.begin(), ew.end(), effect ) != ew.end() ) {
+        return true;
     }
     return false;
 }
 
 bool item::has_effect_when_carried( art_effect_passive effect ) const
 {
-    const auto tool = dynamic_cast<const it_artifact_tool*>( type );
-    if( tool != nullptr ) {
-        auto &ec = tool->effects_carried;
-        if( std::find( ec.begin(), ec.end(), effect ) != ec.end() ) {
-            return true;
-        }
+    if( !type->artifact ) {
+        return false;
+    }
+    auto &ec = type->artifact->effects_carried;
+    if( std::find( ec.begin(), ec.end(), effect ) != ec.end() ) {
+        return true;
     }
     for( auto &i : contents ) {
         if( i.has_effect_when_carried( effect ) ) {

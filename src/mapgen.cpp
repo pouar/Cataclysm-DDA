@@ -593,13 +593,13 @@ public:
     // PieceType, they *can not* be of any other type.
     std::vector<PieceType> alternatives;
     jmapgen_alternativly() = default;
-    void apply( map &m, const size_t x, const size_t y, const float mon_density ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float mon_density ) const override
     {
         if( alternatives.empty() ) {
             return;
         }
         auto &chosen = alternatives[rng( 0, alternatives.size() - 1 )];
-        chosen.apply( m, x, y, mon_density );
+        chosen.apply( m, xmin, ymin, xmax, ymax, mon_density );
     }
 };
 
@@ -623,8 +623,10 @@ public:
             jsi.throw_error( "invalid field type", "field" );
         }
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mon_density*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mon_density*/ ) const override
     {
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         m.add_field( tripoint( x, y, m.get_abs_sub().z ), ftype, density, age );
     }
 };
@@ -642,8 +644,10 @@ public:
             jsi.throw_error( "unknown npc class", "class" );
         }
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mon_density*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mon_density*/ ) const override
     {
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         m.place_npc( x, y, npc_class );
     }
 };
@@ -661,8 +665,10 @@ public:
             signage = _( signage.c_str() );
         }
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mon_density*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mon_density*/ ) const override
     {
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         m.furn_set( x, y, f_null );
         m.furn_set( x, y, "f_sign" );
         m.set_signage( tripoint( x, y, m.get_abs_sub().z ), signage );
@@ -682,8 +688,10 @@ public:
             jsi.throw_error( "no such item group", "item_group" );
         }
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mon_density*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mon_density*/ ) const override
     {
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         m.furn_set( x, y, f_null );
         m.place_vending( x, y, item_group_id );
     }
@@ -699,8 +707,10 @@ public:
     , amount( jsi, "amount", 0, 0 )
     {
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mon_density*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mon_density*/ ) const override
     {
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         const long charges = amount.get();
         m.furn_set( x, y, f_null );
         if( charges == 0 ) {
@@ -730,8 +740,10 @@ public:
             }
         }
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mon_density*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mon_density*/ ) const override
     {
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         long charges = amount.get();
         m.furn_set( x, y, f_null );
         if( charges == 0 ) {
@@ -761,9 +773,9 @@ public:
             jsi.throw_error( "no such item group", "item" );
         }
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mon_density*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mon_density*/ ) const override
     {
-        m.place_items( group_id, chance.get(), x, y, x, y, true, 0 );
+        m.place_items( group_id, chance.get(), xmin, ymin, xmax, ymax, true, 0 );
     }
 };
 /**
@@ -786,9 +798,9 @@ public:
             jsi.throw_error( "no such monster group", "monster" );
         }
     }
-    void apply( map &m, const size_t x, const size_t y, const float mdensity ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float mdensity ) const override
     {
-        m.place_spawns( id, chance.get(), x, y, x, y, density == -1.0f ? mdensity : density );
+        m.place_spawns( id, chance.get(), xmin, ymin, xmax, ymax, density == -1.0f ? mdensity : density );
     }
 };
 /**
@@ -811,8 +823,10 @@ public:
             jsi.throw_error( "no such monster", "monster" );
         }
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mdensity*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mdensity*/ ) const override
     {
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         m.add_spawn( id, 1, x, y, friendly, -1, -1, name );
     }
 };
@@ -850,11 +864,13 @@ public:
             jsi.throw_error( "no such vehicle type or group", "vehicle" );
         }
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mon_density*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mon_density*/ ) const override
     {
         if( !x_in_y( chance.get(), 100 ) ) {
             return;
         }
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         m.add_vehicle( type, point(x, y), random_entry( rotation ), fuel, status );
     }
 };
@@ -878,8 +894,10 @@ public:
             jsi.throw_error( "no such item type", "item" );
         }
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mon_density*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mon_density*/ ) const override
     {
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         const int c = chance.get();
         if ( c == 1 || one_in( c ) ) {
             m.spawn_item( x, y, type, amount.get() );
@@ -912,8 +930,10 @@ public:
         }
         id = sid.id();
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mdensity*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mdensity*/ ) const override
     {
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         const tripoint actual_loc = tripoint( x, y, m.get_abs_sub().z );
         m.add_trap( actual_loc, id );
     }
@@ -943,8 +963,10 @@ public:
         }
         id = iter->second.loadid;
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mdensity*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mdensity*/ ) const override
     {
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         m.furn_set( x, y, id );
     }
 };
@@ -973,8 +995,10 @@ public:
         }
         id = iter->second.loadid;
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mdensity*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mdensity*/ ) const override
     {
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         m.ter_set( x, y, id );
     }
 };
@@ -1007,8 +1031,10 @@ public:
         }
         jsi.read( "overwrite", overwrite );
     }
-    void apply( map &m, const size_t x, const size_t y, const float /*mon_density*/ ) const override
+    void apply( map &m, const size_t xmin, const size_t ymin, const size_t xmax, const size_t ymax, const float /*mon_density*/ ) const override
     {
+        const int x = rng(xmin, xmax);
+        const int y = rng(ymin, ymax);
         m.make_rubble( tripoint( x, y, m.get_abs_sub().z ), rubble_type, items, floor_type, overwrite );
     }
 };
@@ -1505,9 +1531,7 @@ void jmapgen_objects::apply(map *m, float density) const {
         const auto &what = *obj.second;
         const int repeat = where.repeat.get();
         for( int i = 0; i < repeat; i++ ) {
-            const auto x = where.x.get();
-            const auto y = where.y.get();
-            what.apply(*m, x, y, density);
+            what.apply(*m, where.x.val, where.y.val, where.x.valmax, where.y.valmax, density);
         }
     }
 }
