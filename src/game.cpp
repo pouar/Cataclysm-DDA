@@ -189,6 +189,8 @@ void game::load_static_data()
     init_artifacts();
     init_faction_data();
 
+    get_auto_pickup().load_global();
+
     // --- move/delete everything below
     // TODO: move this to player class
     moveCount = 0;
@@ -419,7 +421,7 @@ void game::init_ui()
         hpW = 14;
         statH = 7;
         statW = sidebarWidth - MINIMAP_WIDTH - hpW;
-        locH = 1;
+        locH = 2;
         locW = sidebarWidth;
         stat2H = 2;
         stat2W = sidebarWidth;
@@ -459,7 +461,7 @@ void game::init_ui()
         hpW = 7;
         locX = MINIMAP_WIDTH;
         locY = messY + messH;
-        locH = 1;
+        locH = 2;
         locW = sidebarWidth - locX;
         statX = 0;
         statY = locY + locH;
@@ -601,8 +603,6 @@ void game::setup()
         }
     }
 
-    load_auto_pickup(false); // Load global auto pickup rules
-
     remoteveh_cache_turn = INT_MIN;
     remoteveh_cache = nullptr;
     // back to menu for save loading, new game etc
@@ -679,7 +679,7 @@ void game::start_game(std::string worldname)
     u.last_climate_control_ret = false;
 
     //Reset character pickup rules
-    vAutoPickupRules[2].clear();
+    get_auto_pickup().clear_character_rules();
     //Put some NPCs in there!
     create_starting_npcs();
     //Load NPCs. Set nearby npcs to active.
@@ -1620,7 +1620,7 @@ int game::inventory_item_menu(int pos, int iStartX, int iWidth, int position)
         std::vector<iteminfo> vThisItem, vDummy, vMenu;
 
         const int iOffsetX = 2;
-        const bool bHPR = hasPickupRule(oThisItem.tname( 1, false ));
+        const bool bHPR = get_auto_pickup().has_rule(oThisItem.tname( 1, false ));
         const hint_rating rate_drop_item = u.weapon.has_flag("NO_UNWIELD") ? HINT_CANT : HINT_GOOD;
 
         int max_text_length = 0;
@@ -1653,27 +1653,10 @@ int game::inventory_item_menu(int pos, int iStartX, int iWidth, int position)
         vMenu.push_back(iteminfo("MENU", (bHPR) ? "-" : "+",
                                  (bHPR) ? _("<-> Autopickup") : _("<+> Autopickup"), (bHPR) ? HINT_IFFY : HINT_GOOD));
 
-        int offset_line = 0;
-        int max_line = 0;
-        const std::string str = oThisItem.info(true, vThisItem);
+        int iScrollPos = 0;
+        oThisItem.info(true, vThisItem);
         const std::string item_name = oThisItem.tname();
-        WINDOW *w = newwin(TERMY - VIEW_OFFSET_Y * 2, iWidth, VIEW_OFFSET_Y, iStartX + VIEW_OFFSET_X);
-        WINDOW_PTR wptr( w );
 
-        trim_and_print(w, 1, 2, iWidth - 4, c_white, "%s", item_name.c_str());
-        max_line = fold_and_print_from(w, 3, 2, iWidth - 4, offset_line, c_white, str);
-        if (max_line > TERMY - VIEW_OFFSET_Y * 2 - 5) {
-            wmove(w, 1, iWidth - 3);
-            if (offset_line == 0) {
-                wprintz(w, c_white, "vv");
-            } else if (offset_line > 0 && offset_line + (TERMY - VIEW_OFFSET_Y * 2) - 5 < max_line) {
-                wprintz(w, c_white, "^v");
-            } else {
-                wprintz(w, c_white, "^^");
-            }
-        }
-        draw_border(w);
-        wrefresh(w);
         const int iMenuStart = iOffsetX;
         const int iMenuItems = vMenu.size() - 1;
         int iSelected = iOffsetX - 1;
@@ -1695,9 +1678,10 @@ int game::inventory_item_menu(int pos, int iStartX, int iWidth, int position)
         }
 
         do {
-            cMenu = draw_item_info(popup_x, popup_width, 0, vMenu.size() + iOffsetX * 2,
-                                   "", vMenu, vDummy,
-                                   iSelected >= iOffsetX && iSelected <= iMenuItems ? iSelected : -1);
+            int iSel = iSelected >= iOffsetX && iSelected <= iMenuItems ? iSelected : -1;
+            draw_item_info(VIEW_OFFSET_Y, iWidth, VIEW_OFFSET_X, TERMY - VIEW_OFFSET_Y * 2, item_name, vThisItem, vDummy,
+                           iScrollPos, true, false, false);
+            cMenu = draw_item_info(popup_x, popup_width, 0, vMenu.size() + iOffsetX * 2, "", vMenu, vDummy, iSel);
 
             switch (cMenu) {
             case 'a':
@@ -1742,25 +1726,21 @@ int game::inventory_item_menu(int pos, int iStartX, int iWidth, int position)
             case KEY_DOWN:
                 iSelected++;
                 break;
-            case '>':
-                if (offset_line + (TERMY - VIEW_OFFSET_Y * 2) - 5 < max_line) {
-                    offset_line++;
-                }
+            case KEY_PPAGE:
+                iScrollPos--;
                 break;
-            case '<':
-                if (offset_line > 0) {
-                    offset_line--;
-                }
+            case KEY_NPAGE:
+                iScrollPos++;
                 break;
             case '+':
                 if (!bHPR) {
-                    addPickupRule(oThisItem.tname( 1, false ));
+                    get_auto_pickup().add_rule(oThisItem.tname( 1, false ));
                     add_msg(m_info, _("'%s' added to character pickup rules."), oThisItem.tname( 1, false ).c_str());
                 }
                 break;
             case '-':
                 if (bHPR) {
-                    removePickupRule(oThisItem.tname( 1, false ));
+                    get_auto_pickup().remove_rule(oThisItem.tname( 1, false ));
                     add_msg(m_info, _("'%s' removed from character pickup rules."), oThisItem.tname( 1, false ).c_str());
                 }
                 break;
@@ -1772,22 +1752,7 @@ int game::inventory_item_menu(int pos, int iStartX, int iWidth, int position)
             } else if (iSelected > iMenuItems + 1) {
                 iSelected = iMenuStart;
             }
-            werase(w);
-            if (max_line > TERMY - VIEW_OFFSET_Y * 2 - 5) {
-                wmove(w, 1, iWidth - 3);
-                if (offset_line == 0) {
-                    wprintz(w, c_white, "vv");
-                } else if (offset_line > 0 && offset_line + (TERMY - VIEW_OFFSET_Y * 2) - 5 < max_line) {
-                    wprintz(w, c_white, "^v");
-                } else {
-                    wprintz(w, c_white, "^^");
-                }
-            }
-            trim_and_print(w, 1, 2, iWidth - 4, c_white, "%s", item_name.c_str());
-            fold_and_print_from(w, 3, 2, iWidth - 4, offset_line, c_white, str);
-            draw_border(w);
-            wrefresh(w);
-        } while (cMenu == KEY_DOWN || cMenu == KEY_UP || cMenu == '>' || cMenu == '<');
+        } while (cMenu == KEY_DOWN || cMenu == KEY_UP || cMenu == KEY_PPAGE || cMenu == KEY_NPAGE);
     }
     return cMenu;
 }
@@ -3348,7 +3313,7 @@ void game::load(std::string worldname, std::string name)
     }
 
     init_autosave();
-    load_auto_pickup(true); // Load character auto pickup rules
+    get_auto_pickup().load_character(); // Load character auto pickup rules
     zone_manager::get_manager().load_zones(); // Load character world zones
     load_uistate(worldname);
 
@@ -3507,7 +3472,7 @@ bool game::save()
              !save_factions_missions_npcs() ||
              !save_artifacts() ||
              !save_maps() ||
-             !save_auto_pickup(true) || // Save character auto pickup rules
+             !get_auto_pickup().save_character() ||
              !save_uistate()){
             return false;
         } else {
@@ -4359,7 +4324,7 @@ void game::debug()
     break;
     case 26:
     {
-        int time = std::atoi( string_input_popup( _("Set the time to? (One day is 19200)"),
+        int time = std::atoi( string_input_popup( string_format(_("Set the time to? (One day is %i turns)"), int(DAYS(1))),
                                                   20, to_string( (int)calendar::turn ) ).c_str() );
         if( time > 0 ) {
             calendar::turn = time;
@@ -5010,6 +4975,23 @@ void game::draw_sidebar()
     if (u.worn_with_flag("THERMOMETER")) {
         wprintz( w_location, c_white, " %s", print_temperature( get_temperature() ).c_str());
     }
+
+    //moon phase display
+    static std::vector<std::string> vMoonPhase = {"(   )", "(  ))", "( | )", "((  )"};
+
+    const int iPhase = int(calendar::turn.moon());
+    std::string sPhase = vMoonPhase[iPhase%4];
+
+    if (iPhase > 0) {
+        sPhase.insert(5 - ((iPhase > 4) ? iPhase%4 : 0), "</color>");
+        sPhase.insert(5 - ((iPhase < 4) ? iPhase+1 : 5), "<color_" + string_from_color(i_black) + ">");
+    }
+
+    trim_and_print( w_location, 1, 0, 10, c_white, "Moon %s", sPhase.c_str() );
+
+    const auto ll = get_light_level(g->u.fine_detail_vision_mod());
+    mvwprintz(w_location, 1, 15, c_ltgray, "%s ", _("Lighting:"));
+    wprintz(w_location, ll.second, ll.first.c_str());
 
     wmove(w_location, 0, 33);
     if(!u.has_trait("INCONT") && !u.has_effect("sleep") && !u.has_effect("lying_down"))
@@ -9215,9 +9197,7 @@ std::vector<map_item_stack> game::filter_item_stacks(std::vector<map_item_stack>
 void game::draw_item_filter_rules(WINDOW *window, int rows)
 {
     for (int i = 0; i < rows - 1; i++) {
-        for (int j = 1; j < getmaxx(window) - 1; j++) {
-            mvwprintz(window, i, j, c_black, "%s", " ");
-        }
+        mvwprintz(window, i, 1, c_black, std::string(getmaxx(window) - 2, ' ').c_str());
     }
 
     mvwprintz(window, 0, 2, c_white, "%s", _("Type part of an item's name to"));
@@ -9237,7 +9217,7 @@ void game::draw_item_filter_rules(WINDOW *window, int rows)
 std::string game::ask_item_priority_high(WINDOW *window, int rows)
 {
     for (int i = 0; i < rows - 1; i++) {
-        mvwprintz(window, i, 1, c_black, "%s", "                                                        ");
+        mvwprintz(window, i, 1, c_black, std::string(getmaxx(window) - 2, ' ').c_str());
     }
 
     mvwprintz(window, 2, 2, c_white, "%s", _("Type part of an item's name to move"));
@@ -9256,7 +9236,7 @@ std::string game::ask_item_priority_high(WINDOW *window, int rows)
 std::string game::ask_item_priority_low(WINDOW *window, int rows)
 {
     for (int i = 0; i < rows - 1; i++) {
-        mvwprintz(window, i, 1, c_black, "%s", "                                                        ");
+        mvwprintz(window, i, 1, c_black, std::string(getmaxx(window) - 2, ' ').c_str());
     }
 
     mvwprintz(window, 2, 2, c_white, "%s", _("Type part of an item's name to move"));
@@ -9535,21 +9515,16 @@ int game::list_items(const int iLastState)
 {
     int iInfoHeight = std::min(25, TERMY / 2);
     const int width = use_narrow_sidebar() ? 45 : 55;
-    const int offsetX = right_sidebar ? TERMX - VIEW_OFFSET_X - width :
-                                        VIEW_OFFSET_X;
+    const int offsetX = right_sidebar ? TERMX - VIEW_OFFSET_X - width : VIEW_OFFSET_X;
 
-    WINDOW *w_items = newwin(TERMY - 2 - iInfoHeight - VIEW_OFFSET_Y * 2, width - 2,
-                             VIEW_OFFSET_Y + 1, offsetX + 1);
+    WINDOW *w_items = newwin(TERMY - 2 - iInfoHeight - VIEW_OFFSET_Y * 2, width - 2,VIEW_OFFSET_Y + 1, offsetX + 1);
     WINDOW_PTR w_itemsptr( w_items );
-    WINDOW *w_items_border = newwin(TERMY - iInfoHeight - VIEW_OFFSET_Y * 2, width,
-                                    VIEW_OFFSET_Y, offsetX);
+
+    WINDOW *w_items_border = newwin(TERMY - iInfoHeight - VIEW_OFFSET_Y * 2, width,VIEW_OFFSET_Y, offsetX);
     WINDOW_PTR w_items_borderptr( w_items_border );
-    WINDOW *w_item_info = newwin(iInfoHeight - 1, width - 2,
-                                 TERMY - iInfoHeight - VIEW_OFFSET_Y, offsetX + 1);
+
+    WINDOW *w_item_info = newwin(iInfoHeight, width, TERMY - iInfoHeight - VIEW_OFFSET_Y, offsetX);
     WINDOW_PTR w_item_infoptr( w_item_info );
-    WINDOW *w_item_info_border = newwin(iInfoHeight, width,
-                                        TERMY - iInfoHeight - VIEW_OFFSET_Y, offsetX);
-    WINDOW_PTR w_item_info_borderptr( w_item_info_border );
 
     //Area to search +- of players position.
     const int iRadius = 12 + (u.per_cur * 2);
@@ -9611,6 +9586,7 @@ int game::list_items(const int iLastState)
     bool refilter = true;
     int page_num = 0;
     int iCatSortNum = 0;
+    int iScrollPos = 0;
     map_item_stack *activeItem = NULL;
     std::map<int, std::string> mSortCategory;
 
@@ -9620,6 +9596,8 @@ int game::list_items(const int iLastState)
     ctxt.register_action("DOWN", _("Move cursor down"));
     ctxt.register_action("LEFT", _("Previous item"));
     ctxt.register_action("RIGHT", _("Next item"));
+    ctxt.register_action("PAGE_DOWN");
+    ctxt.register_action("PAGE_UP");
     ctxt.register_action("NEXT_TAB");
     ctxt.register_action("PREV_TAB");
     ctxt.register_action("HELP_KEYBINDINGS");
@@ -9662,8 +9640,10 @@ int game::list_items(const int iLastState)
                 std::vector<iteminfo> vThisItem, vDummy;
 
                 activeItem->example->info(true, vThisItem);
+                int iDummySelect = 0;
                 draw_item_info(0, width - 5, 0, TERMY - VIEW_OFFSET_Y * 2,
-                               activeItem->example->tname(), vThisItem, vDummy);
+                               activeItem->example->tname(), vThisItem, vDummy, iDummySelect,
+                               false, false, true);
                 // wait until the user presses a key to wipe the screen
 
                 iLastActive = tripoint_min;
@@ -9768,13 +9748,14 @@ int game::list_items(const int iLastState)
             if (reset) {
                 reset_item_list_state(w_items_border, iInfoHeight, sort_radius);
                 reset = false;
+                iScrollPos = 0;
             }
 
             if (action == "UP") {
                 do {
                     iActive--;
                 } while(mSortCategory[iActive] != "");
-
+                iScrollPos = 0;
                 page_num = 0;
                 if (iActive < 0) {
                     iActive = iItemNum - 1;
@@ -9783,7 +9764,7 @@ int game::list_items(const int iLastState)
                 do {
                     iActive++;
                 } while(mSortCategory[iActive] != "");
-
+                iScrollPos = 0;
                 page_num = 0;
                 if (iActive >= iItemNum) {
                     iActive = (mSortCategory[0] != "") ? 1 : 0;
@@ -9798,6 +9779,10 @@ int game::list_items(const int iLastState)
                 if (page_num < 0) {
                     page_num = 0;
                 }
+            } else if (action == "PAGE_UP") {
+                iScrollPos--;
+            } else if (action == "PAGE_DOWN") {
+                iScrollPos++;
             } else if (action == "NEXT_TAB" || action == "PREV_TAB") {
                 u.view_offset = stored_view_offset;
                 return 1;
@@ -9907,7 +9892,7 @@ int game::list_items(const int iLastState)
                     std::vector<iteminfo> vThisItem, vDummy;
                     activeItem->example->info(true, vThisItem);
 
-                    draw_item_info(w_item_info, "", vThisItem, vDummy, 0, true, true);
+                    draw_item_info(w_item_info, "", vThisItem, vDummy, iScrollPos, true, true);
 
                     //Only redraw trail/terrain if x/y position changed
                     if( active_pos != iLastActive ) {
@@ -9921,23 +9906,11 @@ int game::list_items(const int iLastState)
                 draw_scrollbar(w_items_border, iActive, iMaxRows, iItemNum, 1);
             }
 
-            for (int j = 0; j < iInfoHeight - 1; j++) {
-                mvwputch(w_item_info_border, j, 0, c_ltgray, LINE_XOXO);
-            }
-
-            for (int j = 0; j < iInfoHeight - 1; j++) {
-                mvwputch(w_item_info_border, j, width - 1, c_ltgray, LINE_XOXO);
-            }
-
-            for (int j = 0; j < width - 1; j++) {
-                mvwputch(w_item_info_border, iInfoHeight - 1, j, c_ltgray, LINE_OXOX);
-            }
-
-            mvwputch(w_item_info_border, iInfoHeight - 1, 0, c_ltgray, LINE_XXOO);
-            mvwputch(w_item_info_border, iInfoHeight - 1, width - 1, c_ltgray, LINE_XOOX);
+            bool bDrawLeft = (ground_items.empty() && iLastState == 1) || filtered_items.empty();
+            draw_custom_border(w_item_info, bDrawLeft, true, false, true,
+                               LINE_XOXO, LINE_XOXO, true, true);
 
             wrefresh(w_items);
-            wrefresh(w_item_info_border);
             wrefresh(w_item_info);
 
             refresh();
@@ -12999,8 +12972,15 @@ void game::fling_creature(Creature *c, const int &dir, float flvel, bool control
         return;
     }
 
+    if( c->is_dead_state() ) {
+        // Flinging a corpse causes problems, don't enable without testing
+        return;
+    }
+
     int steps = 0;
     const bool is_u = (c == &u);
+    // Don't animate critters getting bashed if animations are off
+    const bool animate = is_u || OPTIONS["ANIMATIONS"];
 
     player *p = dynamic_cast<player*>(c);
 
@@ -13027,6 +13007,7 @@ void game::fling_creature(Creature *c, const int &dir, float flvel, bool control
             c->impact( damage, pt );
             // Multiply zed damage by 6 because no body parts
             const int zed_damage = std::max( 0, ( damage - critter.get_armor_bash( bp_torso ) ) * 6 );
+            // TODO: Pass the "flinger" here - it's not the flung critter that deals damage
             critter.apply_damage( c, bp_torso, zed_damage );
             critter.check_dead_state();
             if( !critter.is_dead() ) {
@@ -13083,7 +13064,7 @@ void game::fling_creature(Creature *c, const int &dir, float flvel, bool control
         }
         range--;
         steps++;
-        if( seen || u.sees( *c ) ) {
+        if( animate && (seen || u.sees( *c )) ) {
             draw();
         }
     }
