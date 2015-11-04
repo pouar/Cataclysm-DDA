@@ -1887,7 +1887,7 @@ void item::on_wield( player &p  )
             p.moves -= penalty;
         }
     }
-    p.add_msg_if_player("You wield your %s.", tname().c_str());
+    p.add_msg_if_player(_("You wield your %s."), tname().c_str());
 }
 
 void item::on_pickup( Character &p  )
@@ -5258,6 +5258,20 @@ std::string item::get_plant_name() const
         return std::string{};
     }
     return type->seed->plant_name;
+}
+
+bool item::is_dangerous() const
+{
+    // Note: doesn't handle the pipebomb or radio bombs
+    // Consider flagging dangerous items with an explicit flag instead
+    static const std::string explosion_string( "explosion" );
+    if( type->can_use( explosion_string ) ) {
+        return true;
+    }
+
+    return std::any_of( contents.begin(), contents.end(), []( const item &it ) {
+        return it.is_dangerous();
+    } );
 }
 
 std::string item::type_name( unsigned int quantity ) const

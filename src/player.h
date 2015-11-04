@@ -437,8 +437,14 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         /** Returns true if the player has a weapon with a block technique */
         bool can_weapon_block() const;
         using Creature::melee_attack;
-        /** Sets up a melee attack and handles melee attack function calls */
-        void melee_attack(Creature &t, bool allow_special, const matec_id &technique) override;
+        /**
+         * Sets up a melee attack and handles melee attack function calls
+         * @param t
+         * @param allow_special whether non-forced martial art technique or mutation attack should be
+         *   possible with this attack.
+         * @param force_technique special technique to use in attack.
+         */
+        void melee_attack(Creature &t, bool allow_special, const matec_id &force_technique) override;
         /** Returns the player's dispersion modifier based on skill. **/
         int skill_dispersion( item *weapon, bool random ) const;
         /** Returns a weapon's modified dispersion value */
@@ -691,8 +697,11 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
          * Returns true if it destroys the item. Consumes charges from the item.
          * Multi-use items are ONLY supported when all use_methods are iuse_actor!
          */
-        bool invoke_item( item* );
+        bool invoke_item( item*, const tripoint &pt );
         /** As above, but with a pre-selected method. Debugmsg if this item doesn't have this method. */
+        bool invoke_item( item*, const std::string&, const tripoint &pt );
+        /** As above two, but with position equal to current position */
+        bool invoke_item( item* );
         bool invoke_item( item*, const std::string& );
         /** Consumes charges from a tool or does nothing with a non-tool. Returns true if it destroys the item. */
         bool consume_charges(item *used, long charges_used);

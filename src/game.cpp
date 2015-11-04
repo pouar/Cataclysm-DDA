@@ -1604,84 +1604,103 @@ void game::handle_key_blocking_activity()
 * @param pos position of item in inventory
 * @param iStartX Left coord of the item info window
 * @param iWidth width of the item info window (height = height of terminal)
-* @param position It is position of the action menu. Default 0
-*       -2 - near the right edge of the terminal window
-*       -1 - left before item info window
-*       0 - right after item info window
-*       1 - near the left edge of the terminal window
 * @return getch
 */
-int game::inventory_item_menu(int pos, int iStartX, int iWidth, int position)
+int game::inventory_item_menu(int pos, int iStartX, int iWidth, const inventory_item_menu_positon position)
 {
     int cMenu = (int)'+';
 
     if (u.has_item(pos)) {
         item &oThisItem = u.i_at(pos);
-        std::vector<iteminfo> vThisItem, vDummy, vMenu;
+        std::vector<iteminfo> vThisItem, vDummy;
 
-        const int iOffsetX = 2;
         const bool bHPR = get_auto_pickup().has_rule(oThisItem.tname( 1, false ));
         const hint_rating rate_drop_item = u.weapon.has_flag("NO_UNWIELD") ? HINT_CANT : HINT_GOOD;
 
         int max_text_length = 0;
-        vMenu.push_back(iteminfo("MENU", "", "iOffsetX", iOffsetX));
-        vMenu.push_back(iteminfo("MENU", "", "iOffsetY", 0));
-
-        std::vector< std::tuple<std::string,std::string,std::string,double> >
-            menuItems {
-                std::make_tuple("MENU", "a", _("<a>ctivate"), u.rate_action_use( oThisItem )),
-                std::make_tuple("MENU", "R", _("<R>ead"), u.rate_action_read( oThisItem )),
-                std::make_tuple("MENU", "E", _("<E>at"), u.rate_action_eat( oThisItem )),
-                std::make_tuple("MENU", "W", _("<W>ear"), u.rate_action_wear( oThisItem )),
-                std::make_tuple("MENU", "w", _("<w>ield"), -999),
-                std::make_tuple("MENU", "t", _("<t>hrow"), -999),
-                std::make_tuple("MENU", "T", _("<T>ake off"), u.rate_action_takeoff( oThisItem )),
-                std::make_tuple("MENU", "d", _("<d>rop"), rate_drop_item),
-                std::make_tuple("MENU", "U", _("<U>nload"), u.rate_action_unload( oThisItem )),
-                std::make_tuple("MENU", "r", _("<r>eload"), u.rate_action_reload( oThisItem )),
-                std::make_tuple("MENU", "D", _("<D>isassemble"), u.rate_action_disassemble( oThisItem )),
-                std::make_tuple("MENU", "=", _("<=> reassign"),-999)
-            };
-
-        for (auto &i: menuItems){
-            vMenu.push_back(iteminfo(std::get<0>(i), std::get<1>(i), std::get<2>(i), std::get<3>(i)));
-            max_text_length = std::max( max_text_length, utf8_width(std::get<2>(i)) );
+        uimenu action_menu;
+        const auto addentry = [&]( const char key, const std::string &text, const hint_rating hint ) {
+            // The char is used as retval from the uimenu *and* as hotkey.
+            action_menu.addentry( key, true, key, text );
+            auto &entry = action_menu.entries.back();
+            switch( hint ) {
+                case HINT_CANT:
+                    entry.text_color = c_ltgray;
+                    break;
+                case HINT_IFFY:
+                    entry.text_color = c_ltred;
+                    break;
+                case HINT_GOOD:
+                    entry.text_color = c_ltgreen;
+                    break;
+            }
+            max_text_length = std::max( max_text_length, utf8_width( text ) );
+        };
+        addentry( 'a', _("activate"), u.rate_action_use( oThisItem ) );
+        addentry( 'R', _("read"), u.rate_action_read( oThisItem ) );
+        addentry( 'E', _("eat"), u.rate_action_eat( oThisItem ) );
+        addentry( 'W', _("wear"), u.rate_action_wear( oThisItem ) );
+        addentry( 'w', _("wield"), HINT_GOOD );
+        addentry( 't', _("throw"), HINT_GOOD );
+        addentry( 'T', _("take off"), u.rate_action_takeoff( oThisItem ) );
+        addentry( 'd', _("drop"), rate_drop_item );
+        addentry( 'U', _("unload"), u.rate_action_unload( oThisItem ) );
+        addentry( 'r', _("reload"), u.rate_action_reload( oThisItem ) );
+        addentry( 'D', _("disassemble"), u.rate_action_disassemble( oThisItem ) );
+        addentry( '=', _("reassign"), HINT_GOOD );
+        if( bHPR ) {
+            addentry( '-', _("Autopickup"), HINT_IFFY );
+        } else {
+            addentry( '+', _("Autopickup"), HINT_GOOD );
         }
-
-        max_text_length = std::max(max_text_length, utf8_width(_("<-> Autopickup")));
-        max_text_length = std::max(max_text_length, utf8_width(_("<+> Autopickup")));
-        vMenu.push_back(iteminfo("MENU", (bHPR) ? "-" : "+",
-                                 (bHPR) ? _("<-> Autopickup") : _("<+> Autopickup"), (bHPR) ? HINT_IFFY : HINT_GOOD));
 
         int iScrollPos = 0;
         oThisItem.info(true, vThisItem);
         const std::string item_name = oThisItem.tname();
 
-        const int iMenuStart = iOffsetX;
-        const int iMenuItems = vMenu.size() - 1;
-        int iSelected = iOffsetX - 1;
-        int popup_width = max_text_length + 2;
+        // +2+2 for border and adjacent spaces, +2 for '<hotkey><space>'
+        int popup_width = max_text_length + 2+2 + 2;
         int popup_x = 0;
         switch (position) {
-        case -2:
+        case RIGHT_TERMINAL_EDGE:
             popup_x = 0;
-            break; //near the right edge of the terminal window
-        case -1:
+            break;
+        case LEFT_OF_INFO:
             popup_x = iStartX - popup_width;
-            break; //left before item info window
-        case 0:
+            break;
+        case RIGHT_OF_INFO:
             popup_x = iStartX + iWidth;
-            break; //right after item info window
-        case 1:
+            break;
+        case LEFT_TERMINAL_EDGE:
             popup_x = TERMX - popup_width;
-            break; //near the left edge of the terminal window
+            break;
         }
 
+        // TODO: Ideally the setup of uimenu would be split into calculate variables (size, width...),
+        // and actual window creation. This would allow us to let uimenu calculate the width, we can
+        // use that to adjust its location afterwards.
+        action_menu.w_y = VIEW_OFFSET_Y;
+        action_menu.w_x = popup_x + VIEW_OFFSET_X;
+        action_menu.w_width = popup_width;
+        // Filtering isn't needed, the number of entries is manageable.
+        action_menu.filtering = false;
+        // Default menu border color is different, this matches the border of the item info window.
+        action_menu.border_color = BORDER_COLOR;
+
         do {
-            int iSel = iSelected >= iOffsetX && iSelected <= iMenuItems ? iSelected : -1;
-            draw_item_info(VIEW_OFFSET_Y, iWidth, VIEW_OFFSET_X, TERMY - VIEW_OFFSET_Y * 2, item_name, vThisItem, vDummy,
+            draw_item_info(iStartX, iWidth, VIEW_OFFSET_X, TERMY - VIEW_OFFSET_Y * 2, item_name, vThisItem, vDummy,
                            iScrollPos, true, false, false);
-            cMenu = draw_item_info(popup_x, popup_width, 0, vMenu.size() + iOffsetX * 2, "", vMenu, vDummy, iSel);
+            const int prev_selected = action_menu.selected;
+            action_menu.query( false );
+            if( action_menu.ret != UIMENU_INVALID ) {
+                cMenu = action_menu.ret; /* Remember: hotkey == retval, see addentry above. */
+            } else if( action_menu.keypress == KEY_RIGHT ) {
+                // Simulate KEY_RIGHT == '\n' (confirm currently selected entry) for compatibility with old version.
+                // TODO: ideally this should be done in the uimenu, maybe via a callback.
+                cMenu = action_menu.entries[action_menu.selected].retval;
+            } else {
+                cMenu = action_menu.keypress;
+            }
 
             switch (cMenu) {
             case 'a':
@@ -1720,16 +1739,19 @@ int game::inventory_item_menu(int pos, int iStartX, int iWidth, int position)
             case '=':
                 reassign_item(pos);
                 break;
-            case KEY_UP:
-                iSelected--;
-                break;
-            case KEY_DOWN:
-                iSelected++;
-                break;
             case KEY_PPAGE:
+                // Prevent the menu from scrolling with this key. TODO: Ideally the menu
+                // could be instructed to ignore these two keys instead of scrolling.
+                action_menu.selected = prev_selected;
+                action_menu.fselected = prev_selected;
+                action_menu.vshift = 0;
                 iScrollPos--;
                 break;
             case KEY_NPAGE:
+                // ditto. See KEY_PPAGE.
+                action_menu.selected = prev_selected;
+                action_menu.fselected = prev_selected;
+                action_menu.vshift = 0;
                 iScrollPos++;
                 break;
             case '+':
@@ -1744,13 +1766,6 @@ int game::inventory_item_menu(int pos, int iStartX, int iWidth, int position)
                     add_msg(m_info, _("'%s' removed from character pickup rules."), oThisItem.tname( 1, false ).c_str());
                 }
                 break;
-            default:
-                break;
-            }
-            if (iSelected < iMenuStart - 1) { // wraparound, but can be hidden
-                iSelected = iMenuItems;
-            } else if (iSelected > iMenuItems + 1) {
-                iSelected = iMenuStart;
             }
         } while (cMenu == KEY_DOWN || cMenu == KEY_UP || cMenu == KEY_PPAGE || cMenu == KEY_NPAGE);
     }
@@ -2048,9 +2063,7 @@ input_context game::get_player_input(std::string &action)
                 // Display "press X to continue" text at top of main window
                 std::string message = string_format( _("Press %s to accept your fate..."),
                         ctxt.get_desc("QUIT").c_str() );
-                mvwprintz( w_terrain, 0, (TERRAIN_WINDOW_WIDTH / 2) - (message.length() / 2), c_white,
-                           message.c_str() );
-                wrefresh(w_terrain);
+                popup(message, PF_NO_WAIT_ON_TOP);
                 break;
             }
             wrefresh(w_terrain);
@@ -2293,21 +2306,17 @@ bool game::handle_action()
 
     int before_action_moves = u.moves;
 
-    // Use to track if auto-move should be canceled due to a failed
-    // move or obstacle
-    bool continue_auto_move = false;
-
     // quit prompt check (ACTION_QUIT only grabs 'Q')
     if(uquit == QUIT_WATCH && action == "QUIT") {
         uquit = QUIT_DIED;
         return false;
     }
 
-    // I have split the switch(act) into two, so one can be done
-    // for the deathcam as well. It will still be run if you are
-    // alive, so no worries there. KA101 suggested (quite aptly)
-    // that the user should be able to look around, so this
-    // allows that. -Davek
+    // Use to track if auto-move should be canceled due to a failed
+    // move or obstacle
+    bool continue_auto_move = true;
+
+    // These actions are allowed while deathcam is active.
     if( uquit == QUIT_WATCH || !u.is_dead_state() ) {
         switch(act) {
         case ACTION_CENTER:
@@ -2952,7 +2961,6 @@ bool game::handle_action()
                 break;    //don't do anything when sharing and not debugger
             }
             debug();
-            continue_auto_move = true; // A small hack to help with route testing
             refresh_all();
             break;
 
@@ -2998,8 +3006,7 @@ bool game::handle_action()
             break;
         }
     }
-
-    if (!continue_auto_move) {
+    if( !continue_auto_move ) {
         u.clear_destination();
     }
 
@@ -3487,7 +3494,7 @@ bool game::save()
 // Helper predicate to exclude files from deletion when resetting a world directory.
 static bool isForbidden(std::string candidate)
 {
-    if (candidate.find("worldoptions.txt") != std::string::npos ||
+    if (candidate.find(FILENAMES["worldoptions"]) != std::string::npos ||
         candidate.find("mods.json") != std::string::npos) {
         return true;
     }
@@ -4324,11 +4331,54 @@ void game::debug()
     break;
     case 26:
     {
-        int time = std::atoi( string_input_popup( string_format(_("Set the time to? (One day is %i turns)"), int(DAYS(1))),
-                                                  20, to_string( (int)calendar::turn ) ).c_str() );
-        if( time > 0 ) {
-            calendar::turn = time;
-        }
+        auto set_turn = [&]( const int initial, const int factor, const char * const msg ) {
+            const auto text = string_input_popup( msg, 20, to_string( initial ), "", "", 20, true );
+            if(text.empty()) {
+                return;
+            }
+            const int new_value = std::atoi( text.c_str() );
+            calendar::turn -= (initial - new_value) * factor;
+        };
+
+        uimenu smenu;
+
+        do {
+            const int iSel = smenu.ret;
+            smenu.reset();
+            smenu.addentry( 0, true, 'y', "%s: %d", _("year"), calendar::turn.years() );
+            smenu.addentry( 1, true, 's', "%s: %d", _("season"), int(calendar::turn.get_season()) );
+            smenu.addentry( 2, true, 'd', "%s: %d", _("day"), calendar::turn.days() );
+            smenu.addentry( 3, true, 'h', "%s: %d", _("hour"), calendar::turn.hours() );
+            smenu.addentry( 4, true, 'm', "%s: %d", _("minute"), calendar::turn.minutes() );
+            smenu.addentry( 5, true, 't', "%s: %d", _("turn"), calendar::turn.get_turn() );
+            smenu.addentry( 6, true, 'q', "%s", _("quit") );
+            smenu.selected = iSel;
+            smenu.query();
+
+            switch( smenu.ret ) {
+            case 0:
+                set_turn( calendar::turn.years(), DAYS(1) * calendar::turn.year_length(), _("Set year to?") );
+                break;
+            case 1:
+                set_turn( int(calendar::turn.get_season()), DAYS(1) * calendar::turn.season_length(), _("Set season to? (0 = spring)") );
+                break;
+            case 2:
+                set_turn( calendar::turn.days(), DAYS(1), _("Set days to?") );
+                break;
+            case 3:
+                set_turn( calendar::turn.hours(), HOURS(1), _("Set hour to?") );
+                break;
+            case 4:
+                set_turn( calendar::turn.hours(), MINUTES(1), _("Set minute to?") );
+                break;
+            case 5:
+                set_turn( calendar::turn.get_turn(), 1,
+                          string_format(_("Set turn to? (One day is %i turns)"), int(DAYS(1))).c_str() );
+                break;
+            default:
+                break;
+            }
+        } while (smenu.ret != 6);
     }
     break;
     case 27:
@@ -5134,8 +5184,7 @@ void game::draw_ter( const tripoint &center, const bool looking, const bool draw
         input_context ctxt("DEFAULTMODE");
         std::string message = string_format( _("Press %s to accept your fate..."),
                 ctxt.get_desc("QUIT").c_str() );
-        mvwprintz( w_terrain, 0, (TERRAIN_WINDOW_WIDTH / 2) - (message.length() / 2), c_white,
-                   message.c_str() );
+        popup(message, PF_NO_WAIT_ON_TOP);
     }
     wrefresh(w_terrain);
 
@@ -8056,6 +8105,7 @@ bool npc_menu( npc &who )
         swap_pos,
         push,
         examine_wounds,
+        use_item,
         attack
     };
 
@@ -8069,6 +8119,7 @@ bool npc_menu( npc &who )
     amenu.addentry( swap_pos, obeys, 's', _("Swap positions") );
     amenu.addentry( push, obeys, 'p', _("Push away") );
     amenu.addentry( examine_wounds, true, 'w', _("Examine wounds") );
+    amenu.addentry( use_item, true, 'i', _("Use item on") );
     amenu.addentry( attack, true, 'a', _("Attack") );
 
     amenu.query();
@@ -8097,6 +8148,23 @@ bool npc_menu( npc &who )
     } else if( choice == examine_wounds ) {
         const bool precise = g->u.get_skill_level( skill_firstaid ) * 4 + g->u.per_cur >= 20;
         who.body_window( precise );
+    } else if( choice == use_item ) {
+        static const std::string npc_use_flag( "USE_ON_NPC" );
+        const int pos = g->inv_for_filter( _("Use which item:"),[]( const item &it ) {
+            return it.has_flag( npc_use_flag );
+        } );
+
+        item &used = g->u.i_at( pos );
+        if( !used.has_flag( npc_use_flag ) ) {
+            add_msg( _("Never mind") );
+            return false;
+        }
+
+        bool did_use = g->u.invoke_item( &used, who.pos() );
+        if( did_use ) {
+            // Note: exiting a body part selection menu counts as use here
+            g->u.mod_moves( -300 );
+        }
     } else if( choice == attack ) {
         //The NPC knows we started the fight, used for morale penalty.
         if( !who.is_enemy() ) {
@@ -8849,6 +8917,8 @@ tripoint game::look_around( WINDOW *w_info, const tripoint &start_point,
     ctxt.register_action("LIST_ITEMS");
     ctxt.register_action( "LEVEL_UP" );
     ctxt.register_action( "LEVEL_DOWN" );
+    ctxt.register_action( "TRAVEL_TO" );
+    ctxt.register_action( "HELP_KEYBINDINGS" );
 
     const int old_levz = get_levz();
 
@@ -9020,6 +9090,20 @@ tripoint game::look_around( WINDOW *w_info, const tripoint &start_point,
                 lp.z = new_levz;
                 refresh_all();
                 draw_ter( lp, true );
+            } else if( action == "TRAVEL_TO" ) {
+                if( !u.sees( lp ) ) {
+                    add_msg(_("You can't see that destination."));
+                    continue;
+                }
+                auto route = m.route( u.pos3(), lp, 0, 1000 );
+                if( route.size() > 1 ) {
+                    route.pop_back();
+                    u.set_destination( route );
+                } else {
+                    add_msg(m_info, _("You can't travel there."));
+                    continue;
+                }
+                return { INT_MIN, INT_MIN, INT_MIN };
             } else if (!ctxt.get_coordinates(w_terrain, lx, ly)) {
                 int dx, dy;
                 ctxt.get_direction(dx, dy, action);
@@ -9609,6 +9693,7 @@ int game::list_items(const int iLastState)
     ctxt.register_action("PRIORITY_INCREASE");
     ctxt.register_action("PRIORITY_DECREASE");
     ctxt.register_action("SORT");
+    ctxt.register_action("TRAVEL_TO");
 
     do {
         if (!ground_items.empty() || iLastState == 1) {
@@ -9690,6 +9775,18 @@ int game::list_items(const int iLastState)
                 refilter = true;
                 reset = true;
 
+            } else if( action == "TRAVEL_TO" ) {
+                if( !u.sees( u.pos3() + active_pos ) ) {
+                    add_msg(_("You can't see that destination."));
+                }
+                auto route = m.route( u.pos3(), u.pos3() + active_pos, 0, 1000 );
+                if( route.size() > 1 ) {
+                    route.pop_back();
+                    u.set_destination( route );
+                    break;
+                } else {
+                    add_msg(m_info, _("You can't travel there."));
+                }
             }
 
             if ( uistate.list_item_sort == 1 ) {

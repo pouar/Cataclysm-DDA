@@ -1180,6 +1180,12 @@ bool advanced_inventory::move_all_items(bool nested_call)
     auto &sarea = squares[spane.get_area()];
     auto &darea = squares[dpane.get_area()];
 
+    // Make sure source and destination are different, otherwise items will disappear
+    // Need to check actual position to account for dragged vehicles
+    if(sarea.pos == darea.pos && spane.in_vehicle() == dpane.in_vehicle()){
+        return false;
+    }
+
     if( nested_call || !OPTIONS["CLOSE_ADV_INV"] ) {
         // Why is this here? It's because the activity backlog can act
         // like a stack instead of a single deferred activity in order to
@@ -1597,6 +1603,8 @@ void advanced_inventory::display()
                 continue;
             }
             int ret = 0;
+            const int info_width = w_width / 2;
+            const int info_startx = colstart + ( src == left ? info_width : 0 );
             if( spane.get_area() == AIM_INVENTORY || spane.get_area() == AIM_WORN ) {
                 int idx = ( spane.get_area() == AIM_INVENTORY ) ?
                           sitem->idx : player::worn_position_to_index( sitem->idx );
@@ -1608,8 +1616,8 @@ void advanced_inventory::display()
                 // "return to AIM".
                 do_return_entry();
                 assert( g->u.has_activity( ACT_ADV_INVENTORY ) );
-                ret = g->inventory_item_menu( idx, colstart + ( src == left ? w_width / 2 : 0 ),
-                                              w_width / 2, ( src == right ? 0 : -1 ) );
+                ret = g->inventory_item_menu( idx, info_startx, info_width,
+                                              src == left ? game::LEFT_OF_INFO : game::RIGHT_OF_INFO );
                 if( !g->u.has_activity( ACT_ADV_INVENTORY ) ) {
                     exit = true;
                 } else {
@@ -1624,10 +1632,9 @@ void advanced_inventory::display()
                 item &it = *sitem->items.front();
                 std::vector<iteminfo> vThisItem, vDummy;
                 it.info( true, vThisItem );
-                int rightWidth = w_width / 2;
                 int iDummySelect = 0;
-                ret = draw_item_info( colstart + ( src == left ? w_width / 2 : 0 ),
-                                      rightWidth, 0, 0, it.tname(), vThisItem, vDummy, iDummySelect,
+                ret = draw_item_info( info_startx,
+                                      info_width, 0, 0, it.tname(), vThisItem, vDummy, iDummySelect,
                                       false, false, true );
             }
             if( ret == KEY_NPAGE || ret == KEY_DOWN ) {

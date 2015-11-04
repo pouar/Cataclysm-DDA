@@ -528,9 +528,9 @@ distclean:
 bindist: $(BINDIST)
 
 ifeq ($(TARGETSYSTEM), LINUX)
-DATA_PREFIX=$(PREFIX)/share/cataclysm-dda/
-BIN_PREFIX=$(PREFIX)/bin
-LOCALE_DIR=$(PREFIX)/share/locale
+DATA_PREFIX=$(DESTDIR)$(PREFIX)/share/cataclysm-dda/
+BIN_PREFIX=$(DESTDIR)$(PREFIX)/bin
+LOCALE_DIR=$(DESTDIR)$(PREFIX)/share/locale
 install: version $(TARGET)
 	mkdir -p $(DATA_PREFIX)
 	mkdir -p $(BIN_PREFIX)
@@ -546,6 +546,43 @@ install: version $(TARGET)
 	cp -R --no-preserve=ownership data/title $(DATA_PREFIX)
 ifdef TILES
 	cp -R --no-preserve=ownership gfx $(DATA_PREFIX)
+endif
+ifdef SOUND
+	cp -R --no-preserve=ownership data/sound $(DATA_PREFIX)
+endif
+ifdef LUA
+	mkdir -p $(DATA_PREFIX)/lua
+	install --mode=644 lua/autoexec.lua $(DATA_PREFIX)/lua
+	install --mode=644 lua/class_definitions.lua $(DATA_PREFIX)/lua
+endif
+	install --mode=644 data/changelog.txt data/cataicon.ico data/fontdata.json \
+                   README.txt LICENSE.txt -t $(DATA_PREFIX)
+	mkdir -p $(LOCALE_DIR)
+	LOCALE_DIR=$(LOCALE_DIR) lang/compile_mo.sh
+endif
+
+ifeq ($(TARGETSYSTEM), CYGWIN)
+DATA_PREFIX=$(DESTDIR)$(PREFIX)/share/cataclysm-dda/
+BIN_PREFIX=$(DESTDIR)$(PREFIX)/bin
+LOCALE_DIR=$(DESTDIR)$(PREFIX)/share/locale
+install: version $(TARGET)
+	mkdir -p $(DATA_PREFIX)
+	mkdir -p $(BIN_PREFIX)
+	install --mode=755 $(TARGET) $(BIN_PREFIX)
+	cp -R --no-preserve=ownership data/font $(DATA_PREFIX)
+	cp -R --no-preserve=ownership data/json $(DATA_PREFIX)
+	cp -R --no-preserve=ownership data/mods $(DATA_PREFIX)
+	cp -R --no-preserve=ownership data/names $(DATA_PREFIX)
+	cp -R --no-preserve=ownership data/raw $(DATA_PREFIX)
+	cp -R --no-preserve=ownership data/recycling $(DATA_PREFIX)
+	cp -R --no-preserve=ownership data/motd $(DATA_PREFIX)
+	cp -R --no-preserve=ownership data/credits $(DATA_PREFIX)
+	cp -R --no-preserve=ownership data/title $(DATA_PREFIX)
+ifdef TILES
+	cp -R --no-preserve=ownership gfx $(DATA_PREFIX)
+endif
+ifdef SOUND
+	cp -R --no-preserve=ownership data/sound $(DATA_PREFIX)
 endif
 ifdef LUA
 	mkdir -p $(DATA_PREFIX)/lua

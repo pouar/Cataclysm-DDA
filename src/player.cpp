@@ -591,7 +591,9 @@ void player::apply_persistent_morale()
         } else if (has_effect("took_prozac")) {
             pen = int(pen / 2);
         }
-        add_morale(MORALE_PERM_HOARDER, -pen, -pen, 5, 5, true);
+        if (pen > 0) {
+            add_morale(MORALE_PERM_HOARDER, -pen, -pen, 5, 5, true);
+        }
     }
 
     // The stylish get a morale bonus for each body part covered in an item
@@ -3410,7 +3412,7 @@ Strength - 4;    Dexterity - 4;    Intelligence - 4;    Perception - 4"));
 
     for( auto &speed_effect : speed_effects ) {
         nc_color col = ( speed_effect.second > 0 ? c_green : c_red );
-        mvwprintz( w_speed, line, 1, col, "%s", speed_effect.first.c_str() );
+        mvwprintz( w_speed, line, 1, col, "%s", _(speed_effect.first.c_str()) );
         mvwprintz( w_speed, line, 21, col, ( speed_effect.second > 0 ? "+" : "-" ) );
         mvwprintz( w_speed, line, ( abs( speed_effect.second ) >= 10 ? 22 : 23 ), col, "%d%%",
                    abs( speed_effect.second ) );
@@ -10880,11 +10882,11 @@ bool player::wield(item* it, bool autodrop)
                 return false;
         } else {
         add_msg(m_info, _("You are too weak to wield %s with only one arm."),
-                it->tname().c_str()); 
+                it->tname().c_str());
                 return false;
         }
     }
-    
+
     if (!is_armed()) {
         weapon = i_rem(it);
         moves -= 30;
@@ -11708,21 +11710,22 @@ bool player::has_enough_charges( const item &it, bool show_msg ) const
 
 bool player::consume_charges(item *used, long charges_used)
 {
+    // Non-tools can use charges too - when they're comestibles
     const auto tool = dynamic_cast<const it_tool*>(used->type);
-    if( tool == nullptr || charges_used <= 0 ) {
-        // Non-tools don't use charges
-        // Canceled or not used up or whatever
+    const auto comest = dynamic_cast<const it_comest*>(used->type);
+    if( charges_used <= 0 || (tool == nullptr && comest == nullptr) ) {
         return false;
     }
 
-    if( tool->charges_per_use <= 0 ) {
+    if( tool != nullptr && tool->charges_per_use <= 0 ) {
         // An item that doesn't normally expend charges is destroyed instead.
         /* We can't be certain the item is still in the same position,
          * as other items may have been consumed as well, so remove
          * the item directly instead of by its position. */
-        i_rem(used);
+        i_rem( used );
         return true;
     }
+
     if( used->has_flag( "USE_UPS" ) ) {
         use_charges( "UPS", charges_used );
         //Replace 1 with charges it needs to use.
@@ -11732,6 +11735,12 @@ bool player::consume_charges(item *used, long charges_used)
     } else {
         used->charges -= std::min( used->charges, charges_used );
     }
+
+    if( comest != nullptr && used->charges <= 0 ) {
+        i_rem( used );
+        return true;
+    }
+
     // We may have fiddled with the state of the item in the iuse method,
     // so restack to sort things out.
     inv.restack();
@@ -11941,12 +11950,17 @@ activate your weapon."), gun->tname().c_str(), _(mod->location.c_str()));
 
 bool player::invoke_item( item* used )
 {
+    return invoke_item( used, pos() );
+}
+
+bool player::invoke_item( item* used, const tripoint &pt )
+{
     if( !has_enough_charges( *used, true ) ) {
         return false;
     }
 
     if( used->type->use_methods.size() < 2 ) {
-        const long charges_used = used->type->invoke( this, used, pos3() );
+        const long charges_used = used->type->invoke( this, used, pt );
         return consume_charges( used, charges_used );
     }
 
@@ -11959,7 +11973,7 @@ bool player::invoke_item( item* used )
     umenu.text = string_format( _("What to do with your %s?"), used->tname().c_str() );
     int num_total = 0;
     for( const auto &um : used->type->use_methods ) {
-        bool usable = um.can_call( this, used, false, pos3() );
+        bool usable = um.can_call( this, used, false, pt );
         const std::string &aname = um.get_name();
         umenu.addentry( num_total, usable, MENU_AUTOASSIGN, aname );
         num_total++;
@@ -11973,11 +11987,16 @@ bool player::invoke_item( item* used )
     }
 
     const std::string &method = used->type->use_methods[choice].get_type_name();
-    long charges_used = used->type->invoke( this, used, pos3(), method );
+    long charges_used = used->type->invoke( this, used, pt, method );
     return consume_charges( used, charges_used );
 }
 
 bool player::invoke_item( item* used, const std::string &method )
+{
+    return invoke_item( used, method, pos() );
+}
+
+bool player::invoke_item( item* used, const std::string &method, const tripoint &pt )
 {
     if( !has_enough_charges( *used, true ) ) {
         return false;
@@ -11994,7 +12013,7 @@ bool player::invoke_item( item* used, const std::string &method )
         return consume_item( *used );
     }
 
-    long charges_used = actually_used->type->invoke( this, actually_used, pos3(), method );
+    long charges_used = actually_used->type->invoke( this, actually_used, pt, method );
     return consume_charges( actually_used, charges_used );
 }
 
