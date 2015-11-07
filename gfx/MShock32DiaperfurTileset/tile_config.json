@@ -23745,6 +23745,11 @@
 					"id": "mon_cuntcrusher",
 					"fg": 54,
 					"rotates": false
+				},
+				{
+					"id": "t_console",
+					"fg": 55,
+					"rotates": false
 				}
 			]
 		}
