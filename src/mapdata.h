@@ -337,6 +337,7 @@ extern ter_id t_null,
     t_wall_glass_alarm,
     t_reinforced_glass,
     t_bars,
+    t_wall_r,t_wall_w,t_wall_b,t_wall_g,t_wall_p,t_wall_y,
     t_door_c, t_door_c_peep, t_door_b, t_door_b_peep, t_door_o, t_door_o_peep,
     t_door_locked_interior, t_door_locked, t_door_locked_peep, t_door_locked_alarm, t_door_frame,
     t_chaingate_l, t_fencegate_c, t_fencegate_o, t_chaingate_c, t_chaingate_o,
@@ -435,7 +436,8 @@ extern furn_id f_null,
     f_flower_marloss,
     f_tatami,
     f_kiln_empty, f_kiln_full, f_kiln_metal_empty, f_kiln_metal_full,
-    f_robotic_arm;
+    f_robotic_arm,
+    f_arcade_machine;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //// These are on their way OUT and only used in certain switch statements until they are rewritten.
