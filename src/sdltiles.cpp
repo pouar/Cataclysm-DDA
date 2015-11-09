@@ -587,7 +587,7 @@ void BitmapFont::OutputChar(long t, int x, int y, unsigned char color)
 }
 
 // only update if the set interval has elapsed
-void try_update()
+void try_sdl_update()
 {
     unsigned long now = SDL_GetTicks();
     if (now - lastupdate >= interval) {
@@ -1120,7 +1120,7 @@ void CheckMessages()
         }
     }
     if (needupdate) {
-        try_update();
+        try_sdl_update();
     }
     if(quit) {
         endwin();
