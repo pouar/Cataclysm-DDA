@@ -1173,6 +1173,7 @@ It takes you forever to find the address on your map...\n"));
         query_any(_("Press any key..."));
         break;
     case COMPACT_RHEL:
+        reset_terminal();
         print_line(_("\
 \n\
 Introducing Red Hat Enterprise Linux 7\n\

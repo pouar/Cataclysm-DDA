@@ -3189,8 +3189,6 @@ PPPPPP,                 \n",
                                    mapf::basic_bind("G", f_arcade_machine));
         computer * tmpcomp = m->add_computer( tripoint( 15, 14, m->get_abs_sub().z ), _("Red Hat Enterprise Linux"), 0);
         tmpcomp->add_option(_("About Red Hat Enterprise Linux"), COMPACT_RHEL, 0);
-        tmpcomp->add_option(_("View Research Logs"), COMPACT_RESEARCH, 0);
-        tmpcomp->add_option(_("Download Map Data"), COMPACT_MAPS, 0);
 }
 
 
