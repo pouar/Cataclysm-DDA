@@ -619,6 +619,7 @@ public:
 
 // Display
     virtual nc_color basic_symbol_color() const override;
+    virtual nc_color symbol_color() const override;
  int print_info(WINDOW* w, int vStart, int vLines, int column) const override;
  void popup_desc() const;
  std::string short_description() const;
@@ -859,6 +860,16 @@ public:
  static const tripoint no_goal_point;
  
  void die_by_bfg9000( Creature *source );
+
+    int last_updated;
+    /**
+     * Do some cleanup and caching as npc is being unloaded from map.
+     */
+    void on_unload();
+    /**
+     * Retroactively update npc.
+     */
+    void on_load();
 
     protected:
         void store(JsonOut &jsout) const;
