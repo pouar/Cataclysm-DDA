@@ -87,7 +87,6 @@ void mapgen_s_hardware(map *m, oter_id terrain_type, mapgendata dat, int turn, f
 void mapgen_s_sports(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 
 void mapgen_shelter(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
-void mapgen_flying_fortress_5(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 void mapgen_shelter_under(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 void mapgen_lmoe(map *m, oter_id terrain_type, mapgendata dat, int turn, float density);
 

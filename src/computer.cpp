@@ -1172,26 +1172,7 @@ It takes you forever to find the address on your map...\n"));
         }
         query_any(_("Press any key..."));
         break;
-    case COMPACT_RHEL:
-        reset_terminal();
-        print_line(_("\
-\n\
-Introducing Red Hat Enterprise Linux 7\n\
-Red Hat Enterprise Linux 7 showcases the latest features in an enterprise\n\
-operating system\n\
- - Enterprise architects will appreciate new capabilities such as\n\
-   lightweight application isolation.\n\
- - Application developers will welcome an updated development environment\n\
-   and application-profiling tools. Read more at the Red Hat Developer Blog.\n\
- - System administrators will appreciate new management tools and expanded\n\
-   file-system options with improved performance and scalability.\n\
-Deployed on physical hardware, virtual machines, or in the cloud,\n\
-Red Hat Enterprise Linux 7 delivers the advanced features required for\n\
-next-generation architectures.\n\
-\n\
-  \n"));
-        query_any(_("Press any key to continue..."));
-        break;
+
     } // switch (action)
 }
 

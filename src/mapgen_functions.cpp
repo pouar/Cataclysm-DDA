@@ -103,7 +103,6 @@ void init_mapgen_builtin_functions() {
     mapgen_cfunction_map["s_hardware"] = mapgen_s_hardware;
     mapgen_cfunction_map["s_sports"] = mapgen_s_sports;
     mapgen_cfunction_map["shelter"] = &mapgen_shelter;
-    mapgen_cfunction_map["flying_fortress_5"] = &mapgen_flying_fortress_5;
     mapgen_cfunction_map["shelter_under"] = &mapgen_shelter_under;
     mapgen_cfunction_map["lmoe"] = &mapgen_lmoe;
     mapgen_cfunction_map["basement_generic_layout"] = &mapgen_basement_generic_layout; // empty, not bound
@@ -3151,44 +3150,6 @@ void mapgen_shelter(map *m, oter_id, mapgendata dat, int, float) {
             m->place_spawns( GROUP_ZOMBIE, ACTIVE_WORLD_OPTIONS["SPAWN_DENSITY"], 0, SEEX * 2 - 3,
                          SEEX * 2 - 1, SEEX * 2 - 1, 0.4f);
         }
-}
-
-
-void mapgen_flying_fortress_5(map *m, oter_id, mapgendata dat, int, float) {
-
-        (void)dat;
-        fill_background(m, t_carpet_red);
-        mapf::formatted_set_simple(m, 0, 0,
-                                   "\
-                        \n\
-                        \n\
-                        \n\
-                        \n\
-                        \n\
-                        \n\
-                        \n\
-                        \n\
-                        \n\
-                        \n\
-                        \n\
-                        \n\
-                        \n\
------------------------+\n\
-             AG         \n\
-                        \n\
-                        \n\
-                        \n\
-                        \n\
-                        \n\
-,,,,,,,                 \n\
-PPPPPP,                 \n\
-PPPPPP,                 \n\
-PPPPPP,                 \n",
-                                   mapf::basic_bind("+ A G P | - ,", t_door_metal_c, t_atm, t_carpet_red, t_water_pool,  t_wall_r,
-                                           t_wall_r, t_linoleum_white),
-                                   mapf::basic_bind("G", f_arcade_machine));
-        computer * tmpcomp = m->add_computer( tripoint( 15, 14, m->get_abs_sub().z ), _("Red Hat Enterprise Linux"), 0);
-        tmpcomp->add_option(_("About Red Hat Enterprise Linux"), COMPACT_RHEL, 0);
 }
 
 
