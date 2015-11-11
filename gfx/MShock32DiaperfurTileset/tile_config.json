@@ -23360,22 +23360,22 @@
 				{
 					"rotates": false,
 					"id": "broken_diaperfur_animatronic_bear",
-					"fg": 32
+					"fg": 24
 				},
 				{
 					"rotates": false,
 					"id": "broken_diaperfur_animatronic_fox",
-					"fg": 33
+					"fg": 25
 				},
 				{
 					"rotates": false,
 					"id": "broken_diaperfur_animatronic_bunny",
-					"fg": 34
+					"fg": 26
 				},
 				{
 					"rotates": false,
 					"id": "broken_diaperfur_animatronic_chicken",
-					"fg": 35
+					"fg": 27
 				},
 				{
 					"rotates": false,
