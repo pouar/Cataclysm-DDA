@@ -39,5 +39,5 @@ TILESET: tiles.png
 #diapered ponies came from here
 #http://www.furaffinity.net/view/15358249/
 
-Zalgo Pinkie came from here
-http://zalgopinkie.deviantart.com/art/Zalgo-Pinkie-Sprite-346397625
+#Zalgo Pinkie came from here
+#http://zalgopinkie.deviantart.com/art/Zalgo-Pinkie-Sprite-346397625
