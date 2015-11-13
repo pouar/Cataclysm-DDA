@@ -5951,6 +5951,16 @@ void player::update_body()
 void player::update_body( int from, int to )
 {
     update_stamina( to - from );
+    if (calendar::once_every(peerate) && !has_effect("sleep")) {
+        bladder++;
+        if(has_effect("diuretic"))
+            bladder++;
+    }
+    else if (calendar::once_every(peesleeprate) && has_effect("sleep")) {
+        bladder++;
+        if(has_effect("diuretic"))
+            bladder++;
+    }
     const int five_mins = ticks_between( from, to, MINUTES(5) );
     if( five_mins > 0 ) {
         check_needs_extremes();
@@ -6125,17 +6135,6 @@ void player::update_needs( int rate_multiplier )
     float hunger_rate = 1.0f;
     if( has_trait("LIGHTEATER") ) {
         hunger_rate -= (1.0f / 3.0f);
-    }
-
-    if (calendar::once_every(peerate) && !has_effect("sleep")) {
-        bladder++;
-        if(has_effect("diuretic"))
-            bladder++;
-    }
-    else if (calendar::once_every(peesleeprate) && has_effect("sleep")) {
-        bladder++;
-        if(has_effect("diuretic"))
-            bladder++;
     }
 
     if( has_trait( "HUNGER" ) ) {
