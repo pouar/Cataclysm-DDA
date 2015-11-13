@@ -23982,6 +23982,11 @@
 					"id": "t_console",
 					"fg": 55,
 					"rotates": false
+				},
+				{
+					"id": "mon_toriel",
+					"fg": 56,
+					"rotates": false
 				}
 			]
 		}

@@ -697,17 +697,14 @@
 		"anger_triggers":[],
 		"fear_triggers":["PLAYER_WEAK","HURT","FIRE"],
 		"placate_triggers" : [],
-		"death_drops": "mon_diaperfur_cat_death_drops"
-	},
-	{
-		"type" : "item_group",
-		"subtype": "collection",
-		"id": "mon_diaperfur_cat_death_drops",
-		"entries":
-		[
-			{ "item": "leotard"},
-			{ "item": "thick_pink_diaper"}
-		]
+		"death_drops": {
+			"subtype": "collection",
+			"entries":
+			[
+				{ "item": "leotard"},
+				{ "item": "thick_pink_diaper"}
+			]
+		}
 	},
 	{
 		"type" : "MONSTER",
@@ -741,17 +738,14 @@
 		"anger_triggers":[],
 		"fear_triggers":["PLAYER_WEAK","HURT","FIRE"],
 		"placate_triggers" : [],
-		"death_drops": "mon_diaperfur_fox_death_drops"
-	},
-	{
-		"type" : "item_group",
-		"subtype": "collection",
-		"id": "mon_diaperfur_fox_death_drops",
-		"entries":
-		[
-			{ "item": "bikini_top"},
-			{ "item": "thick_pink_diaper"}
-		]
+		"death_drops": {
+			"subtype": "collection",
+			"entries":
+			[
+				{ "item": "bikini_top"},
+				{ "item": "thick_pink_diaper"}
+			]
+		}
 	},
 	{
 		"type" : "MONSTER",
@@ -785,17 +779,14 @@
 		"anger_triggers":[],
 		"fear_triggers":["PLAYER_WEAK","HURT","FIRE"],
 		"placate_triggers" : [],
-		"death_drops": "mon_diaperfur_dragon_death_drops"
-	},
-	{
-		"type" : "item_group",
-		"subtype": "collection",
-		"id": "mon_diaperfur_dragon_death_drops",
-		"entries":
-		[
-			{ "item": "halter_top"},
-			{ "item": "thick_pink_diaper"}
-		]
+		"death_drops": {
+			"subtype": "collection",
+			"entries":
+			[
+				{ "item": "halter_top"},
+				{ "item": "thick_pink_diaper"}
+			]
+		}
 	},
 	{
 		"type" : "MONSTER",
@@ -829,16 +820,13 @@
 		"anger_triggers":["PLAYER_CLOSE","HURT","MEAT"],
 		"fear_triggers":[],
 		"placate_triggers" : [],
-		"death_drops": "mon_big_diaper_dragon_death_drops"
-	},
-	{
-		"type" : "item_group",
-		"subtype": "collection",
-		"id": "mon_big_diaper_dragon_death_drops",
-		"entries":
-		[
-			{ "item": "thick_diaper"}
-		]
+		"death_drops": {
+			"subtype": "collection",
+			"entries":
+			[
+				{ "item": "thick_diaper"}
+			]
+		}
 	},
 	{
 		"type":"monstergroup",
@@ -2663,21 +2651,6 @@
 		"material_thickness" : 2
 	},
 	{
-		"type" : "item_group",
-		"subtype": "collection",
-		"id": "mon_amy_death_drops",
-		"entries":
-		[
-			{ "item": "amy_gloves"},
-			{ "item": "amy_dress"},
-			{ "item": "amy_boots"},
-			{ "item": "amy_headband"},
-			{ "item": "gold_bracelet"},
-			{ "item": "gold_bracelet"},
-			{ "item": "pink_diaper"}
-		]
-	},
-	{
 		"type" : "MONSTER",
 		"id" : "mon_amy_rose",
 		"name": "Amy Rose",
@@ -2709,7 +2682,19 @@
 		"anger_triggers":["FRIEND_ATTACKED","HURT"],
 		"fear_triggers":["FIRE"],
 		"placate_triggers" : [],
-		"death_drops": "mon_amy_death_drops"
+		"death_drops": {
+			"subtype": "collection",
+			"entries":
+			[
+				{ "item": "amy_gloves"},
+				{ "item": "amy_dress"},
+				{ "item": "amy_boots"},
+				{ "item": "amy_headband"},
+				{ "item": "gold_bracelet"},
+				{ "item": "gold_bracelet"},
+				{ "item": "pink_diaper"}
+			]
+		}
 	},
 	{
 		"type" : "mutation",
@@ -2800,5 +2785,41 @@
 		"flags" : ["VARSIZE"],
 		"coverage" : 37,
 		"material_thickness" : 3
+	},
+	{
+		"type" : "MONSTER",
+		"id" : "mon_toriel",
+		"name": "Toriel",
+		"species":"MAMMAL",
+		"default_faction":"player",
+		"symbol":"T",
+		"color":"white",
+		"size":"MEDIUM",
+		"material":"flesh",
+		"diff":8,
+		"aggression":0,
+		"morale":100,
+		"speed":110,
+		"melee_skill":6,
+		"melee_dice":1,
+		"melee_dice_sides":6,
+		"melee_cut":0,
+		"dodge":3,
+		"armor_bash":0,
+		"armor_cut":0,
+		"vision_day":40,
+		"death_drops": {
+			"subtype": "collection",
+			"entries":
+			[
+				{ "item": "pink_diaper"},
+				{ "item": "bra"},
+				{ "item": "dress"}
+			]
+		},
+		"hp":60,
+		"death_function":"NORMAL",
+		"description":"AKA Goat Mom. And what's a diaperfur mod without a diaper under there?",
+		"flags":["SEES", "HEARS", "WARM", "BASHES", "HUMAN", "BONES"]
 	}
 ]
