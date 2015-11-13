@@ -661,18 +661,9 @@ void player::apply_persistent_morale()
     }
     if(!has_trait("INCONT"))
     {
-        if(bladder<4)
-            bonusbladder+=bladder/bladdercap/4;
-            bonusbladder+=bladder/bladdercap/4;
-            if(bladder>=bladdercap-5)
-            {
-                bonusbladder++;
-                if(has_trait("DL"))
-                    bonusbladder++;
-                
-            }
-            if(bladder>=bladdercap && has_trait("DL"))
-                bonusbladder+=5;
+        bonusbladder+=bladder/(bladdercap/4);
+        if(bladder>=bladdercap-5)
+            bonusbladder++;
     }
     if(has_trait("DL"))
     {
