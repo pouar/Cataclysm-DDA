@@ -668,20 +668,20 @@ void player::apply_persistent_morale()
     if(has_trait("DL"))
     {
         if(bonus)
-            add_morale(MORALE_DIAPER, 20, 20, 20, 20, true);
+            add_morale(MORALE_DIAPER, 20, 20, 20, 1, true);
         if(bonuspee)
-            add_morale(MORALE_WET_DIAPER, 20, 20, 20, 20, true);
+            add_morale(MORALE_WET_DIAPER, 20, 20, 20, 1, true);
         if(bonusbladder!=0)
-            add_morale(MORALE_BLADDER, bonusbladder*5, bonusbladder*5);
+            add_morale(MORALE_BLADDER, bonusbladder*5, bonusbladder*5, 0, 0, true);
     }
     else
     {
         if(bonus)
-            add_morale(MORALE_DIAPER, -4, -4, -4, -4, true);
+            add_morale(MORALE_DIAPER, -4, -4, 1, 1, true);
         if(bonuspee)
-            add_morale(MORALE_WET_DIAPER, -8, -8, -8, -8, true);
+            add_morale(MORALE_WET_DIAPER, -8, -8, 1, 1, true);
         if(bonusbladder!=0)
-            add_morale(MORALE_BLADDER, -bonusbladder, -bonusbladder, -4, -4, true);
+            add_morale(MORALE_BLADDER, -bonusbladder, -bonusbladder, 0, 0, true);
     }
 
     // Floral folks really don't like having their flowers covered.
