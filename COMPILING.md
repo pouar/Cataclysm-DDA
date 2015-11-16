@@ -389,7 +389,7 @@ If you dont want localization you can change `LOCALIZE` to 0.
 
 This is a tentative step-by-step guide to building your own CDDA with Tiles, Localization and Lua using only MSYS2. You may want to follow it if the MinGW guide above doesn't work for you or you just feel adventurous. Feedback is very much welcome in terms of issues and/or pull-requests.
 
-It has been tested and proven to work on Windows XP, Windows 7 and Windows 10. Your mileage may vary.
+This guide assumes you're building on a x86_64 build of Windows. If not adjust the invocations appropriately. It has been tested and proven to work on Windows XP, Windows 7 and Windows 10. Your mileage may vary.
 
 #### 1. Go to https://msys2.github.io/ and download appropriate MSYS (top of the page).
 
@@ -398,10 +398,54 @@ It has been tested and proven to work on Windows XP, Windows 7 and Windows 10. Y
 #### 3. In the open terminal:
 
 ```bash
-pacman --needed -Syu mingw-w64-$(uname -m)-{SDL2{,_image,_mixer,_ttf},pkg-config,toolchain,lua} base-devel git
+pacman --needed -Sy bash pacman pacman-mirrors msys2-runtime
 ```
 
-#### 4. Close MSYS2 terminal and open MinGW-w64 Win64 Shell from Start menu and run:
+Note: You may close the terminal now and reopen it from the Start menu (MSYS2 Shell, just to be on the safe-er side).
+
+Note: You may need to bash the close button repeatedly. Or use the task manager to kill it.
+
+#### 4. Open an editor that preserves line-endings
+
+Note: Wordpad should do. Or Notepadd++.
+
+#### 5. Open `C:\msys64\etc\pacman.conf` and change:
+
+```bash
+# By default, pacman accepts packages signed by keys that its local keyring
+# trusts (see pacman-key and its man page), as well as unsigned packages.
+#SigLevel = Never
+SigLevel    = Required DatabaseOptional
+LocalFileSigLevel = Optional
+#RemoteFileSigLevel = Required
+```
+
+To:
+
+```bash
+# By default, pacman accepts packages signed by keys that its local keyring
+# trusts (see pacman-key and its man page), as well as unsigned packages.
+SigLevel = Never
+#SigLevel    = Required DatabaseOptional
+LocalFileSigLevel = Optional
+#RemoteFileSigLevel = Required
+```
+
+(Exchange the # on SigLevel). This disables signature checking as it is currently borked.
+
+#### 6. Save the file
+
+#### 7. Run in MSYS2 terminal:
+```bash
+update-core
+```
+
+then restart MSYS2 and run
+
+```bash
+pacman --needed -Syu mingw-w64-$(uname -m)-{SDL2{,_image,_mixer,_ttf},pkg-config,toolchain,lua} base-devel git
+```
+#### 8. Close MSYS2 terminal and open MinGW-w64 Win64 Shell from Start menu and run:
 
 Note: This will download whole CDDA repository. If you're just testing you should probably add `--depth=1`.
 
@@ -409,8 +453,7 @@ Note: This will download whole CDDA repository. If you're just testing you shoul
 git clone https://github.com/CleverRaven/Cataclysm-DDA.git
 cd Cataclysm-DDA
 ```
-
-#### 5. Open `Makefile` (it's located at `C:\msys64\home\<Your_Login>\Cataclysm-DDA\Makefile`) in an editor that worked before and change:
+#### also
 
 ```Makefile
    ifeq ($(NATIVE), osx)
@@ -454,25 +497,15 @@ To:
 
 (Add `-lharfbuzz -lglib-2.0 -llzma -lws2_32 -lintl -liconv -lwebp -ljpeg -luuid`). You'll need these libs for it to link.
 
-#### 6. Compile your CDDA by running:
+#### 9. Compile your CDDA by running:
 
 ```bash
-make RELEASE=1 TILES=1
+make MSYS2=1 RELEASE=1 TILES=1 LOCALIZE=1 SOUND=1 LUA=1 NATIVE=win64
 ```
 
+Note: You cannot naively use `-jX` to speed up your building process with `LUA=1`. You must first run `cd src/lua/ && lua generate_bindings.lua && cd ../..` if you want to use `-jX`. X should be the number of threads/cores your processor has.
 
-For:
-- Lua:
-    You'd need to first run:
-    
-    ```bash
-    cd src/lua && lua generate_bindings.lua && cd ../../
-    ```
-
-    Then add `LUA=1` to make invocation
-- Localization: Use `LOCALIZE=1`
-
-That's it. You should get a `cataclysm-tiles.exe` binary in the same folder you've found the `Makefile` in.
+That's it. You should get a `cataclysm-tiles.exe` binary in the same folder you've found the `Makefile` in. The make flags are the same as the ones described above. For instance, if you do not want to build with sound support, you can remove `SOUND=1`.
 
 # BSDs
 

@@ -1202,7 +1202,7 @@ int iuse::meth(player *p, item *it, bool, const tripoint& )
 int iuse::vitamins(player *p, item *it, bool, const tripoint& )
 {
     p->add_msg_if_player(_("You take some vitamins."));
-    p->mod_healthy_mod(50);
+    p->mod_healthy_mod(50, 50);
     return it->type->charges_to_use();
 }
 
@@ -1210,7 +1210,7 @@ int iuse::vaccine(player *p, item *it, bool, const tripoint& )
 {
     p->add_msg_if_player(_("You inject the vaccine."));
     p->add_msg_if_player(m_good, _("You feel tough."));
-    p->mod_healthy_mod(200);
+    p->mod_healthy_mod(200, 200);
     p->mod_pain(3);
     item syringe( "syringe", it->bday );
     p->i_add( syringe );
@@ -1409,7 +1409,7 @@ int iuse::plantblech(player *p, item *it, bool, const tripoint &pos)
         //reverses the harmful values of drinking fertilizer
         p->mod_hunger(p->nutrition_for(food) * multiplier);
         p->thirst -= food->quench * multiplier;
-        p->mod_healthy_mod(food->healthy * multiplier);
+        p->mod_healthy_mod(food->healthy * multiplier, food->healthy * multiplier);
         p->add_morale(MORALE_FOOD_GOOD, -10 * multiplier, 60, 60, 30, false, food);
         return it->type->charges_to_use();
     } else {
@@ -2331,7 +2331,7 @@ int iuse::mycus(player *p, item *it, bool t, const tripoint &pos)
         p->fatigue += 5;
         p->thirst += 10;
         p->vomit(); // no hunger/quench benefit for you
-        p->mod_healthy_mod(-8);
+        p->mod_healthy_mod(-8, -50);
     }
     return it->type->charges_to_use();
 }
@@ -6818,7 +6818,7 @@ int iuse::holster_gun(player *p, item *it, bool, const tripoint& )
             }
 
             p->add_msg_if_player(message.c_str(), gun.tname().c_str(), it->tname().c_str());
-            p->wield_contents(it, true, t_gun->skill_used, 13);
+            p->wield_contents(it, 0, 13);
         }
     }
     return it->type->charges_to_use();
@@ -6876,7 +6876,7 @@ int iuse::sheath_knife(player *p, item *it, bool, const tripoint& )
         // else unsheathe a sheathed weapon and have the player wield it
     } else {
         if (!p->is_armed() || p->wield(NULL)) {
-            p->wield_contents(it, true, skill_cutting, 13);
+            p->wield_contents(it, 0, 13);
 
             int lvl = p->skillLevel( skill_cutting );
             std::string message;
@@ -6942,7 +6942,7 @@ int iuse::sheath_sword(player *p, item *it, bool, const tripoint& )
     } else {
         if (!p->is_armed() || p->wield(NULL)) {
             int lvl = p->skillLevel( skill_cutting );
-            p->wield_contents(it, true, skill_cutting, 13);
+            p->wield_contents(it, 0, 13);
 
             // in order to perform iaijutsu, have to pass a roll based on level
             bool iaijutsu =
