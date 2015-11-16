@@ -30,3 +30,16 @@ MSYS2 is an alternate way to build the project on Windows. It has a great packag
 ## Visual Studio
 
 MSVC 14 can build Cataclysm and we have project files for it in msvc140/.  We strongly suspect that MSVC 13 and earlier are incapable of building Cataclysm and we've removed their project files.  If we can support MSVC 13, feel free to restore the project files.
+
+
+# Pouar's Notes
+
+
+## Use MSYS2 on Windows and MinGW-w64 when cross-compiling to Windows
+
+### While MinGW-w64 is the best compiler when cross-compiling from Linux to Windows. It's quite unintuitive on its own on Windows, mostly because the cli environment on Windows is crap. use MSYS2 as it has a decent cli environment and it includes MinGW-w64.
+
+
+## Don't use MSVC
+
+### Cataclysm-DDA needed a few hacks and polyfills to get it to compile in MSVC. Hacks I didn't like and decided to take it out in my branch. MSYS2/MinGW-w64 is better anyway. You can still view it in Visual Studio though as I left the project files in there.
