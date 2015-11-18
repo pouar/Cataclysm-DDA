@@ -436,6 +436,7 @@ LocalFileSigLevel = Optional
 #### 6. Save the file
 
 #### 7. Run in MSYS2 terminal:
+
 ```bash
 update-core
 ```
@@ -453,7 +454,8 @@ Note: This will download whole CDDA repository. If you're just testing you shoul
 git clone https://github.com/CleverRaven/Cataclysm-DDA.git
 cd Cataclysm-DDA
 ```
-#### also
+
+also change
 
 ```Makefile
    ifeq ($(NATIVE), osx)
@@ -474,28 +476,6 @@ To:
      LDFLAGS += -s
    endif
 ```
-
-Also change:
-
-```Makefile
-   ifeq ($(TARGETSYSTEM),WINDOWS)
-     ifndef DYNAMIC_LINKING
-       # These differ depending on what SDL2 is configured to use.
-       LDFLAGS += -lfreetype -lpng -lz -ljpeg -lbz2
-     else
-```
-
-To:
-
-```Makefile
-   ifeq ($(TARGETSYSTEM),WINDOWS)
-     ifndef DYNAMIC_LINKING
-       # These differ depending on what SDL2 is configured to use.
-       LDFLAGS += -lfreetype -lpng -lz -ltiff -lbz2 -lharfbuzz -lglib-2.0 -llzma -lws2_32 -lintl -liconv -lwebp -ljpeg -luuid
-     else
-```
-
-(Add `-lharfbuzz -lglib-2.0 -llzma -lws2_32 -lintl -liconv -lwebp -ljpeg -luuid`). You'll need these libs for it to link.
 
 #### 9. Compile your CDDA by running:
 

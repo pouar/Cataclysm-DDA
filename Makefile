@@ -231,25 +231,6 @@ ifeq ($(NATIVE), osx)
   endif
 endif
 
-ifeq ($(NATIVE),)
-  ifeq ($(shell uname -o), Msys)
-    NATIVE=win
-  else
-    ifeq ($(shell uname -o), Cygwin)
-      NATIVE=win
-    endif
-  endif
-endif
-
-ifeq ($(NATIVE), win)
-  ifeq ($(shell uname -m), x86_64)
-    NATIVE=win64
-  else
-    ifeq ($(shell uname -m), i686)
-      NATIVE=win32
-    endif
-  endif
-endif
 # Win32 (MinGW32 or MinGW-w64(32bit)?)
 ifeq ($(NATIVE), win32)
 # Any reason not to use -m32 on MinGW32?
@@ -261,6 +242,11 @@ else
     LDFLAGS += -m64
     TARGETSYSTEM=WINDOWS
   endif
+endif
+
+# Cygwin
+ifeq ($(NATIVE), cygwin)
+  TARGETSYSTEM=CYGWIN
 endif
 
 # MXE cross-compile to win32
@@ -415,6 +401,12 @@ else
   endif
 endif
 
+ifeq ($(TARGETSYSTEM),CYGWIN)
+  ifeq ($(LOCALIZE),1)
+    # Work around Cygwin not including gettext support in glibc
+    LDFLAGS += -lintl -liconv
+  endif
+endif
 
 # BSDs have backtrace() and friends in a separate library
 ifeq ($(BSD), 1)
@@ -428,7 +420,7 @@ endif
 
 # Global settings for Windows targets (at end)
 ifeq ($(TARGETSYSTEM),WINDOWS)
-    LDFLAGS += -lgdi32 -lwinmm -limm32 -loleaut32 -lversion -ltiff -llzma -lpng -ljpeg -luuid -lcomctl32 -lwebp -lharfbuzz -lglib-2.0 -lws2_32 -lole32 -lintl -liconv
+    LDFLAGS += -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion
 endif
 
 ifeq ($(LOCALIZE),1)
@@ -436,6 +428,10 @@ ifeq ($(LOCALIZE),1)
 endif
 
 ifeq ($(TARGETSYSTEM),LINUX)
+  BINDIST_EXTRAS += cataclysm-launcher
+endif
+
+ifeq ($(TARGETSYSTEM),CYGWIN)
   BINDIST_EXTRAS += cataclysm-launcher
 endif
 
@@ -453,6 +449,12 @@ ifdef LANGUAGES
 endif
 
 ifeq ($(TARGETSYSTEM), LINUX)
+  ifneq ($(PREFIX),)
+    DEFINES += -DPREFIX="$(PREFIX)" -DDATA_DIR_PREFIX
+  endif
+endif
+
+ifeq ($(TARGETSYSTEM), CYGWIN)
   ifneq ($(PREFIX),)
     DEFINES += -DPREFIX="$(PREFIX)" -DDATA_DIR_PREFIX
   endif
