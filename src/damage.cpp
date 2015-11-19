@@ -87,7 +87,7 @@ void dealt_damage_instance::set_damage( damage_type dt, int amount )
 }
 int dealt_damage_instance::type_damage( damage_type dt ) const
 {
-    if( (size_t)dt < dealt_dams.size()  ) {
+    if( ( size_t )dt < dealt_dams.size() ) {
         return dealt_dams[dt];
     }
 
@@ -163,7 +163,7 @@ void ammo_effects( const tripoint &p, const std::set<std::string> &effects )
     if( effects.count( "NAPALM" ) > 0 ) {
         g->explosion( p, 4, 0.7, 0, true );
         // More intense fire near the center
-        for( auto &&pt : g->m.points_in_radius( p, 1, 0 ) ) {
+        for( auto && pt : g->m.points_in_radius( p, 1, 0 ) ) {
             g->m.add_field( pt, fd_fire, 1, 0 );
         }
     }
@@ -171,14 +171,14 @@ void ammo_effects( const tripoint &p, const std::set<std::string> &effects )
     if( effects.count( "NAPALM_BIG" ) > 0 ) {
         g->explosion( p, 24, 0.8, 0, true );
         // More intense fire near the center
-        for( auto &&pt : g->m.points_in_radius( p, 3, 0 ) ) {
+        for( auto && pt : g->m.points_in_radius( p, 3, 0 ) ) {
             g->m.add_field( pt, fd_fire, 1, 0 );
         }
     }
 
     if( effects.count( "MININUKE_MOD" ) > 0 ) {
         g->explosion( p, 450 );
-        for( auto &&pt : g->m.points_in_radius( p, 6, 0 ) ) {
+        for( auto && pt : g->m.points_in_radius( p, 6, 0 ) ) {
             if( g->m.sees( p, pt, 3 ) &&
                 g->m.move_cost( pt ) > 0 ) {
                 g->m.add_field( pt, fd_nuke_gas, 3, 0 );
@@ -187,7 +187,7 @@ void ammo_effects( const tripoint &p, const std::set<std::string> &effects )
     }
 
     if( effects.count( "ACIDBOMB" ) > 0 ) {
-        for( auto &&pt : g->m.points_in_radius( p, 1, 0 ) ) {
+        for( auto && pt : g->m.points_in_radius( p, 1, 0 ) ) {
             g->m.add_field( pt, fd_acid, 3, 0 );
         }
     }
@@ -205,27 +205,27 @@ void ammo_effects( const tripoint &p, const std::set<std::string> &effects )
     }
 
     if( effects.count( "TOXICGAS" ) > 0 ) {
-        for( auto &&pt : g->m.points_in_radius( p, 1, 0 ) ) {
+        for( auto && pt : g->m.points_in_radius( p, 1, 0 ) ) {
             g->m.add_field( pt, fd_toxic_gas, 3, 0 );
         }
     }
     if( effects.count( "TEARGAS" ) > 0 ) {
-        for( auto &&pt : g->m.points_in_radius( p, 2, 0 ) ) {
+        for( auto && pt : g->m.points_in_radius( p, 2, 0 ) ) {
             g->m.add_field( pt, fd_tear_gas, 3, 0 );
         }
     }
     if( effects.count( "GAS_FUNGICIDAL" ) > 0 ) {
-        for( auto &&pt : g->m.points_in_radius( p, 1, 0 ) ) {
+        for( auto && pt : g->m.points_in_radius( p, 1, 0 ) ) {
             g->m.add_field( pt, fd_fungicidal_gas, 3, 0 );
         }
     }
     if( effects.count( "SMOKE" ) > 0 ) {
-        for( auto &&pt : g->m.points_in_radius( p, 1, 0 ) ) {
+        for( auto && pt : g->m.points_in_radius( p, 1, 0 ) ) {
             g->m.add_field( pt, fd_smoke, 3, 0 );
         }
     }
     if( effects.count( "SMOKE_BIG" ) > 0 ) {
-        for( auto &&pt : g->m.points_in_radius( p, 6, 0 ) ) {
+        for( auto && pt : g->m.points_in_radius( p, 6, 0 ) ) {
             g->m.add_field( pt, fd_smoke, 18, 0 );
         }
     }
@@ -235,7 +235,7 @@ void ammo_effects( const tripoint &p, const std::set<std::string> &effects )
     }
 
     if( effects.count( "NO_BOOM" ) == 0 && effects.count( "FLAME" ) > 0 ) {
-        for( auto &&pt : g->m.points_in_radius( p, 1, 0 ) ) {
+        for( auto && pt : g->m.points_in_radius( p, 1, 0 ) ) {
             g->m.add_field( pt, fd_fire, 1, 0 );
         }
     }
@@ -249,7 +249,7 @@ void ammo_effects( const tripoint &p, const std::set<std::string> &effects )
     }
 
     if( effects.count( "LIGHTNING" ) > 0 ) {
-        for( auto &&pt : g->m.points_in_radius( p, 1, 0 ) ) {
+        for( auto && pt : g->m.points_in_radius( p, 1, 0 ) ) {
             g->m.add_field( pt, fd_electricity, 3, 0 );
         }
     }
@@ -274,7 +274,7 @@ void ammo_effects( const tripoint &p, const std::set<std::string> &effects )
     }
 
     if( effects.count( "PLASMA" ) > 0 ) {
-        for( auto &&pt : g->m.points_in_radius( p, 1, 0 ) ) {
+        for( auto && pt : g->m.points_in_radius( p, 1, 0 ) ) {
             if( one_in( 2 ) ) {
                 g->m.add_field( pt, fd_plasma, rng( 2, 3 ), 0 );
             }
@@ -306,8 +306,7 @@ int aoe_size( const std::set<std::string> &tags )
 }
 
 
-static const std::map<std::string, damage_type> dt_map =
-{
+static const std::map<std::string, damage_type> dt_map = {
     { "true", DT_TRUE },
     { "biological", DT_BIOLOGICAL },
     { "bash", DT_BASH },
@@ -330,13 +329,13 @@ damage_type dt_by_name( const std::string &name )
 }
 
 projectile::projectile() :
-        speed( 0 ),
-        drop( nullptr )
+    speed( 0 ),
+    drop( nullptr )
 { }
 
 projectile::projectile( const projectile &other )
 {
-    (*this) = other;
+    ( *this ) = other;
 }
 
 projectile &projectile::operator=( const projectile &other )
