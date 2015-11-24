@@ -729,8 +729,8 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         void remove_gunmod(item *weapon, unsigned id);
         /** Attempts to install bionics, returns false if the player cancels prior to installation */
         bool install_bionics(const itype &type, int skill_level = -1);
-        /** Handles reading effects */
-        void read(int pos);
+        /** Handles reading effects and returns true if activity started */
+        bool read(int pos);
         /** Completes book reading action. **/
         void do_read( item *book );
         /** Note that we've read a book at least once. **/
@@ -915,8 +915,9 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         bool studied_all_recipes(const itype &book) const;
 
         // crafting.cpp
-        bool crafting_allowed(); // is morale high enough to craft?
-        bool crafting_can_see(); // can player see well enough to craft?
+        bool crafting_allowed(); // can_see_to_craft() && has_morale_to_craft()
+        bool can_see_to_craft();
+        bool has_moral_to_craft();
         bool can_make(const recipe *r, int batch_size = 1); // have components?
         bool making_would_work(const std::string &id_to_make, int batch_size);
         void craft();
