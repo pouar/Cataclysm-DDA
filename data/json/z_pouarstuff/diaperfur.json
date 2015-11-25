@@ -2571,10 +2571,9 @@
 		"environmental_protection" : 2,
 		"encumbrance" : 50,
 		"bashing" : 1,
-		"flags" : ["VARSIZE", "WATERPROOF", "BOOTS"],
+		"flags" : ["VARSIZE", "WATERPROOF"],
 		"coverage" : 100,
-		"material_thickness" : 3,
-		"use_action" : "BOOTS"
+		"material_thickness" : 3
 	},
 	{
 		"type" : "ARMOR",
