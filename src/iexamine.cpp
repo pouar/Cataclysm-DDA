@@ -25,6 +25,7 @@
 #include "mtype.h"
 #include "weather.h"
 #include "sounds.h"
+#include "cata_utility.h"
 
 #include <sstream>
 #include <algorithm>
@@ -894,7 +895,7 @@ void iexamine::pit(player *p, map *m, const tripoint &examp)
         if (player_has && map_has) {
             if (query_yn(_("Use the plank at your feet?"))) {
                 long quantity = 1;
-                m->use_amount( p->pos3(), 1, "2x4", quantity, false);
+                m->use_amount( p->pos3(), 1, "2x4", quantity);
             } else {
                 p->use_amount("2x4", 1);
             }
@@ -902,7 +903,7 @@ void iexamine::pit(player *p, map *m, const tripoint &examp)
             p->use_amount("2x4", 1);
         } else if (!player_has && map_has) { // only map has plank
             long quantity = 1;
-            m->use_amount( p->pos3(), 1, "2x4", quantity, false);
+            m->use_amount( p->pos3(), 1, "2x4", quantity);
         }
 
         if( m->ter(examp) == t_pit ) {
@@ -2442,7 +2443,7 @@ void iexamine::recycler(player *p, map *m, const tripoint &examp)
     // Get format for printing weights, convert weight to that format,
     const std::string format = OPTIONS["USE_METRIC_WEIGHTS"].getValue() == "lbs" ? _("%.3f lbs") :
                                _("%.3f kg");
-    const std::string weight_str = string_format(format, p->convert_weight(steel_weight));
+    const std::string weight_str = string_format(format, convert_weight(steel_weight));
     as_m.text = string_format(_("Recycle %s metal into:"), weight_str.c_str());
     add_recyle_menu_entry(as_m, norm_recover_weight, 'l', "steel_lump");
     add_recyle_menu_entry(as_m, norm_recover_weight, 'S', "sheet_metal");

@@ -40,6 +40,7 @@
 #include "submap.h"
 #include "mtype.h"
 #include "weather_gen.h"
+#include "cata_utility.h"
 
 #include <map>
 
@@ -355,13 +356,12 @@ void player::reset_stats()
     if (has_trait("ARACHNID_ARMS")) {
         add_miss_reason(_("Your arachnid limbs get in the way."), 4);
     }
-    if (has_trait("ARACHNID_ARMS_OK")) {
-        if (!wearing_something_on(bp_torso)) {
-            mod_dex_bonus(2);
-        }
-        else {
-            mod_dex_bonus(-2);
-            add_miss_reason(_("Your clothing constricts your arachnid limbs."), 2);
+    if( has_trait( "ARACHNID_ARMS_OK" ) ) {
+        if( !wearing_something_on( bp_torso ) ) {
+            mod_dex_bonus( 2 );
+        } else if( !exclusive_flag_coverage( "OVERSIZE" )[bp_torso] ) {
+            mod_dex_bonus( -2 );
+            add_miss_reason( _( "Your clothing constricts your arachnid limbs." ), 2 );
         }
     }
 
@@ -989,7 +989,7 @@ void player::update_bodytemp()
         }
         // Represents the fact that the body generates heat when it is cold.
         // TODO : should this increase hunger?
-        double scaled_temperature = logistic_range( BODYTEMP_VERY_COLD, BODYTEMP_VERY_HOT,
+        double scaled_temperature = logarithmic_range( BODYTEMP_VERY_COLD, BODYTEMP_VERY_HOT,
                                                     temp_cur[i] );
         // Produces a smooth curve between 30.0 and 60.0.
         float homeostasis_adjustement = 30.0 * (1.0 + scaled_temperature);
@@ -6623,17 +6623,6 @@ void player::add_pain_msg(int val, body_part bp) const
     }
 }
 
-static int bound_mod_to_vals(int val, int mod, int max, int min)
-{
-    if (val + mod > max && max != 0) {
-        mod = std::max(max - val, 0);
-    }
-    if (val + mod < min && min != 0) {
-        mod = std::min(min - val, 0);
-    }
-    return mod;
-}
-
 void player::print_health() const
 {
     if( !is_player() ) {
@@ -9436,18 +9425,6 @@ void player::update_body_wetness( const w_point &weather )
     // TODO: Make clothing slow down drying
 }
 
-double player::convert_weight(int weight) const
-{
-    double ret;
-    ret = double(weight);
-    if (OPTIONS["USE_METRIC_WEIGHTS"] == "kg") {
-        ret /= 1000;
-    } else {
-        ret /= 453.6;
-    }
-    return ret;
-}
-
 int player::net_morale(morale_point effect) const
 {
     double bonus = effect.bonus;
@@ -9456,7 +9433,7 @@ int player::net_morale(morale_point effect) const
     // reduce it appropriately.
     if (effect.age > effect.decay_start)
     {
-        bonus *= logistic_range(effect.decay_start,
+        bonus *= logarithmic_range(effect.decay_start,
                                 effect.duration, effect.age);
     }
 
@@ -9520,7 +9497,7 @@ void player::add_morale(morale_type type, int bonus, int max_bonus,
 
             // Scale the morale bonus to its current level.
             if (i.age > i.decay_start) {
-                i.bonus *= logistic_range(i.decay_start, i.duration, i.age);
+                i.bonus *= logarithmic_range(i.decay_start, i.duration, i.age);
             }
 
             // If we're capping the existing effect, we can use the new duration
@@ -9773,15 +9750,15 @@ std::vector<item *> player::inv_dump()
     return ret;
 }
 
-std::list<item> player::use_amount(itype_id it, int _quantity, bool use_container)
+std::list<item> player::use_amount(itype_id it, int _quantity)
 {
     std::list<item> ret;
     long quantity = _quantity; // Don't wanny change the function signature right now
-    if (weapon.use_amount(it, quantity, use_container, ret)) {
+    if (weapon.use_amount(it, quantity, ret)) {
         remove_weapon();
     }
     for( auto a = worn.begin(); a != worn.end() && quantity > 0; ) {
-        if( a->use_amount( it, quantity, use_container, ret ) ) {
+        if( a->use_amount( it, quantity, ret ) ) {
             a = worn.erase( a );
         } else {
             ++a;
@@ -9790,7 +9767,7 @@ std::list<item> player::use_amount(itype_id it, int _quantity, bool use_containe
     if (quantity <= 0) {
         return ret;
     }
-    std::list<item> tmp = inv.use_amount(it, quantity, use_container);
+    std::list<item> tmp = inv.use_amount(it, quantity);
     ret.splice(ret.end(), tmp);
     return ret;
 }
@@ -10012,9 +9989,12 @@ std::list<item> player::use_charges(itype_id it, long quantity)
 int player::butcher_factor() const
 {
     int result = INT_MIN;
-    if (has_bionic("bio_tools")) {
+    if( has_bionic( "bio_tools" ) ) {
         item tmp( "toolset", 0 );
-        result = tmp.butcher_factor();
+        result = std::max( result, tmp.butcher_factor() );
+    }
+    if( has_bionic( "bio_razor" ) ) {
+        result = std::max( result, 8 );
     }
     result = std::max( result, inv.butcher_factor() );
     result = std::max( result, weapon.butcher_factor() );
@@ -13730,6 +13710,17 @@ bool player::wearing_something_on(body_part bp) const
     return false;
 }
 
+
+bool player::natural_attack_restricted_on( body_part bp ) const
+{
+    for( auto &i : worn ) {
+        if( i.covers( bp ) && !i.has_flag( "ALLOWS_NATURAL_ATTACKS" ) ) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool player::is_wearing_item (const item& it) const {
    return std::any_of(worn.begin(), worn.end(), [&](const item& elem) { return &elem == &it; });
 }
@@ -13938,27 +13929,30 @@ void player::practice( const skill_id &s, int amount, int cap )
     practice( &s.obj(), amount, cap );
 }
 
-bool player::knows_recipe(const recipe *rec) const
+bool player::has_recipe_requirements( const recipe *rec ) const
 {
-    // do we know the recipe by virtue of it being autolearned?
-    if( rec->autolearn ) {
-        // Can the skill being trained can handle the difficulty of the task
-        bool meets_requirements = false;
-        if( !rec->skill_used || get_skill_level(rec->skill_used) >= rec->difficulty){
-            meets_requirements = true;
-            //If there are required skills, insure their requirements are met, or we can't craft
-            if(!rec->required_skills.empty()){
-                for( auto iter = rec->required_skills.cbegin();
-                     iter != rec->required_skills.cend(); ++iter ){
-                    if( get_skill_level(iter->first) < iter->second ){
-                        meets_requirements = false;
-                    }
+    bool meets_requirements = false;
+    if( !rec->skill_used || get_skill_level( rec->skill_used) >= rec->difficulty ) {
+        meets_requirements = true;
+        // If there are required skills, insure their requirements are met, or we can't craft.
+        if( !rec->required_skills.empty() ) {
+            for( auto iter = rec->required_skills.cbegin();
+                 iter != rec->required_skills.cend(); ++iter ) {
+                if( get_skill_level(iter->first) < iter->second ) {
+                    meets_requirements = false;
                 }
             }
         }
-        if(meets_requirements){
-            return true;
-        }
+    }
+
+    return meets_requirements;
+}
+
+bool player::knows_recipe(const recipe *rec) const
+{
+    // do we know the recipe by virtue of it being autolearned?
+    if( rec->autolearn && has_recipe_requirements( rec ) ) {
+        return true;
     }
 
     if( learned_recipes.find( rec->ident ) != learned_recipes.end() ) {
@@ -14290,48 +14284,6 @@ int player::climbing_cost( const tripoint &from, const tripoint &to ) const
 
     return 50 + diff * 100;
     // TODO: All sorts of mutations, equipment weight etc.
-}
-
-// --- Library functions ---
-// This stuff could be moved elsewhere, but there
-// doesn't seem to be a good place to put it right now.
-
-// Basic logistic function.
-double player::logistic(double t) const
-{
-    return 1 / (1 + exp(-t));
-}
-
-// Logistic curve [-6,6], flipped and scaled to
-// range from 1 to 0 as pos goes from min to max.
-double player::logistic_range(int min, int max, int pos) const
-{
-    const double LOGI_CUTOFF = 4;
-    const double LOGI_MIN = logistic(-LOGI_CUTOFF);
-    const double LOGI_MAX = logistic(+LOGI_CUTOFF);
-    const double LOGI_RANGE = LOGI_MAX - LOGI_MIN;
-    // Anything beyond [min,max] gets clamped.
-    if (pos < min)
-    {
-        return 1.0;
-    }
-    else if (pos > max)
-    {
-        return 0.0;
-    }
-
-    // Normalize the pos to [0,1]
-    double range = max - min;
-    double unit_pos = (pos - min) / range;
-
-    // Scale and flip it to [+LOGI_CUTOFF,-LOGI_CUTOFF]
-    double scaled_pos = LOGI_CUTOFF - 2 * LOGI_CUTOFF * unit_pos;
-
-    // Get the raw logistic value.
-    double raw_logistic = logistic(scaled_pos);
-
-    // Scale the output to [0,1]
-    return (raw_logistic - LOGI_MIN) / LOGI_RANGE;
 }
 
 void player::environmental_revert_effect()

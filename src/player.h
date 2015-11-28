@@ -792,6 +792,8 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         int get_env_resist(body_part bp) const override;
         /** Returns true if the player is wearing something on the entered body_part */
         bool wearing_something_on(body_part bp) const;
+        /** Returns true if the player is wearing something on the entered body_part, ignoring items with the ALLOWS_NATURAL_ATTACKS flag */
+        bool natural_attack_restricted_on(body_part bp) const;
         /** Returns true if the player is wearing the given item */
         bool is_wearing_item (const item& it) const;
         /** Returns true if the player is wearing something on their feet that is not SKINTIGHT */
@@ -816,7 +818,6 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         bool has_activity(const activity_type type) const;
         void cancel_activity();
 
-        double convert_weight(int weight) const;
         int net_morale(morale_point effect) const;
         int morale_level() const; // Modified by traits, &c
         void add_morale(morale_type type, int bonus, int max_bonus = 0,
@@ -869,7 +870,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
 
         // has_amount works ONLY for quantity.
         // has_charges works ONLY for charges.
-        std::list<item> use_amount(itype_id it, int quantity, bool use_container = false);
+        std::list<item> use_amount(itype_id it, int quantity);
         bool use_charges_if_avail(itype_id it, long quantity);// Uses up charges
         std::list<item> use_charges(itype_id it, long quantity);// Uses up charges
         bool has_amount(const itype_id &it, int quantity) const;
@@ -907,6 +908,7 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         int has_recipe( const recipe *r, const inventory &crafting_inv ) const;
         bool knows_recipe( const recipe *rec ) const;
         void learn_recipe( const recipe *rec );
+        bool has_recipe_requirements(const recipe *rec) const;
 
         bool studied_all_recipes(const itype &book) const;
 
@@ -964,10 +966,6 @@ class player : public Character, public JsonSerializer, public JsonDeserializer
         std::vector<tripoint> &get_auto_move_route();
         action_id get_next_auto_move_direction();
         void shift_destination(int shiftx, int shifty);
-
-        // Library functions
-        double logistic(double t) const;
-        double logistic_range(int min, int max, int pos) const;
 
         /**
          * Global position, expressed in map square coordinate system
