@@ -37,7 +37,7 @@ MSVC 14 can build Cataclysm and we have project files for it in msvc140/.  We st
 
 ## Use MSYS2 on Windows and MinGW-w64 when cross-compiling to Windows
 
-### While MinGW-w64 is the best compiler when cross-compiling from Linux to Windows. It's quite unintuitive on its own on Windows, mostly because the cli environment on Windows is crap. use MSYS2 as it has a decent cli environment and it includes MinGW-w64.
+### While MinGW-w64 is the best compiler when cross-compiling from Linux to Windows. It absolutely sucks by itself on Windows, mostly because the cli environment on Windows is shit. use MSYS2 as it has a decent cli environment and it includes MinGW-w64.
 
 
 ## Don't use MSVC
